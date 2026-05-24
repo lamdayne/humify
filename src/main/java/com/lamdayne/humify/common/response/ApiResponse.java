@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import lombok.*;
 
-import java.io.Serializable;
-
 @Getter
 @Setter
 @Builder

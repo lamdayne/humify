@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum SuccessCode {
     COMPANY_CREATE_SUCCESS("COMPANY_CREATE_SUCCESS", "Company created successfully"),
+    COMPANY_READ_SUCCESS("COMPANY_READ_SUCCESS", "Get company successfully"),
     ;
 
     private String code;
