@@ -1,5 +1,6 @@
 package com.lamdayne.humify.common.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import lombok.*;
 
@@ -10,7 +11,8 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponse<T> implements Serializable {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponse<T> {
     private boolean success;
     private String code;
     private String message;
@@ -46,7 +48,7 @@ public class ApiResponse<T> implements Serializable {
                 ? errorCode.getDefaultMessage()
                 : message;
         return ApiResponse.<T>builder()
-                .success(true)
+                .success(false)
                 .code(errorCode.getCode())
                 .message(resolved)
                 .data(data)
