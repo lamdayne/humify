@@ -14,7 +14,4 @@ public interface BranchMapper {
 
     @Mapping(source = "company.id", target = "companyId")
     BranchResponse toBranchResponse(Branch branch);
-
-    @Mapping(source = "company.id", target = "companyId")
-    List<BranchResponse> toBranchResponseList(List<Branch> branches);
 }

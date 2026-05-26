@@ -14,6 +14,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class BranchServiceImpl implements BranchService {
@@ -27,12 +29,11 @@ public class BranchServiceImpl implements BranchService {
         Company company = companyRepository.findById(request.getCompanyId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
-        if (branchRepository.existsByCompanyIdAndBranchCode(request.getCompanyId(), request.getBranchCode())) {
-            throw new AppException(ErrorCode.BRANCH_CODE_EXISTED);
-        }
-
         Branch branch = branchMapper.toBranch(request);
         branch.setCompany(company);
+
+        String BranchCode = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
+        branch.setBranchCode(BranchCode);
 
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
