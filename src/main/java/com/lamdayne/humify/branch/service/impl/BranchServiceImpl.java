@@ -10,6 +10,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BranchServiceImpl implements BranchService {
     private final BranchRepository branchRepository;
-    private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
     private final BranchMapper branchMapper;
 
     @Override
     @Transactional
     public BranchResponse createBranch(CreateBranchRequest request) {
-        Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+        Company company = companyService.getCompanyById(request.getCompanyId());
 
         Branch branch = branchMapper.toBranch(request);
         branch.setCompany(company);

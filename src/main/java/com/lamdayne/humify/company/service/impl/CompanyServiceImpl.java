@@ -75,4 +75,9 @@ public class CompanyServiceImpl implements CompanyService {
                 .items(companies)
                 .build();
     }
+    @Override
+    public Company getCompanyById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+    }
 }
