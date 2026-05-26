@@ -15,7 +15,13 @@ public enum ErrorCode {
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),
     PAGE_NO_INVALID("PAGE_NO_INVALID", "Invalid page number", HttpStatus.BAD_REQUEST),
     PAGE_SIZE_INVALID("PAGE_SIZE_INVALID", "Invalid page size", HttpStatus.BAD_REQUEST),
-
+    // Branch
+    COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
+    BRANCH_CODE_REQUIRED("BRANCH_CODE_REQUIRED", "Branch code cannot be blank", HttpStatus.BAD_REQUEST),
+    BRANCH_CODE_INVALID("BRANCH_CODE_INVALID", "Branch code exceed max length", HttpStatus.BAD_REQUEST),
+    BRANCH_NAME_REQUIRED("BRANCH_NAME_REQUIRED", "Branch name cannot be blank", HttpStatus.BAD_REQUEST),
+    BRANCH_FIELD_REQUIRED("BRANCH_FIELD_REQUIRED", "Branch field cannot be blank", HttpStatus.BAD_REQUEST),
+    BRANCH_CODE_EXISTED("BRANCH_CODE_EXISTED", "Branch code already exists in this company", HttpStatus.BAD_REQUEST),
     // Company
     COMPANY_NAME_REQUIRED("COMPANY_NAME_REQUIRED", "Company name can not blank", HttpStatus.BAD_REQUEST),
     COMPANY_FIELD_REQUIRED("COMPANY_FIELD_REQUIRED", "Company field can not blank", HttpStatus.BAD_REQUEST),
@@ -26,6 +32,7 @@ public enum ErrorCode {
     COMPANY_TAX_CODE_EXISTED("COMPANY_TAX_CODE_EXISTED", "Company tax code already exists", HttpStatus.BAD_REQUEST),
     COMPANY_PHONE_INVALID("COMPANY_PHONE_INVALID", "Company phone number is invalid", HttpStatus.BAD_REQUEST),
     COMPANY_EMAIL_INVALID("COMPANY_EMAIL_INVALID", "Company email is invalid", HttpStatus.BAD_REQUEST),
+    COMPANY_NOT_FOUND("COMPANY_NOT_FOUND", "Company not found", HttpStatus.BAD_REQUEST),
     //Department
     BRANCH_NOT_FOUND("BRANCH_NOT_FOUND", "Branch not found" , HttpStatus.BAD_REQUEST ),
     BRANCH_ID_REQUIRED("BRANCH_ID_REQUIRED", "branch id can not blank", HttpStatus.BAD_REQUEST),
