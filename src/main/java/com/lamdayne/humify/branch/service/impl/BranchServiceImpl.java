@@ -13,6 +13,9 @@ import com.lamdayne.humify.company.repository.CompanyRepository;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,5 +61,15 @@ public class BranchServiceImpl implements BranchService {
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
 
         return branchMapper.toBranchResponse(branch);
+    }
+
+    @Override
+    public Page<BranchResponse> getAllBranches(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Branch> branches = branchRepository.findAll(pageable);
+
+        return branches.map(branchMapper::toBranchResponse);
     }
 }

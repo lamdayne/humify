@@ -8,6 +8,7 @@ import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +41,19 @@ public class BranchController {
                 )
         );
     }
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<BranchResponse>>> getAllBranches(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.FOUND_BRANCH_SUCCESS,
+                        branchService.getAllBranches(page, size)
+                )
+        );
+    }
     @GetMapping("/company/{companyId}")
     public ResponseEntity<ApiResponse<List<BranchResponse>>> getBranchesByCompanyId(
             @PathVariable Long companyId
