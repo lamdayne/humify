@@ -8,18 +8,24 @@ import com.lamdayne.humify.branch.repository.BranchRepository;
 import com.lamdayne.humify.branch.service.BranchService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.company.entity.Company;
-import com.lamdayne.humify.company.repository.CompanyRepository;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +55,41 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
+    public PageResponse<BranchResponse> getAllBranches(int page, int size, String sort) {
+        int pageNo = page > 0 ? page - 1 : 0;
+
+        List<Sort.Order> sorts = new ArrayList<>();
+
+        if (StringUtils.hasLength(sort)) {
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
+            Matcher matcher = pattern.matcher(sort);
+            if (matcher.find()) {
+                if (matcher.group(3).equalsIgnoreCase("asc")) {
+                    sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                } else {
+                    sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
+                }
+            }
+        }
+
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by(sorts));
+        Page<Branch> branches = branchRepository.findAll(pageable);
+
+        List<BranchResponse> branchResponses = branches.stream().map(branchMapper::toBranchResponse).toList();
+
+        return PageResponse.<BranchResponse>builder()
+                .pageNo(page)
+                .pageSize(size)
+                .totalPages(branches.getTotalPages())
+                .totalElements(branches.getTotalElements())
+                .items(branchResponses)
+                .build();
+    }
+
+
+    @Override
     public Branch getBranchById(Long id) {
-        return  branchRepository.findById(id)
+        return branchRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
     }
 
@@ -63,13 +102,5 @@ public class BranchServiceImpl implements BranchService {
         return branchMapper.toBranchResponse(branch);
     }
 
-    @Override
-    public Page<BranchResponse> getAllBranches(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Branch> branches = branchRepository.findAll(pageable);
-
-        return branches.map(branchMapper::toBranchResponse);
-    }
 }
