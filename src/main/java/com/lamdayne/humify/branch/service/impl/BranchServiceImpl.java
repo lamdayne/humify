@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,9 +38,25 @@ public class BranchServiceImpl implements BranchService {
 
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
+
+    @Override
+    public List<BranchResponse> getBranchesByCompanyId(Long companyId) {
+        List<Branch> branches = branchRepository.findByCompanyId(companyId);
+        return branchMapper.toBranchResponseList(branches);
+    }
+
     @Override
     public Branch getBranchById(Long id) {
         return  branchRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+    }
+
+    @Override
+    public BranchResponse getBranchResponseById(Long id) {
+
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+
+        return branchMapper.toBranchResponse(branch);
     }
 }
