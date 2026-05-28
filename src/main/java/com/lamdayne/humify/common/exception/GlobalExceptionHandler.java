@@ -4,6 +4,7 @@ import com.lamdayne.humify.common.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -70,6 +71,13 @@ public class GlobalExceptionHandler {
             );
         }
         return ErrorCode.INVALID_ERROR_CODE;
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePropertyReferenceException(
+            PropertyReferenceException e
+    ) {
+        return buildErrorResponse(ErrorCode.INVALID_FIELD_NAME);
     }
 
     private ResponseEntity<ApiResponse<Void>> buildErrorResponse(ErrorCode errorCode) {

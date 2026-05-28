@@ -11,7 +11,6 @@ import java.time.Instant;
 @Setter
 @Builder
 public class CompanyResponse implements Serializable {
-    private Long id;
     private String companyCode;
     private String name;
     private String field;

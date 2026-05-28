@@ -4,6 +4,7 @@ import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
+import com.lamdayne.humify.company.dto.request.UpdateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.validation.Valid;
@@ -43,5 +44,28 @@ public class CompanyController {
                 ));
     }
 
+    @PostMapping("/{companyCode}/approve")
+    public ResponseEntity<ApiResponse<?>> approveCompany(
+            @PathVariable(name = "companyCode") String companyCode
+    ) {
+        companyService.approveCompany(companyCode);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(SuccessCode.APPROVE_COMPANY_SUCCESS));
+    }
+
+    @PutMapping("/{companyCode}")
+    public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
+            @RequestBody @Valid UpdateCompanyRequest request,
+            @PathVariable(name = "companyCode") String companyCode
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.COMPANY_UPDATE_SUCCESS,
+                        "Update company info successfully",
+                        companyService.updateCompany(companyCode, request)
+                ));
+    }
 
 }
