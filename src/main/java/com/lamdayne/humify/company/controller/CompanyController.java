@@ -4,6 +4,7 @@ import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
+import com.lamdayne.humify.company.dto.request.UpdateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.validation.Valid;
@@ -33,15 +34,38 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAllCompanies(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
-            @RequestParam(required = false) String sort
+            @RequestParam(required = false) String... sorts
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         SuccessCode.COMPANY_READ_SUCCESS,
-                        companyService.getAllCompanies(page, size, sort)
+                        companyService.getAllCompanies(page, size, sorts)
                 ));
     }
 
+    @PostMapping("/{companyCode}/approve")
+    public ResponseEntity<ApiResponse<?>> approveCompany(
+            @PathVariable(name = "companyCode") String companyCode
+    ) {
+        companyService.approveCompany(companyCode);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(SuccessCode.APPROVE_COMPANY_SUCCESS));
+    }
+
+    @PutMapping("/{companyCode}")
+    public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
+            @RequestBody @Valid UpdateCompanyRequest request,
+            @PathVariable(name = "companyCode") String companyCode
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.COMPANY_UPDATE_SUCCESS,
+                        "Update company info successfully",
+                        companyService.updateCompany(companyCode, request)
+                ));
+    }
 
 }

@@ -9,7 +9,6 @@ import com.lamdayne.humify.common.response.SuccessCode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -46,12 +45,12 @@ public class BranchController {
     public ResponseEntity<ApiResponse<PageResponse<BranchResponse>>> getAllBranches(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
-            @RequestParam(required = false) String sort
+            @RequestParam(required = false) String... sorts
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.FOUND_BRANCH_SUCCESS,
-                        branchService.getAllBranches(page, size, sort)
+                        branchService.getAllBranches(page, size, sorts)
                 )
         );
     }
