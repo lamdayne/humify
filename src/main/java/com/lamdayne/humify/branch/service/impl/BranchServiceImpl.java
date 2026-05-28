@@ -9,22 +9,17 @@ import com.lamdayne.humify.branch.service.BranchService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Service
@@ -42,8 +37,8 @@ public class BranchServiceImpl implements BranchService {
         Branch branch = branchMapper.toBranch(request);
         branch.setCompany(company);
 
-        String BranchCode = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
-        branch.setBranchCode(BranchCode);
+        String branchCode = UUID.randomUUID().toString();
+        branch.setBranchCode(branchCode);
 
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
@@ -55,24 +50,8 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public PageResponse<BranchResponse> getAllBranches(int page, int size, String sort) {
-        int pageNo = page > 0 ? page - 1 : 0;
-
-        List<Sort.Order> sorts = new ArrayList<>();
-
-        if (StringUtils.hasLength(sort)) {
-            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
-            Matcher matcher = pattern.matcher(sort);
-            if (matcher.find()) {
-                if (matcher.group(3).equalsIgnoreCase("asc")) {
-                    sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
-                } else {
-                    sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
-                }
-            }
-        }
-
-        Pageable pageable = PageRequest.of(pageNo, size, Sort.by(sorts));
+    public PageResponse<BranchResponse> getAllBranches(int page, int size, String... sorts) {
+        Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         Page<Branch> branches = branchRepository.findAll(pageable);
 
         List<BranchResponse> branchResponses = branches.stream().map(branchMapper::toBranchResponse).toList();

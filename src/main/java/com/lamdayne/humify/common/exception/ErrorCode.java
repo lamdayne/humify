@@ -33,6 +33,7 @@ public enum ErrorCode {
     COMPANY_PHONE_INVALID("COMPANY_PHONE_INVALID", "Company phone number is invalid", HttpStatus.BAD_REQUEST),
     COMPANY_EMAIL_INVALID("COMPANY_EMAIL_INVALID", "Company email is invalid", HttpStatus.BAD_REQUEST),
     COMPANY_NOT_FOUND("COMPANY_NOT_FOUND", "Company not found", HttpStatus.BAD_REQUEST),
+    COMPANY_EMAIL_EXISTED("COMPANY_EMAIL_EXISTED", "Company email already exists", HttpStatus.BAD_REQUEST),
     //Department
     BRANCH_NOT_FOUND("BRANCH_NOT_FOUND", "Branch not found" , HttpStatus.BAD_REQUEST ),
     BRANCH_ID_REQUIRED("BRANCH_ID_REQUIRED", "branch id can not blank", HttpStatus.BAD_REQUEST),

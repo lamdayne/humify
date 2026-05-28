@@ -8,6 +8,6 @@ import com.lamdayne.humify.company.entity.Company;
 public interface CompanyService {
     CompanyResponse createCompany(CreateCompanyRequest request);
 
-    PageResponse<CompanyResponse> getAllCompanies(int page, int size, String sort);
+    PageResponse<CompanyResponse> getAllCompanies(int page, int size, String... sorts);
     Company getCompanyById(Long id);
 }
