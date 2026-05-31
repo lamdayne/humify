@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_CREATE')")
     public ResponseEntity<ApiResponse<DepartmentResponse>>createDepartment(@RequestBody @Valid CreateDepartmentRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -31,6 +33,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_READ')")
     public ResponseEntity<ApiResponse<List<DepartmentResponse>>> findByBranchId(@PathVariable Long branchId) {
 
         return ResponseEntity
