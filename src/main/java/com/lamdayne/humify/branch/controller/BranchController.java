@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE')")
     public ResponseEntity<ApiResponse<BranchResponse>> createBranch(@RequestBody @Valid CreateBranchRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -32,6 +34,7 @@ public class BranchController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
     public ResponseEntity<ApiResponse<BranchResponse>> getBranchById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -42,6 +45,7 @@ public class BranchController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
     public ResponseEntity<ApiResponse<PageResponse<BranchResponse>>> getAllBranches(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,

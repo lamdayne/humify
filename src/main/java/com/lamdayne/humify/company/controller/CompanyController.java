@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class CompanyController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'COMPANY_READ')")
     public ResponseEntity<ApiResponse<PageResponse<CompanyResponse>>> getAllCompanies(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
@@ -45,6 +47,7 @@ public class CompanyController {
     }
 
     @PostMapping("/{companyCode}/approve")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS')")
     public ResponseEntity<ApiResponse<?>> approveCompany(
             @PathVariable(name = "companyCode") String companyCode
     ) {
@@ -55,6 +58,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{companyCode}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'COMPANY_UPDATE')")
     public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
             @RequestBody @Valid UpdateCompanyRequest request,
             @PathVariable(name = "companyCode") String companyCode

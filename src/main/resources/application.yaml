@@ -4,3 +4,19 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
+
+system:
+  account:
+    email: ${SYSTEM_EMAIL}
+    password: ${SYSTEM_PASSWORD}
+
+jwt:
+  expiryHour: ${EXPIRY_HOUR}
+  expiryDay: ${EXPIRY_DAY}
+  secretKey: ${JWT_SECRET_KEY}
+  refreshKey: ${JWT_REFRESH_KEY}
+
+sqids:
+  min-length: ${SQIDS_MIN_LENGTH}
+  keys:
+    company: ${SQIDS_COMPANY_KEY}

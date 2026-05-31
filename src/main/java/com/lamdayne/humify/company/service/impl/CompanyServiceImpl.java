@@ -89,4 +89,10 @@ public class CompanyServiceImpl implements CompanyService {
         companyMapper.updateCompany(company, request);
         return companyMapper.toCompanyResponse(companyRepository.save(company));
     }
+
+    @Override
+    public Company getCompanyByCode(String code) {
+        return companyRepository.findByCompanyCode(code)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+    }
 }

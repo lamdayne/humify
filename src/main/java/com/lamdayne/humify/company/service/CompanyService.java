@@ -16,4 +16,6 @@ public interface CompanyService {
     void approveCompany(String companyCode);
 
     CompanyResponse updateCompany(String companyCode, UpdateCompanyRequest request);
+
+    Company getCompanyByCode(String code);
 }
