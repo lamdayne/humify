@@ -21,6 +21,10 @@ public class Role extends BaseEntity implements Serializable {
 
     private String description;
 
+    @Builder.Default
+    @Column(name = "is_system", nullable = false)
+    private Boolean isSystem = Boolean.FALSE;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
