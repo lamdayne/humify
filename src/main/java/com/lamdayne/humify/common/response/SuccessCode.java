@@ -29,6 +29,7 @@ public enum SuccessCode {
 
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
+    ROLE_DELETE_SUCCESS("ROLE_DELETE_SUCCESS", "Role deleted successfully"),
 
     ;
 
