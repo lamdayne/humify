@@ -12,6 +12,7 @@ public enum SuccessCode {
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
+    LOGOUT_SUCCESS("LOGOUT_SUCCESS", "Logout Success"),
 
     // Company
     COMPANY_CREATE_SUCCESS("COMPANY_CREATE_SUCCESS", "Company created successfully"),
@@ -29,6 +30,7 @@ public enum SuccessCode {
 
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
+    ROLE_DELETE_SUCCESS("ROLE_DELETE_SUCCESS", "Role deleted successfully"),
 
     ;
 

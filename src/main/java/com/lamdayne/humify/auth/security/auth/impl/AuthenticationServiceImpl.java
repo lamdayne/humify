@@ -6,6 +6,7 @@ import com.lamdayne.humify.auth.enums.TokenType;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
 import com.lamdayne.humify.auth.security.jwt.JwtService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
+import com.lamdayne.humify.auth.service.RefreshTokenService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -40,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String accessToken = jwtService.generateAccessToken(userPrincipal);
         String refreshToken = jwtService.generateRefreshToken(userPrincipal);
 
-        // save to redis
+        refreshTokenService.save(refreshToken, userPrincipal.getId(), Instant.now());
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -56,16 +60,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         final String email = jwtService.extractUsername(token, TokenType.REFRESH_TOKEN);
+
+        refreshTokenService.revokeIfValid(token);
+
         UserPrincipal userPrincipal = (UserPrincipal) userDetailsService.loadUserByUsername(email);
 
-        if (!jwtService.isValid(token, TokenType.REFRESH_TOKEN, userPrincipal)) {
-            throw new AuthenticationServiceException("Invalid token");
-        }
-
         String accessToken = jwtService.generateAccessToken(userPrincipal);
+        String refreshToken = jwtService.generateRefreshToken(userPrincipal);
+
+        refreshTokenService.save(refreshToken, userPrincipal.getId(), Instant.now());
+
         return TokenResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(token)
+                .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        String token = request.getHeader("x-refresh-token");
+        if (StringUtils.isBlank(token)) {
+            throw new AuthenticationServiceException("Token must be not blank");
+        }
+        jwtService.extractUsername(token, TokenType.REFRESH_TOKEN);
+
+        refreshTokenService.revokeIfValid(token);
     }
 }

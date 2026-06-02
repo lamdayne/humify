@@ -10,11 +10,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +22,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_CREATE')")
     public ResponseEntity<ApiResponse<RoleResponse>> createRole(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateRoleRequest request
@@ -33,6 +32,17 @@ public class RoleController {
                         SuccessCode.ROLE_CREATE_SUCCESS,
                         roleService.createRole(userPrincipal, request)
                 ));
+    }
+
+    @DeleteMapping("/{roleId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_DELETE')")
+    public ResponseEntity<ApiResponse<Void>> deleteRole(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(name = "roleId") Long roleId
+    ) {
+        roleService.deleteRole(userPrincipal, roleId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(SuccessCode.ROLE_DELETE_SUCCESS));
     }
 
 }

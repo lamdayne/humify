@@ -27,8 +27,8 @@ public class JwtServiceImpl implements JwtService {
 
     private final SqidsUtil sqidsUtil;
 
-    @Value("${jwt.expiryHour}")
-    private int expiryHour;
+    @Value("${jwt.expiryAccessToken}")
+    private int expiryAccessToken;
 
     @Value("${jwt.expiryDay}")
     private int expiryDay;
@@ -76,7 +76,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(
-                        Instant.now().plus(expiryHour, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(expiryAccessToken, ChronoUnit.MINUTES).toEpochMilli()
                 ))
                 .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS512)
                 .compact();
