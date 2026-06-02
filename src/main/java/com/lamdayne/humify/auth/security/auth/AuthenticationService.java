@@ -10,4 +10,6 @@ public interface AuthenticationService {
 
     TokenResponse refresh(HttpServletRequest request);
 
+    void logout(HttpServletRequest request);
+
 }
