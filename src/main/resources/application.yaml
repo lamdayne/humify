@@ -11,8 +11,8 @@ system:
     password: ${SYSTEM_PASSWORD}
 
 jwt:
-  expiryHour: ${EXPIRY_HOUR}
-  expiryDay: ${EXPIRY_DAY}
+  expiryAccessToken: ${EXPIRY_ACCESS_TOKEN:15} # Minutes
+  expiryDay: ${EXPIRY_DAY:7}
   secretKey: ${JWT_SECRET_KEY}
   refreshKey: ${JWT_REFRESH_KEY}
 
