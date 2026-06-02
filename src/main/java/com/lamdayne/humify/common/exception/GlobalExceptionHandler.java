@@ -1,6 +1,7 @@
 package com.lamdayne.humify.common.exception;
 
 import com.lamdayne.humify.common.response.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +79,11 @@ public class GlobalExceptionHandler {
             PropertyReferenceException e
     ) {
         return buildErrorResponse(ErrorCode.INVALID_FIELD_NAME);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException() {
+        return buildErrorResponse(ErrorCode.JWT_EXPIRED);
     }
 
     private ResponseEntity<ApiResponse<Void>> buildErrorResponse(ErrorCode errorCode) {
