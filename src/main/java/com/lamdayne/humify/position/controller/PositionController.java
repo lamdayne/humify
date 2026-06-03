@@ -17,7 +17,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("positions")
+@RequestMapping("/positions")
 public class PositionController {
 
     private final PositionService positionService;
