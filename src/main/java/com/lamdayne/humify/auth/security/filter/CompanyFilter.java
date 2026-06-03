@@ -31,12 +31,11 @@ public class CompanyFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         try {
             String companyCode = request.getHeader("x-company-code");
-            Long companyId = null;
             if (companyCode != null) {
                 Company company = companyService.getCompanyByCode(companyCode);
-                companyId = company.getId();
+                Long companyId = company.getId();
+                CompanyContext.setCompanyId(companyId);
             }
-            CompanyContext.setCompanyId(companyId);
         } catch (AppException e) {
             request.setAttribute("errorCode", e.getErrorCode());
             response.setStatus(e.getErrorCode().getStatus().value());
