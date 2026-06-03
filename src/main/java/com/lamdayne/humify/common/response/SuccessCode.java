@@ -17,10 +17,16 @@ public enum SuccessCode {
     // Department
     DEPARTMENT_CREATE_SUCCESS("DEPARTMENT_CREATE_SUCCESS", "Department created successfully" ),
     FOUND_DEPARTMENT_SUCCESS("FOUND_DEPARTMENT_SUCCES", "Department found successfully"),
+    // Position
+    POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),
+    FOUND_POSITION_SUCCESS("FOUND_POSITION_SUCCESS", "Position found successfully"),
 
     // Branch
     BRANCH_CREATE_SUCCESS("BRANCH_CREATE_SUCCESS", "Branch created successfully"),
     FOUND_BRANCH_SUCCESS("FOUND_BRANCH_SUCCESS", "Branch found successfully"),;
+
+
+
 
     private String code;
     private String defaultMessage;

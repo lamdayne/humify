@@ -1,6 +1,11 @@
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    url: jdbc:postgresql://localhost:5433/humify
+    username: root
+    password: 123456
     driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
