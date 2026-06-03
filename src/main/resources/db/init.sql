@@ -289,6 +289,16 @@ CREATE TABLE role_has_permissions
 CREATE UNIQUE INDEX uq_role_has_permissions ON role_has_permissions (role_id, permission_id);
 CREATE INDEX idx_role_has_permissions_role_id ON role_has_permissions (role_id);
 
+-- Table: refresh_tokens
+CREATE TABLE refresh_tokens
+(
+    token       TEXT PRIMARY KEY,
+    user_id     BIGINT    NOT NULL,
+    expiry_date TIMESTAMP NOT NULL,
+    revoked     BOOLEAN   NOT NULL DEFAULT FALSE,
+    created_at  TIMESTAMP          DEFAULT NOW()
+);
+
 -- Enable RLS
 -- Bật RLS
 ALTER TABLE branches
