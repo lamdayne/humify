@@ -48,13 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String token = authorization.substring("Bearer ".length());
             final String username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
 
+            // extract companyId and decode
+            String companyId = jwtService.extractCompanyId(token, TokenType.ACCESS_TOKEN);
+            CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
+
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isValid(token, TokenType.ACCESS_TOKEN, userDetails)) {
-                    // extract companyId and decode
-                    String companyId = jwtService.extractCompanyId(token, TokenType.ACCESS_TOKEN);
-                    CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
-
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities()
