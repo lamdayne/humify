@@ -22,7 +22,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_CREATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_CREATE', 'ROLE_FULL')")
     public ResponseEntity<ApiResponse<RoleResponse>> createRole(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateRoleRequest request
@@ -35,7 +35,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{roleId}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_DELETE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_DELETE', 'ROLE_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteRole(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(name = "roleId") Long roleId
