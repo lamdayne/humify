@@ -1,5 +1,6 @@
 package com.lamdayne.humify.branch.service.impl;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.entity.Branch;
@@ -31,8 +32,8 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     @Transactional
-    public BranchResponse createBranch(CreateBranchRequest request) {
-        Company company = companyService.getCompanyById(request.getCompanyId());
+    public BranchResponse createBranch(UserPrincipal userPrincipal, CreateBranchRequest request) {
+        Company company = companyService.getCompanyById(userPrincipal.getCompanyId());
 
         Branch branch = branchMapper.toBranch(request);
         branch.setCompany(company);
