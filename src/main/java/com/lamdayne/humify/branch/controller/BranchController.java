@@ -28,7 +28,7 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE')")
+    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<BranchResponse>> createBranch(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateBranchRequest request
@@ -42,7 +42,7 @@ public class BranchController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<BranchResponse>> getBranchById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -53,7 +53,7 @@ public class BranchController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<BranchResponse>>> getAllBranches(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
