@@ -11,7 +11,6 @@ import java.time.Instant;
 @Builder
 public class BranchResponse implements Serializable {
     private Long id;
-    private Long companyId;
     private String branchCode;
     private String name;
     private String field;

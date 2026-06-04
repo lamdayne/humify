@@ -1,5 +1,6 @@
 package com.lamdayne.humify.branch.controller;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.service.BranchService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +29,16 @@ public class BranchController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('BRANCH_CREATE')")
-    public ResponseEntity<ApiResponse<BranchResponse>> createBranch(@RequestBody @Valid CreateBranchRequest request) {
+    public ResponseEntity<ApiResponse<BranchResponse>> createBranch(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody @Valid CreateBranchRequest request
+    ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(SuccessCode.BRANCH_CREATE_SUCCESS, branchService.createBranch(request)));
+                .body(ApiResponse.success(
+                        SuccessCode.BRANCH_CREATE_SUCCESS,
+                        branchService.createBranch(userPrincipal, request)
+                ));
     }
 
     @GetMapping("/{id}")
