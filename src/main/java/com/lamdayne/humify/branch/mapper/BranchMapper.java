@@ -12,7 +12,6 @@ public interface BranchMapper {
 
     Branch toBranch(CreateBranchRequest request);
 
-    @Mapping(source = "company.id", target = "companyId")
     BranchResponse toBranchResponse(Branch branch);
 
     @Mapping(source = "company.id", target = "companyId")
