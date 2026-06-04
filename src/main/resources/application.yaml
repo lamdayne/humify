@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: true
+
+system:
+  account:
+    email: ${SYSTEM_EMAIL}
+    password: ${SYSTEM_PASSWORD}
+
+jwt:
+  expiryAccessToken: ${EXPIRY_ACCESS_TOKEN:15} # Minutes
+  expiryDay: ${EXPIRY_DAY:7}
+  secretKey: ${JWT_SECRET_KEY}
+  refreshKey: ${JWT_REFRESH_KEY}
+
+sqids:
+  min-length: ${SQIDS_MIN_LENGTH}
+  keys:
+    company: ${SQIDS_COMPANY_KEY}

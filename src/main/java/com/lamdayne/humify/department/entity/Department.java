@@ -1,8 +1,8 @@
 package com.lamdayne.humify.department.entity;
 
+import com.lamdayne.humify.branch.entity.Branch;
 import com.lamdayne.humify.common.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -15,4 +15,14 @@ import java.io.Serializable;
 @Entity
 @Table(name = "departments")
 public class Department extends BaseEntity implements Serializable {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
+
+    @Column(nullable = false)
+    private String name;
+
+    private String description;
+
 }

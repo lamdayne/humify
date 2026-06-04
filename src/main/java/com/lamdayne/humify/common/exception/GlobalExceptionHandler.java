@@ -1,8 +1,11 @@
 package com.lamdayne.humify.common.exception;
 
 import com.lamdayne.humify.common.response.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,9 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException e) {
-        return ResponseEntity
-                .status(e.getErrorCode().getStatus())
-                .body(ApiResponse.failure(e.getErrorCode()));
+        return buildErrorResponse(e.getErrorCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -26,23 +27,66 @@ public class GlobalExceptionHandler {
     ) {
         FieldError fieldError = e.getFieldError();
         if (fieldError == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure(ErrorCode.VALIDATION_ERROR));
+            return buildErrorResponse(ErrorCode.VALIDATION_ERROR);
         }
 
-        String enumKey = fieldError.getDefaultMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_ERROR_CODE;
+        ErrorCode errorCode = resolveErrorCode(
+                fieldError.getDefaultMessage(),
+                fieldError.getField(),
+                fieldError.getObjectName()
+        );
 
+        return buildErrorResponse(errorCode);
+    }
+
+    @ExceptionHandler({ ConstraintViolationException.class })
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(
+            ConstraintViolationException e
+    ) {
+        ConstraintViolation<?> violation = e.getConstraintViolations().stream().findFirst().orElse(null);
+
+        if (violation == null) {
+            return buildErrorResponse(ErrorCode.VALIDATION_ERROR);
+        }
+
+        String enumKey = violation.getMessage();
+        String field = violation.getPropertyPath().toString();
+
+        ErrorCode errorCode = resolveErrorCode(
+                enumKey,
+                field,
+                violation.getRootBeanClass().getSimpleName()
+        );
+
+        return buildErrorResponse(errorCode);
+    }
+
+    private ErrorCode resolveErrorCode(String enumKey, String field, String objectName) {
         try {
-            errorCode = ErrorCode.valueOf(enumKey);
+            return ErrorCode.valueOf(enumKey);
         } catch (IllegalArgumentException ex) {
             log.error("Invalid ErrorCode with key = \"{}\", field = \"{}\", classError = \"{}\"",
                     enumKey,
-                    e.getFieldError().getField(),
-                    e.getFieldError().getObjectName()
+                    field,
+                    objectName
             );
         }
+        return ErrorCode.INVALID_ERROR_CODE;
+    }
 
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePropertyReferenceException(
+            PropertyReferenceException e
+    ) {
+        return buildErrorResponse(ErrorCode.INVALID_FIELD_NAME);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException() {
+        return buildErrorResponse(ErrorCode.JWT_EXPIRED);
+    }
+
+    private ResponseEntity<ApiResponse<Void>> buildErrorResponse(ErrorCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getStatus())
                 .body(ApiResponse.failure(errorCode));
