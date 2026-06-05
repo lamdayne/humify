@@ -14,4 +14,5 @@ public interface RoleHasPermissionRepository extends JpaRepository<RoleHasPermis
     @Query("select rhp from RoleHasPermission rhp join fetch rhp.permission where rhp.role.id = :roleId")
     List<RoleHasPermission> findByRoleId(@Param("roleId") Long roleId);
 
+    void deleteByRoleId(Long roleId);
 }
