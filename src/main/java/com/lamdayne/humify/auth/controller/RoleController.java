@@ -1,6 +1,7 @@
 package com.lamdayne.humify.auth.controller;
 
 import com.lamdayne.humify.auth.dto.request.CreateRoleRequest;
+import com.lamdayne.humify.auth.dto.request.UpdateRoleRequest;
 import com.lamdayne.humify.auth.dto.response.RoleResponse;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.service.RoleService;
@@ -43,6 +44,20 @@ public class RoleController {
         roleService.deleteRole(userPrincipal, roleId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(SuccessCode.ROLE_DELETE_SUCCESS));
+    }
+
+    @PutMapping("/{roleId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ROLE_UPDATE', 'ROLE_FULL')")
+    public ResponseEntity<ApiResponse<RoleResponse>> updateRole(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable(name = "roleId") Long id,
+            @RequestBody @Valid UpdateRoleRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.ROLE_UPDATE_SUCCESS,
+                        roleService.updateRole(userPrincipal, id, request)
+                ));
     }
 
 }

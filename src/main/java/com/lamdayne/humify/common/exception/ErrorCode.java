@@ -17,6 +17,7 @@ public enum ErrorCode {
     PAGE_SIZE_INVALID("PAGE_SIZE_INVALID", "Invalid page size", HttpStatus.BAD_REQUEST),
     INVALID_FIELD_NAME("INVALID_FIELD_NAME", "Invalid field name", HttpStatus.BAD_REQUEST),
     INVALID_CODE("INVALID_CODE", "Invalid code", HttpStatus.BAD_REQUEST),
+    FORBIDDEN("FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN),
 
     // Branch
     COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
