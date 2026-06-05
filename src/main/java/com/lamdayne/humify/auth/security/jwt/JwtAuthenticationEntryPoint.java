@@ -24,7 +24,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-        log.info("Authentication Exception: {}", authException.getMessage(), authException);
+        log.error("Authentication Exception: {}", authException.getMessage());
 
         Object attribute = request.getAttribute("errorCode");
 
