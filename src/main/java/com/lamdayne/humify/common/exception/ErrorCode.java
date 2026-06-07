@@ -19,6 +19,7 @@ public enum ErrorCode {
     INVALID_CODE("INVALID_CODE", "Invalid code", HttpStatus.BAD_REQUEST),
     FORBIDDEN("FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN),
     RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "Resource not found", HttpStatus.NOT_FOUND),
+    REQUEST_BODY_MISSING_OR_INVALID("REQUEST_BODY_MISSING_OR_INVALID", "Body missing or invalid", HttpStatus.BAD_REQUEST),
 
     // Branch
     COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
@@ -51,7 +52,7 @@ public enum ErrorCode {
     //Department
     BRANCH_NOT_FOUND("BRANCH_NOT_FOUND", "Branch not found" , HttpStatus.BAD_REQUEST ),
     BRANCH_ID_REQUIRED("BRANCH_ID_REQUIRED", "Branch id can not blank", HttpStatus.BAD_REQUEST),
-    DEPARTMENT_NAME_REQUIRED("BRANCH_NOT_FOUND", "Department name can not blank", HttpStatus.BAD_REQUEST),
+    DEPARTMENT_NAME_REQUIRED("DEPARTMENT_NAME_REQUIRED", "Department name can not blank", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NOT_FOUND("DEPARTMENT_NOT_FOUND", "Department resource not found", HttpStatus.NOT_FOUND),
     DEPARTMENT_ID_REQUIRED("DEPARTMENT_ID_REQUIRED", "Department ID cannot be blank", HttpStatus.BAD_REQUEST),
     DEPARTMENT_ID_INVALID("DEPARTMENT_ID_INVALID", "Department ID is invalid", HttpStatus.BAD_REQUEST),
@@ -89,6 +90,7 @@ public enum ErrorCode {
     EMPLOYEE_EMAIL_REQUIRED("EMPLOYEE_EMAIL_REQUIRED", "Employee email can not blank", HttpStatus.BAD_REQUEST),
     EMPLOYEE_EMAIL_INVALID("EMPLOYEE_EMAIL_INVALID", "Employee email is invalid", HttpStatus.BAD_REQUEST),
     EMPLOYEE_CODE_EXISTS("EMPLOYEE_CODE_EXISTS", "Employee code exists", HttpStatus.BAD_REQUEST),
+    EMPLOYEE_NOT_FOUND("EMPLOYEE_NOT_FOUND", "Employee not found", HttpStatus.NOT_FOUND),
 
     ;
     private String code;
