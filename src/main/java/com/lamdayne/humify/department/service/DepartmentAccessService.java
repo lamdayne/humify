@@ -4,4 +4,7 @@ import com.lamdayne.humify.common.base.BaseAccessService;
 import com.lamdayne.humify.department.entity.Department;
 
 public interface DepartmentAccessService extends BaseAccessService<Department, Long> {
+
+    boolean existsByIdAndBranchId(Long id, Long branchId);
+
 }

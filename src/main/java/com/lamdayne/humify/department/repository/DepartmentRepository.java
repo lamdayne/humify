@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     List<Department> findByBranchId(Long branchId);
+
+    boolean existsByIdAndBranchId(Long id, Long branchId);
 }
