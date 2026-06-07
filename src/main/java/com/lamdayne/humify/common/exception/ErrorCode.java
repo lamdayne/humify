@@ -59,6 +59,8 @@ public enum ErrorCode {
 
     // User
     USER_NOT_FOUND("USER_NOT_FOUND", "User not found", HttpStatus.BAD_REQUEST),
+    USER_EMAIL_REQUIRED("USER_EMAIL_REQUIRED", "Email is required", HttpStatus.BAD_REQUEST),
+    USER_PASSWORD_REQUIRED("USER_PASSWORD_REQUIRED", "Password is required", HttpStatus.BAD_REQUEST),
 
     // Auth
     JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),
