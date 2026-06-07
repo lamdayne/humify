@@ -99,4 +99,9 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
     public boolean existsById(Long id) {
         return branchRepository.existsById(id);
     }
+
+    @Override
+    public boolean existsByIdAndCompanyId(Long id, Long companyId) {
+        return branchRepository.existsByIdAndCompanyId(id, companyId);
+    }
 }
