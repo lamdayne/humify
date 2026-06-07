@@ -28,6 +28,10 @@ public enum SuccessCode {
     BRANCH_CREATE_SUCCESS("BRANCH_CREATE_SUCCESS", "Branch created successfully"),
     FOUND_BRANCH_SUCCESS("FOUND_BRANCH_SUCCESS", "Branch found successfully"),
 
+    // Position
+    POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),
+    FOUND_POSITION_SUCCESS("FOUND_POSITION_SUCCESS", "Get positions data successfully"),
+
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
     ROLE_DELETE_SUCCESS("ROLE_DELETE_SUCCESS", "Role deleted successfully"),
