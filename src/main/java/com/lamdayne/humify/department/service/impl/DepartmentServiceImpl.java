@@ -62,4 +62,9 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
     public boolean existsById(Long id) {
         return departmentRepository.existsById(id);
     }
+
+    @Override
+    public boolean existsByIdAndBranchId(Long id, Long branchId) {
+        return departmentRepository.existsByIdAndBranchId(id, branchId);
+    }
 }
