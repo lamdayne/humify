@@ -11,6 +11,7 @@ import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.enums.CompanyStatus;
 import com.lamdayne.humify.company.mapper.CompanyMapper;
 import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.company.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CompanyServiceImpl implements CompanyService {
+public class CompanyServiceImpl implements CompanyService, CompanyAccessService {
 
     private final CompanyMapper companyMapper;
     private final CompanyRepository companyRepository;
@@ -94,5 +95,20 @@ public class CompanyServiceImpl implements CompanyService {
     public Company getCompanyByCode(String code) {
         return companyRepository.findByCompanyCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+    }
+
+    @Override
+    public Company getReferenceById(Long id) {
+        return companyRepository.getReferenceById(id);
+    }
+
+    @Override
+    public Company getById(Long id) {
+        return companyRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return companyRepository.existsById(id);
     }
 }
