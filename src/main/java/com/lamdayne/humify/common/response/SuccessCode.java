@@ -48,6 +48,9 @@ public enum SuccessCode {
     EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
     EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
 
+    // User
+    USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
+
     ;
 
     private String code;
