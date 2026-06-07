@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,8 +67,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
+            SecurityContextHolder.clearContext();
             request.setAttribute("errorCode", ErrorCode.JWT_EXPIRED);
-            filterChain.doFilter(request, response);
+            throw new InsufficientAuthenticationException(ErrorCode.JWT_EXPIRED.getCode(), e);
+        } finally {
+            CompanyContext.clear();
         }
     }
 }
