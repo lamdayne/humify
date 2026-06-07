@@ -9,5 +9,5 @@ public interface PositionService {
 
     PositionResponse createPosition(UserPrincipal userPrincipal, CreatePositionRequest request);
 
-    PageResponse<PositionResponse> getAllPositions(Long companyId, int page, int size, String... sorts);
+    PageResponse<PositionResponse> getAllPositions(int page, int size, String... sorts);
 }

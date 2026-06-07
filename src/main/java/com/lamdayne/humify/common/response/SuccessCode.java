@@ -40,6 +40,14 @@ public enum SuccessCode {
     // Permission
     PERMISSION_READ_SUCCESS("PERMISSION_READ_SUCCESS", "Get permissions successfully"),
 
+    // Employee
+    EMPLOYEE_CREATE_SUCCESS("EMPLOYEE_CREATE_SUCCESS", "Employee created successfully"),
+    EMPLOYEE_READ_SUCCESS("EMPLOYEE_READ_SUCCESS", "Employee read successfully"),
+    EMPLOYEE_UPDATE_SUCCESS("EMPLOYEE_UPDATE_SUCCESS", "Employee updated successfully"),
+    EMPLOYEE_TRANSFER_SUCCESS("EMPLOYEE_TRANSFER_SUCCESS", "Employee transfer successfully"),
+    EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
+    EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
+
     ;
 
     private String code;

@@ -42,7 +42,6 @@ public class PositionController {
     @GetMapping
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'POSITION_READ', 'POSITION_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<PositionResponse>>> getAllPositions(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
             @RequestParam(required = false) String... sorts
@@ -51,7 +50,7 @@ public class PositionController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         SuccessCode.FOUND_POSITION_SUCCESS,
-                        positionService.getAllPositions(userPrincipal.getCompanyId(), page, size, sorts)
+                        positionService.getAllPositions(page, size, sorts)
                 ));
     }
 }

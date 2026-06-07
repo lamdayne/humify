@@ -25,7 +25,7 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_CREATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_CREATE', 'DEPARTMENT_FULL')")
     public ResponseEntity<ApiResponse<DepartmentResponse>>createDepartment(@RequestBody @Valid CreateDepartmentRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,7 +33,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/branch/{branchId}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_READ', 'DEPARTMENT_FULL')")
     public ResponseEntity<ApiResponse<List<DepartmentResponse>>> findByBranchId(@PathVariable Long branchId) {
 
         return ResponseEntity
