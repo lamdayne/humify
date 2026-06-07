@@ -79,4 +79,9 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     public boolean existsById(Long id) {
         return positionRepository.existsById(id);
     }
+
+    @Override
+    public boolean existsByIdAndCompanyId(Long id, Long companyId) {
+        return positionRepository.existsByIdAndCompanyId(id, companyId);
+    }
 }
