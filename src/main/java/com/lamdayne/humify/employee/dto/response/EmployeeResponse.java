@@ -1,0 +1,26 @@
+package com.lamdayne.humify.employee.dto.response;
+
+import com.lamdayne.humify.employee.enums.EmployeeStatus;
+import com.lamdayne.humify.employee.enums.Gender;
+import lombok.Builder;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+@Data
+@Builder
+public class EmployeeResponse implements Serializable {
+    private Long branchId;
+    private Long departmentId;
+    private Long positionId;
+    private String employeeCode;
+    private String fullName;
+    private LocalDate dateOfBirth;
+    private Gender gender;
+    private String email;
+    private String phone;
+    private String address;
+    private LocalDate startDate;
+    private EmployeeStatus status;
+}
