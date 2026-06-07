@@ -5,4 +5,6 @@ import com.lamdayne.humify.company.entity.Company;
 
 public interface CompanyAccessService extends BaseAccessService<Company, Long> {
 
+    Company findByCompanyCode(String companyCode);
+
 }

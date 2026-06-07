@@ -111,4 +111,9 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     public boolean existsById(Long id) {
         return companyRepository.existsById(id);
     }
+
+    @Override
+    public Company findByCompanyCode(String companyCode) {
+        return getCompanyByCode(companyCode);
+    }
 }
