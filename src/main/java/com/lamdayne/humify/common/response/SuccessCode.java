@@ -50,6 +50,7 @@ public enum SuccessCode {
 
     // User
     USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
+    USER_READ_SUCCESS("USER_READ_SUCCESS", "Get all user successfully"),
 
     ;
 
