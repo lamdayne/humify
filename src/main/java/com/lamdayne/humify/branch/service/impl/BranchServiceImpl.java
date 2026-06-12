@@ -1,10 +1,12 @@
 package com.lamdayne.humify.branch.service.impl;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.entity.Branch;
 import com.lamdayne.humify.branch.mapper.BranchMapper;
 import com.lamdayne.humify.branch.repository.BranchRepository;
+import com.lamdayne.humify.branch.service.BranchAccessService;
 import com.lamdayne.humify.branch.service.BranchService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
@@ -24,15 +26,16 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class BranchServiceImpl implements BranchService {
+public class BranchServiceImpl implements BranchService, BranchAccessService {
+
     private final BranchRepository branchRepository;
     private final CompanyService companyService;
     private final BranchMapper branchMapper;
 
     @Override
     @Transactional
-    public BranchResponse createBranch(CreateBranchRequest request) {
-        Company company = companyService.getCompanyById(request.getCompanyId());
+    public BranchResponse createBranch(UserPrincipal userPrincipal, CreateBranchRequest request) {
+        Company company = companyService.getCompanyById(userPrincipal.getCompanyId());
 
         Branch branch = branchMapper.toBranch(request);
         branch.setCompany(company);
@@ -82,4 +85,23 @@ public class BranchServiceImpl implements BranchService {
     }
 
 
+    @Override
+    public Branch getReferenceById(Long id) {
+        return branchRepository.getReferenceById(id);
+    }
+
+    @Override
+    public Branch getById(Long id) {
+        return branchRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return branchRepository.existsById(id);
+    }
+
+    @Override
+    public boolean existsByIdAndCompanyId(Long id, Long companyId) {
+        return branchRepository.existsByIdAndCompanyId(id, companyId);
+    }
 }

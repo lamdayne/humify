@@ -1,5 +1,6 @@
 package com.lamdayne.humify.branch.controller;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.service.BranchService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,15 +28,21 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE')")
-    public ResponseEntity<ApiResponse<BranchResponse>> createBranch(@RequestBody @Valid CreateBranchRequest request) {
+    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE', 'BRANCH_FULL')")
+    public ResponseEntity<ApiResponse<BranchResponse>> createBranch(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody @Valid CreateBranchRequest request
+    ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(SuccessCode.BRANCH_CREATE_SUCCESS, branchService.createBranch(request)));
+                .body(ApiResponse.success(
+                        SuccessCode.BRANCH_CREATE_SUCCESS,
+                        branchService.createBranch(userPrincipal, request)
+                ));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<BranchResponse>> getBranchById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -45,7 +53,7 @@ public class BranchController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<BranchResponse>>> getAllBranches(
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,

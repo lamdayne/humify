@@ -2,6 +2,7 @@ package com.lamdayne.humify.auth.repository;
 
 import com.lamdayne.humify.auth.entity.UserHasRole;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,11 @@ public interface UserHasRoleRepository extends JpaRepository<UserHasRole, Long> 
     List<String> findPermissionNameByUserIdAndCompanyId(@Param("userId") Long userId, @Param("companyId") Long companyId);
 
     boolean existsByRoleId(Long roleId);
+
+    @Modifying
+    @Query("DELETE FROM UserHasRole uhr WHERE uhr.user.id = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT uhr.role.name FROM UserHasRole uhr WHERE uhr.user.id = :userId")
+    List<String> findAllRoleNameByUserId(@Param("userId") Long userId);
 }

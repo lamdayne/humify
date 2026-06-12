@@ -28,9 +28,33 @@ public enum SuccessCode {
     BRANCH_CREATE_SUCCESS("BRANCH_CREATE_SUCCESS", "Branch created successfully"),
     FOUND_BRANCH_SUCCESS("FOUND_BRANCH_SUCCESS", "Branch found successfully"),
 
+    // Position
+    POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),
+    FOUND_POSITION_SUCCESS("FOUND_POSITION_SUCCESS", "Get positions data successfully"),
+
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
     ROLE_DELETE_SUCCESS("ROLE_DELETE_SUCCESS", "Role deleted successfully"),
+    ROLE_UPDATE_SUCCESS("ROLE_UPDATE_SUCCESS", "Role updated successfully"),
+    ROLE_READ_ALL_SUCCESS("ROLE_READ_ALL_SUCCESS", "Get all role successfully"),
+    ROLE_READ_SUCCESS("ROLE_READ_SUCCESS", "Get role successfully"),
+
+    // Permission
+    PERMISSION_READ_SUCCESS("PERMISSION_READ_SUCCESS", "Get permissions successfully"),
+
+    // Employee
+    EMPLOYEE_CREATE_SUCCESS("EMPLOYEE_CREATE_SUCCESS", "Employee created successfully"),
+    EMPLOYEE_READ_SUCCESS("EMPLOYEE_READ_SUCCESS", "Employee read successfully"),
+    EMPLOYEE_UPDATE_SUCCESS("EMPLOYEE_UPDATE_SUCCESS", "Employee updated successfully"),
+    EMPLOYEE_TRANSFER_SUCCESS("EMPLOYEE_TRANSFER_SUCCESS", "Employee transfer successfully"),
+    EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
+    EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
+
+    // User
+    USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
+    USER_READ_SUCCESS("USER_READ_SUCCESS", "Get all user successfully"),
+    USER_CHANGE_ROLE_SUCCESS("USER_CHANGE_ROLE_SUCCESS", "Change role successfully"),
+    USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully"),
 
     ;
 

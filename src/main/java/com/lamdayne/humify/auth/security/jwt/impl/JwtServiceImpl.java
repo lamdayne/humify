@@ -67,7 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String extractCompanyId(String token, TokenType type) {
-        return extractClaim(token, type, claims -> claims.get("companyId").toString());
+        return extractClaim(token, type, claims -> claims.get("companyId", String.class));
     }
 
     private String generateAccessToken(Map<String, Object> claims, UserDetails userDetails) {
