@@ -20,6 +20,7 @@ public enum ErrorCode {
     FORBIDDEN("FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN),
     RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "Resource not found", HttpStatus.NOT_FOUND),
     REQUEST_BODY_MISSING_OR_INVALID("REQUEST_BODY_MISSING_OR_INVALID", "Body missing or invalid", HttpStatus.BAD_REQUEST),
+    ACCESS_DENIED("ACCESS_DENIED", "Access denied", HttpStatus.FORBIDDEN),
 
     // Branch
     COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
@@ -61,6 +62,9 @@ public enum ErrorCode {
     USER_NOT_FOUND("USER_NOT_FOUND", "User not found", HttpStatus.BAD_REQUEST),
     USER_EMAIL_REQUIRED("USER_EMAIL_REQUIRED", "Email is required", HttpStatus.BAD_REQUEST),
     USER_PASSWORD_REQUIRED("USER_PASSWORD_REQUIRED", "Password is required", HttpStatus.BAD_REQUEST),
+    USER_EMAIL_EXISTED("USER_EMAIL_EXISTED", "Email already exists", HttpStatus.BAD_REQUEST),
+    USER_OLD_PASSWORD_REQUIRED("USER_OLD_PASSWORD_REQUIRED", "Old password is required", HttpStatus.BAD_REQUEST),
+    USER_PASSWORD_NOT_MATCH("USER_PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
 
     // Auth
     JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),
@@ -77,6 +81,7 @@ public enum ErrorCode {
     ROLE_NOT_FOUND("ROLE_NOT_FOUND", "Role not found", HttpStatus.BAD_REQUEST),
     CANNOT_DELETE_SYSTEM_ROLE("CANNOT_DELETE_SYSTEM_ROLE", "Cannot delete system role", HttpStatus.BAD_REQUEST),
     ROLE_IN_USE("ROLE_IN_USE", "Can not delete role in use", HttpStatus.BAD_REQUEST),
+    ROLE_ID_REQUIRED("ROLE_ID_REQUIRED", "Role ID is required", HttpStatus.BAD_REQUEST),
 
     // Permission
     PERMISSION_NOT_FOUND("PERMISSION_NOT_FOUND", "Permission not found", HttpStatus.BAD_REQUEST),

@@ -1,8 +1,11 @@
 package com.lamdayne.humify.user.controller;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
+import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
+import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.service.UserService;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,6 +47,39 @@ public class UserController {
                         SuccessCode.USER_READ_SUCCESS,
                         userService.findAll(page, size, sorts)
                 ));
+    }
+
+    @PutMapping("/{userId}/roles")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'USER_UPDATE', 'USER_FULL')")
+    public ResponseEntity<ApiResponse<Void>> changeRole(
+            @PathVariable("userId") Long userId,
+            @RequestBody @Valid ChangeRoleRequest request
+    ) {
+        userService.changeRole(userId, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.USER_CHANGE_ROLE_SUCCESS));
+    }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'USER_READ', 'USER_FULL')")
+    public ResponseEntity<ApiResponse<UserResponse>> findById(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.USER_READ_SUCCESS,
+                        userService.findById(userId)
+                ));
+    }
+
+    @PutMapping("/{userId}/password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserResponse>> changePassword(
+            @PathVariable("userId") Long userId,
+            @RequestBody @Valid ChangePasswordRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        userService.changePassword(userId, request, userPrincipal);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.USER_CHANGE_PASSWORD_SUCCESS));
     }
 
 }

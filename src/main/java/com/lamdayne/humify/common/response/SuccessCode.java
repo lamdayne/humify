@@ -53,6 +53,8 @@ public enum SuccessCode {
     // User
     USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
     USER_READ_SUCCESS("USER_READ_SUCCESS", "Get all user successfully"),
+    USER_CHANGE_ROLE_SUCCESS("USER_CHANGE_ROLE_SUCCESS", "Change role successfully"),
+    USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully"),
 
     ;
 
