@@ -51,7 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // extract companyId and decode
             String companyId = jwtService.extractCompanyId(token, TokenType.ACCESS_TOKEN);
-            CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
+            if (companyId != null) {
+                CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
+            }
 
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);

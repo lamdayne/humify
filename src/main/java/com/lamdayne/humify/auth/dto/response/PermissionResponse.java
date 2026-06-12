@@ -13,6 +13,7 @@ public class PermissionResponse {
     private String name;
     private String description;
     private String module;
+    private Boolean canAssign;
 
     public static PermissionResponse from(Permission permission) {
         return PermissionResponse.builder()
