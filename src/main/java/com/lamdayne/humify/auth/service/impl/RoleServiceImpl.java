@@ -6,18 +6,21 @@ import com.lamdayne.humify.auth.dto.response.RoleResponse;
 import com.lamdayne.humify.auth.entity.Permission;
 import com.lamdayne.humify.auth.entity.Role;
 import com.lamdayne.humify.auth.entity.RoleHasPermission;
+import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.PermissionEnum;
 import com.lamdayne.humify.auth.repository.PermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleHasPermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleRepository;
 import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
+import com.lamdayne.humify.auth.service.RoleAccessService;
 import com.lamdayne.humify.auth.service.RoleService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.user.entity.User;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +38,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RoleServiceImpl implements RoleService {
+public class RoleServiceImpl implements RoleService, RoleAccessService {
+
+    private static final String SYSTEM_ROLE_PREFIX = "SYSTEM_";
 
     private final EntityManager em;
     private final RoleRepository roleRepository;
@@ -138,7 +144,7 @@ public class RoleServiceImpl implements RoleService {
 
         List<RoleResponse> roleResponses = roles.stream()
                 .filter(role -> {
-                    if (role.getName().startsWith("SYSTEM_")) {
+                    if (role.getName().startsWith(SYSTEM_ROLE_PREFIX)) {
                         return false;
                     }
                     return role.getIsSystem() || role.getCompany() != null;
@@ -190,7 +196,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private boolean isAllowed(Set<String> userPermissions, boolean isSysAdmin, String permissionName) {
-        if (permissionName.startsWith("SYSTEM_")) {
+        if (permissionName.startsWith(SYSTEM_ROLE_PREFIX)) {
             return isSysAdmin;
         }
 
@@ -212,6 +218,51 @@ public class RoleServiceImpl implements RoleService {
 
         validatePermissions(userPrincipal, permissions);
         return permissions;
+    }
+
+    @Override
+    public List<Role> resolveRoles(List<Long> rawIds) {
+        List<Long> roleIds = rawIds.stream().distinct().toList();
+        List<Role> roles = roleRepository.findAllById(roleIds);
+
+        if (roleIds.size() != roles.size()) {
+            throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+        }
+
+        for (Role role : roles) {
+            if (role.getName().startsWith(SYSTEM_ROLE_PREFIX)) {
+                throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+            }
+
+            if (Boolean.FALSE.equals(role.getIsSystem()) && role.getCompany() == null) {
+                throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+            }
+        }
+
+        return roles;
+    }
+
+    @Override
+    @Transactional
+    public void assignRoles(User user, List<Long> roleIds) {
+        userHasRoleRepository.deleteByUserId(user.getId());
+
+        List<Role> roles = resolveRoles(roleIds);
+
+        List<UserHasRole> userHasRoles = roles.stream()
+                .map(role -> UserHasRole.builder()
+                        .company(user.getCompany())
+                        .role(role)
+                        .user(user)
+                        .build()
+                ).toList();
+
+        userHasRoleRepository.saveAll(userHasRoles);
+    }
+
+    @Override
+    public Set<String> findAllRoleNames(UserPrincipal userPrincipal) {
+        return new HashSet<>(userHasRoleRepository.findAllRoleNameByUserId(userPrincipal.getId()));
     }
 
 }
