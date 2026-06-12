@@ -5,12 +5,15 @@ import com.lamdayne.humify.auth.entity.Permission;
 import com.lamdayne.humify.auth.enums.PermissionEnum;
 import com.lamdayne.humify.auth.enums.PermissionModule;
 import com.lamdayne.humify.auth.repository.PermissionRepository;
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.service.PermissionService;
+import com.lamdayne.humify.auth.validator.RoleValidator;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PageResponse<PermissionResponse> getPermissions(int page, int size, String... sorts) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         Page<Permission> permissionPage = permissionRepository.findAll(pageable);
 
@@ -38,7 +43,14 @@ public class PermissionServiceImpl implements PermissionService {
 
                     return !name.endsWith("_FULL");
                 })
-                .map(PermissionResponse::from)
+                .map(permission -> PermissionResponse.builder()
+                        .id(permission.getId())
+                        .name(permission.getName())
+                        .description(permission.getDescription())
+                        .module(permission.getModule())
+                        .canAssign(RoleValidator.canAssign(userPrincipal, permission))
+                        .build()
+                )
                 .toList();
 
         return PageResponse.<PermissionResponse>builder()

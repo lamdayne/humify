@@ -36,6 +36,8 @@ public enum SuccessCode {
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
     ROLE_DELETE_SUCCESS("ROLE_DELETE_SUCCESS", "Role deleted successfully"),
     ROLE_UPDATE_SUCCESS("ROLE_UPDATE_SUCCESS", "Role updated successfully"),
+    ROLE_READ_ALL_SUCCESS("ROLE_READ_ALL_SUCCESS", "Get all role successfully"),
+    ROLE_READ_SUCCESS("ROLE_READ_SUCCESS", "Get role successfully"),
 
     // Permission
     PERMISSION_READ_SUCCESS("PERMISSION_READ_SUCCESS", "Get permissions successfully"),
