@@ -17,7 +17,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Stri
                 SET rt.revoked = true
                 WHERE rt.token = :token
                   AND rt.revoked = false
-                  AND rt.expiryDate > :now
             """)
     int revokeIfValid(String token, Instant now);
 
