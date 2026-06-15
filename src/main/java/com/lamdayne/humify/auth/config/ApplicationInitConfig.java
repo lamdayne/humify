@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,9 +46,14 @@ public class ApplicationInitConfig {
     @Bean
     public ApplicationRunner initApplicationRunner() {
         return application -> {
-            initPermissions();
-            initSystemRoles();
-            initSystemAccount();
+            try {
+                CompanyContext.setAdmin(true);
+                initPermissions();
+                initSystemRoles();
+                initSystemAccount();
+            } finally {
+                CompanyContext.clear();
+            }
         };
     }
 
