@@ -67,12 +67,13 @@ public enum ErrorCode {
     USER_PASSWORD_NOT_MATCH("USER_PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
 
     // Auth
-    JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),
+    JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.UNAUTHORIZED),
     UNAUTHENTICATED("UNAUTHENTICATED", "Unauthorized", HttpStatus.UNAUTHORIZED),
     EMAIL_REQUIRED("EMAIL_REQUIRED", "Email can not blank", HttpStatus.BAD_REQUEST),
     EMAIL_INVALID("EMAIL_INVALID", "Email address is invalid", HttpStatus.BAD_REQUEST),
     PASSWORD_REQUIRED("PASSWORD_REQUIRED", "Password cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD("INVALID_PASSWORD", "Invalid password", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),

@@ -49,10 +49,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String token = authorization.substring("Bearer ".length());
             final String username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
 
+            // check system admin
+            Boolean isSystemAdmin = jwtService.isSystemAdmin(token, TokenType.ACCESS_TOKEN);
+            if (Boolean.TRUE.equals(isSystemAdmin)) {
+                CompanyContext.setCompanyId(null);
+                CompanyContext.setAdmin(true);
+            }
+
             // extract companyId and decode
             String companyId = jwtService.extractCompanyId(token, TokenType.ACCESS_TOKEN);
             if (companyId != null) {
+                // Company user: set companyId and clear admin flag for tenant isolation
                 CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
+                CompanyContext.setAdmin(false);
             }
 
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -72,8 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             request.setAttribute("errorCode", ErrorCode.JWT_EXPIRED);
             throw new InsufficientAuthenticationException(ErrorCode.JWT_EXPIRED.getCode(), e);
-        } finally {
-            CompanyContext.clear();
         }
     }
 }

@@ -7,7 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -26,10 +29,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     ) throws IOException, ServletException {
         log.error("Authentication Exception: {}", authException.getMessage());
 
-        Object attribute = request.getAttribute("errorCode");
+        ErrorCode errorCode = resolveErrorCode(request, authException);
 
-        ErrorCode errorCode = (attribute instanceof ErrorCode ec) ? ec : ErrorCode.UNAUTHENTICATED;
+        writeError(response, errorCode);
+    }
 
+    private void writeError(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -39,5 +44,22 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.getWriter().write(mapper.writeValueAsString(apiResponse));
         response.getWriter().flush();
+    }
+
+    private ErrorCode resolveErrorCode(HttpServletRequest request, AuthenticationException ex) {
+        Object attribute = request.getAttribute("errorCode");
+        if (attribute instanceof ErrorCode ec) {
+            return ec;
+        }
+
+        if (ex instanceof BadCredentialsException) {
+            return ErrorCode.INVALID_PASSWORD;
+        }
+
+        if (ex instanceof InsufficientAuthenticationException) {
+            return ErrorCode.UNAUTHENTICATED;
+        }
+
+        return ErrorCode.UNAUTHENTICATED;
     }
 }
