@@ -1,6 +1,7 @@
 package com.lamdayne.humify.auth.config;
 
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
+import com.lamdayne.humify.auth.service.ApplicationInitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;

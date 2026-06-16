@@ -1,4 +1,4 @@
-package com.lamdayne.humify.auth.config;
+package com.lamdayne.humify.auth.service;
 
 import com.lamdayne.humify.auth.entity.Permission;
 import com.lamdayne.humify.auth.entity.Role;
@@ -23,14 +23,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * Service that handles application initialization in a single transaction.
- * Extracted from ApplicationInitConfig so that @Transactional works correctly
- * via Spring's proxy mechanism. This ensures all init operations (permissions,
- * roles, system account) share the same transaction, and the RLS context
- * (SET LOCAL app.is_admin = 'true') is applied once and remains active
- * throughout the entire initialization.
- */
 @Slf4j(topic = "APPLICATION_INIT")
 @Service
 @RequiredArgsConstructor
