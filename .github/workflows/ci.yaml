@@ -32,6 +32,18 @@ jobs:
 
       - name: Run Tests (Unit Test & Integration Test)
         run: mvn test
+        env:
+          TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
+          TEST_DB_USER: ${{ secrets.TEST_DB_USER }}
+          TEST_DB_PASS: ${{ secrets.TEST_DB_PASS }}
+          TEST_SYSTEM_EMAIL: ${{ secrets.TEST_SYSTEM_EMAIL }}
+          TEST_SYSTEM_PASSWORD: ${{ secrets.TEST_SYSTEM_PASSWORD }}
+          TEST_EXPIRY_ACCESS_TOKEN: ${{ secrets.TEST_EXPIRY_ACCESS_TOKEN }}
+          TEST_EXPIRY_DAY: ${{ secrets.TEST_EXPIRY_DAY }}
+          TEST_JWT_SECRET_KEY: ${{ secrets.TEST_JWT_SECRET_KEY }}
+          TEST_JWT_REFRESH_KEY: ${{ secrets.TEST_JWT_REFRESH_KEY }}
+          TEST_SQIDS_COMPANY_KEY: ${{ secrets.TEST_SQIDS_COMPANY_KEY }}
+          TEST_SQIDS_MIN_LENGTH: ${{ secrets.TEST_SQIDS_MIN_LENGTH }}
 
       - name: SonarCloud Analysis
         uses: sonarsource/sonarqube-scan-action@master
