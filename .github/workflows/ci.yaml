@@ -76,7 +76,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          push: true
           load: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/humify-backend:${{ steps.version.outputs.VERSION }}
