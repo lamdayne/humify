@@ -49,6 +49,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String token = authorization.substring("Bearer ".length());
             final String username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
 
+            // check system admin
+            Boolean isSystemAdmin = jwtService.isSystemAdmin(token, TokenType.ACCESS_TOKEN);
+            if (Boolean.TRUE.equals(isSystemAdmin)) {
+                CompanyContext.setCompanyId(null);
+                CompanyContext.setAdmin(true);
+            }
+
             // extract companyId and decode
             String companyId = jwtService.extractCompanyId(token, TokenType.ACCESS_TOKEN);
             if (companyId != null) {
@@ -56,8 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 CompanyContext.setCompanyId(sqidsUtil.decode(companyId));
                 CompanyContext.setAdmin(false);
             }
-            // If companyId is null, this is a system admin user — keep isAdmin=true
-            // (set earlier by CompanyFilter when no x-company-code header)
 
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);

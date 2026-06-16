@@ -1,5 +1,6 @@
 package com.lamdayne.humify.auth.security.jwt.impl;
 
+import com.lamdayne.humify.auth.enums.PermissionEnum;
 import com.lamdayne.humify.auth.enums.TokenType;
 import com.lamdayne.humify.auth.security.jwt.JwtService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
@@ -10,6 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,10 @@ public class JwtServiceImpl implements JwtService {
             claims.put("companyId", sqidsUtil.encode(user.getCompanyId()));
         }
 
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(PermissionEnum.FULL_ACCESS.name()))) {
+            claims.put("isSystemAdmin", true);
+        }
+
         return generateAccessToken(claims, user);
     }
 
@@ -68,6 +74,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String extractCompanyId(String token, TokenType type) {
         return extractClaim(token, type, claims -> claims.get("companyId", String.class));
+    }
+
+    @Override
+    public Boolean isSystemAdmin(String token, TokenType type) {
+        return extractClaim(token, type, claims -> claims.get("isSystemAdmin", Boolean.class));
     }
 
     private String generateAccessToken(Map<String, Object> claims, UserDetails userDetails) {
