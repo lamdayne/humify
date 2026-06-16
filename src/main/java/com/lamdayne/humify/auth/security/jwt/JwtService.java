@@ -16,4 +16,6 @@ public interface JwtService {
 
     String extractCompanyId(String token, TokenType type);
 
+    Boolean isSystemAdmin(String token, TokenType type);
+
 }

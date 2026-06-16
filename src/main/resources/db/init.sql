@@ -316,30 +316,39 @@ ALTER TABLE user_has_roles
 
 -- Policy cho từng bảng
 CREATE POLICY tenant_isolation ON branches
-    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
+    );
 
 CREATE POLICY tenant_isolation ON employees
-    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
+    );
 
 CREATE POLICY tenant_isolation ON users
     USING (
-        company_id = current_setting('app.company_id', true)::BIGINT
-        OR company_id IS NULL  -- system account
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON attendances
-    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
+    );
 
 CREATE POLICY tenant_isolation ON roles
     USING (
-        company_id = current_setting('app.company_id', true)::BIGINT
-        OR company_id IS NULL  -- system roles
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON user_has_roles
     USING (
-        company_id = current_setting('app.company_id', true)::BIGINT
-        OR company_id IS NULL  -- system account
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = current_setting('app.company_id', true)::BIGINT
     );
 
 CREATE USER app_user WITH PASSWORD 'secret';
