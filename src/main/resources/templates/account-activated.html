@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Account Security Credentials</title>
+    <style type="text/css">
+        /* Import Google Fonts with absolute URL inside style tag */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+        /* CSS resets for wide client support */
+        body, table, td, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        table {
+            border-collapse: collapse !important;
+        }
+
+        /* Modern & Minimalist Typography with robust fallbacks */
+        body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background-color: #f5f5f4;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Hover triggers */
+        .btn-link:hover {
+            opacity: 0.9 !important;
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f4;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td align="center" style="padding: 40px 10px 40px 10px;">
+            <!-- Main Container Frame (Max-width 550px) -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                   style="max-width: 550px; background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+
+                <!-- Branding Section -->
+                <tr>
+                    <td align="left" style="padding: 48px 48px 24px 48px;">
+                            <span th:text="${companyName}" style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #1c1917; border: 1px solid #1c1917; padding: 6px 12px; display: inline-block;">
+
+                            </span>
+                    </td>
+                </tr>
+
+                <!-- Subject Header & Welcome message -->
+                <tr>
+                    <td align="left" style="padding: 12px 48px 20px 48px; color: #1c1917;">
+                        <h1 style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 20px; font-weight: 500; margin: 0 0 16px 0; letter-spacing: -0.01em;">
+                            Account Activation Successful</h1>
+                        <p style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 300; line-height: 1.6; color: #78716c; margin: 0;">
+                            Hello,<br/>
+                            Your enterprise workspace has been successfully set up on our platform. Below are your
+                            secure credentials to connect and access the service. Please safeguard this information
+                            carefully.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Credential Specifications Table -->
+                <tr>
+                    <td align="left" style="padding: 10px 48px 30px 48px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                               style="border-top: 1px solid #f5f5f4; border-bottom: 1px solid #f5f5f4; padding: 20px 0;">
+
+                            <!-- Company Code -->
+                            <tr>
+                                <td align="left"
+                                    style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 8px 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #a8a29e; width: 40%;">
+                                    Company Code
+                                </td>
+                                <td align="right" th:text="${companyCode}"
+                                    style="font-family: 'Roboto Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; padding: 8px 0; font-size: 13px; font-weight: 700; color: #1c1917;">
+
+                                </td>
+                            </tr>
+
+                            <!-- Company Email -->
+                            <tr>
+                                <td align="left"
+                                    style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 8px 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #a8a29e; width: 40%;">
+                                    Company Email
+                                </td>
+                                <td align="right" th:text="${companyEmail}"
+                                    style="font-family: 'Roboto Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; padding: 8px 0; font-size: 13px; font-weight: 700; color: #1c1917;">
+
+                                </td>
+                            </tr>
+
+                            <!-- Temporary Password -->
+                            <tr>
+                                <td align="left"
+                                    style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 8px 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #a8a29e; width: 40%;">
+                                    Temporary Password
+                                </td>
+                                <td align="right" th:text="${tempPassword}"
+                                    style="font-family: 'Roboto Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; padding: 8px 0; font-size: 13px; font-weight: 700; color: #1c1917;">
+
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- CTA Primary Button Action -->
+                <tr>
+                    <td align="left" style="padding: 0px 48px 40px 48px;">
+                        <a class="btn-link" th:href="${urlLogin}" target="_blank"
+                           style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #1c1917; color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; text-decoration: none; padding: 14px 32px; border-radius: 4px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease;">
+                            Login now
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Security Alert notice block -->
+                <tr>
+                    <td align="left" style="padding: 0px 48px 40px 48px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                               style="background-color: #fafaf9; border: 1px solid #f5f5f4; border-radius: 4px;">
+                            <tr>
+                                <td style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px; font-size: 12px; line-height: 1.5; color: #78716c; font-weight: 300;">
+                                    <strong style="color: #44403c; font-weight: 600; display: block; margin-bottom: 4px;">⚠️
+                                        Account Security Notice:</strong>
+                                    This is an automatically generated temporary password. For safety, you will be
+                                    prompted to set a permanent, custom password upon your first sign-in to protect your
+                                    organization's data.
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Footer Details -->
+                <tr>
+                    <td align="left"
+                        style="padding: 0 48px 48px 48px; border-top: 1px solid #f5f5f4; padding-top: 32px;">
+                        <p style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; line-height: 1.6; color: #a8a29e; margin: 0 0 10px 0; font-weight: 300;">
+                            © 2026 HRM CORPORATION. All rights reserved.
+                        </p>
+                        <p style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; line-height: 1.6; color: #a8a29e; margin: 0 0 16px 0; font-weight: 300;">
+                            You received this automated security email because your partner account was registered under
+                            our platform. If you believe this notification was sent in error, please immediately contact
+                            our technical assistance team.
+                        </p>
+                        <p style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; margin: 0; font-weight: 300;">
+                            <a href="#" style="color: #78716c; text-decoration: underline; margin-right: 12px;">Terms of
+                                Service</a>
+                            <a href="#" style="color: #78716c; text-decoration: underline;">Privacy Policy</a>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
