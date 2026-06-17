@@ -38,9 +38,9 @@ import java.util.UUID;
 public class CompanyServiceImpl implements CompanyService, CompanyAccessService {
 
     @Value("${system.url}")
-    private String SYSTEM_URL;
+    private String systemUrl;
 
-    private static final String TEMP_PASSWORD_CHARS =
+    private static final String CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int TEMP_PASSWORD_LENGTH = 12;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -80,7 +80,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
         user = userRepository.save(user);
         roleAccessService.assignCompanyAdmin(user);
 
-        String urlLogin = String.format("%s/login?companyCode=%s", SYSTEM_URL, companyCode);
+        String urlLogin = String.format("%s/login?companyCode=%s", systemUrl, companyCode);
 
         Map<String, Object> variables = new HashMap<>();
 
@@ -177,7 +177,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     private String generateTempPassword() {
         StringBuilder sb = new StringBuilder(TEMP_PASSWORD_LENGTH);
         for (int i = 0; i < TEMP_PASSWORD_LENGTH; i++) {
-            sb.append(TEMP_PASSWORD_CHARS.charAt(SECURE_RANDOM.nextInt(TEMP_PASSWORD_CHARS.length())));
+            sb.append(CHARACTERS.charAt(SECURE_RANDOM.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
     }
