@@ -13,11 +13,13 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
+    @Transactional
     public void save(String token, Long userId, Instant expiry) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)

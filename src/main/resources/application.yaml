@@ -8,6 +8,7 @@ spring:
     open-in-view: true
 
 system:
+  url: ${SYSTEM_URL}
   account:
     email: ${SYSTEM_EMAIL}
     password: ${SYSTEM_PASSWORD}
@@ -22,3 +23,10 @@ sqids:
   min-length: ${SQIDS_MIN_LENGTH}
   keys:
     company: ${SQIDS_COMPANY_KEY}
+
+resend:
+  default:
+    from: ${RESEND_FROM}
+  api-key: ${RESEND_API_KEY}
+  forgot-password:
+    expiryTime: ${FORGOT_PASSWORD_TTL} # Minutes

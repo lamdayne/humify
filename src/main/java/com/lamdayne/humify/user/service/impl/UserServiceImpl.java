@@ -29,6 +29,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
@@ -43,11 +44,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void save(User user) {
         userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
@@ -125,6 +128,14 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(Long id, String newPassword) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 }

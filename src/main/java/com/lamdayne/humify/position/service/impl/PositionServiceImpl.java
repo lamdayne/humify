@@ -14,7 +14,7 @@ import com.lamdayne.humify.position.mapper.PositionMapper;
 import com.lamdayne.humify.position.repository.PositionRepository;
 import com.lamdayne.humify.position.service.PositionAccessService;
 import com.lamdayne.humify.position.service.PositionService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PositionServiceImpl implements PositionService, PositionAccessService {
 
     private final PositionRepository positionRepository;

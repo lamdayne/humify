@@ -35,10 +35,6 @@ public class CompanyFilter extends OncePerRequestFilter {
                 Company company = companyService.getCompanyByCode(companyCode);
                 Long companyId = company.getId();
                 CompanyContext.setCompanyId(companyId);
-            } else {
-                // No company header: allow admin/system access for login
-                // (actual authorization is handled by Spring Security)
-                CompanyContext.setAdmin(true);
             }
         } catch (AppException e) {
             request.setAttribute("errorCode", e.getErrorCode());

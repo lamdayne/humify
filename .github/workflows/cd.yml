@@ -1,0 +1,52 @@
+name: Continuous Deployment Pipeline
+run-name: ${{ github.actor }}
+on:
+  workflow_run:
+    workflows:
+      - Continuous Integration Pipeline (Maven Build, Test, Package, Docker)
+    types:
+      - completed
+    branches:
+      - main
+      - master
+
+jobs:
+  cd-pipeline:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            echo ">>> Start Deploying"
+            cd /root/humify-api
+            
+            echo ">>> Pulling new image"
+            docker compose pull humify-backend
+            
+            echo ">>> Restarting backend"
+            docker compose up -d --no-deps --force-create humify-backend
+            
+            echo ">>> Cleaning up old image"
+            docker image prune -f
+            
+            echo ">>> Status:"
+            docker compose ps
+            
+            echo ">>> Deploy Successfully"
+            
+      - name: Summary
+        run: |
+          echo "### CD Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Key | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | ${{ secrets.DOCKER_USERNAME }}/humify-backend:latest |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by CI | ${{ github.event.workflow_run.html_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.event.workflow_run.head_sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ✅ Deploy Successfully |" >> $GITHUB_STEP_SUMMARY

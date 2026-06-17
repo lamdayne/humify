@@ -15,4 +15,6 @@ public interface RoleAccessService {
 
     Set<String> findAllRoleNames(UserPrincipal userPrincipal);
 
+    void assignCompanyAdmin(User user);
+
 }
