@@ -28,3 +28,5 @@ resend:
   default:
     from: ${RESEND_FROM}
   api-key: ${RESEND_API_KEY}
+  forgot-password:
+    expiryTime: ${FORGOT_PASSWORD_TTL} # Minutes

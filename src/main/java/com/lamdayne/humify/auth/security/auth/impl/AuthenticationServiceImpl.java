@@ -1,34 +1,59 @@
 package com.lamdayne.humify.auth.security.auth.impl;
 
+import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
+import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
+import com.lamdayne.humify.auth.entity.PasswordResetToken;
 import com.lamdayne.humify.auth.enums.TokenType;
+import com.lamdayne.humify.auth.repository.PasswordResetTokenRepository;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
 import com.lamdayne.humify.auth.security.jwt.JwtService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.service.RefreshTokenService;
+import com.lamdayne.humify.common.exception.AppException;
+import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.mail.dto.SendEmailEvent;
+import com.lamdayne.humify.user.entity.User;
+import com.lamdayne.humify.user.service.UserService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    @Value("${system.url}")
+    private String systemUrl;
+
+    @Value("${resend.forgot-password.expiryTime}")
+    private int forgotPasswordTtl;
+
     private final JwtService jwtService;
+    private final UserService userService;
+    private final ApplicationEventPublisher publisher;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public TokenResponse login(SignInRequest request) {
@@ -85,5 +110,65 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         jwtService.extractUsername(token, TokenType.REFRESH_TOKEN);
 
         refreshTokenService.revokeIfValid(token);
+    }
+
+    @Override
+    public void forgot(ForgotPasswordRequest request) {
+        User user = userService.findByEmail(request.getEmail());
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVATED);
+        }
+
+        String resetToken = UUID.randomUUID().toString();
+
+        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+                .token(resetToken)
+                .expiryTime(Instant.now().plus(forgotPasswordTtl, ChronoUnit.MINUTES))
+                .userId(user.getId())
+                .used(false)
+                .build();
+
+        passwordResetTokenRepository.save(passwordResetToken);
+
+        String resetUrl = String.format("%s/reset-password?token=%s", systemUrl, resetToken);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("name", user.getEmail());
+        variables.put("resetUrl", resetUrl);
+        variables.put("expiryTime", forgotPasswordTtl);
+
+        publisher.publishEvent(
+                SendEmailEvent.builder()
+                        .to(user.getEmail())
+                        .subject("Reset password")
+                        .templateId("3ea4bce3-e7e1-41e2-b3f7-eda117615732")
+                        .variables(variables)
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+
+        if (passwordResetToken.getExpiryTime().isBefore(Instant.now())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_EXPIRED);
+        }
+
+        if (Boolean.TRUE.equals(passwordResetToken.getUsed())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_USED);
+        }
+
+        userService.resetPassword(passwordResetToken.getUserId(), request.getNewPassword());
+
+        passwordResetToken.setUsed(Boolean.TRUE);
+        passwordResetTokenRepository.save(passwordResetToken);
     }
 }

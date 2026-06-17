@@ -75,6 +75,12 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD("INVALID_PASSWORD", "Invalid password", HttpStatus.BAD_REQUEST),
     USER_NOT_ACTIVATED("USER_NOT_ACTIVATED", "User is not activated", HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_FOUND("TOKEN_NOT_FOUND", "Token not found", HttpStatus.NOT_FOUND),
+    PASSWORD_NOT_MATCH("PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
+    RESET_TOKEN_EXPIRED("RESET_TOKEN_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),
+    RESET_TOKEN_USED("RESET_TOKEN_USED", "Token has been used", HttpStatus.BAD_REQUEST),
+    RESET_TOKEN_REQUIRED("RESET_TOKEN_REQUIRED", "Token is required", HttpStatus.BAD_REQUEST),
+    CONFIRM_PASSWORD_REQUIRED("CONFIRM_PASSWORD_REQUIRED", "Confirm password is required", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),
