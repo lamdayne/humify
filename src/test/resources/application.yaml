@@ -22,3 +22,10 @@ sqids:
   min-length: ${TEST_SQIDS_MIN_LENGTH}
   keys:
     company: ${TEST_SQIDS_COMPANY_KEY}
+
+resend:
+  default:
+    from: ${TEST_RESEND_FROM}
+  api-key: ${TEST_RESEND_API_KEY}
+  forgot-password:
+    expiryTime: ${TEST_FORGOT_PASSWORD_TTL} # Minutes
