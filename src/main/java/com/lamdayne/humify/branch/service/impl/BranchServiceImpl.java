@@ -14,7 +14,7 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BranchServiceImpl implements BranchService, BranchAccessService {
 
     private final BranchRepository branchRepository;

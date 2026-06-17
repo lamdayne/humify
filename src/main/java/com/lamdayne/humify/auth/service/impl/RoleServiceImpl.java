@@ -8,6 +8,7 @@ import com.lamdayne.humify.auth.entity.Role;
 import com.lamdayne.humify.auth.entity.RoleHasPermission;
 import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.PermissionEnum;
+import com.lamdayne.humify.auth.enums.SystemRole;
 import com.lamdayne.humify.auth.repository.PermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleHasPermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleRepository;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RoleServiceImpl implements RoleService, RoleAccessService {
 
     private static final String SYSTEM_ROLE_PREFIX = "SYSTEM_";
@@ -263,6 +265,21 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
     @Override
     public Set<String> findAllRoleNames(UserPrincipal userPrincipal) {
         return new HashSet<>(userHasRoleRepository.findAllRoleNameByUserId(userPrincipal.getId()));
+    }
+
+    @Override
+    @Transactional
+    public void assignCompanyAdmin(User user) {
+        Role role = roleRepository.findByName(SystemRole.COMPANY_ADMIN.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        UserHasRole userHasRole = UserHasRole.builder()
+                .role(role)
+                .user(user)
+                .company(user.getCompany())
+                .build();
+
+        userHasRoleRepository.save(userHasRole);
     }
 
 }

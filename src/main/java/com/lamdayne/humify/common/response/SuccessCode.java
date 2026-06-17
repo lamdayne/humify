@@ -13,6 +13,8 @@ public enum SuccessCode {
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
     LOGOUT_SUCCESS("LOGOUT_SUCCESS", "Logout Success"),
+    FORGOT_PASSWORD_SUCCESS("FORGOT_PASSWORD_SUCCESS", "Forgot Password"),
+    RESET_PASSWORD_SUCCESS("RESET_PASSWORD_SUCCESS", "Reset Password Success"),
 
     // Company
     COMPANY_CREATE_SUCCESS("COMPANY_CREATE_SUCCESS", "Company created successfully"),

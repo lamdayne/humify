@@ -299,6 +299,17 @@ CREATE TABLE refresh_tokens
     created_at  TIMESTAMP          DEFAULT NOW()
 );
 
+-- Table: password_reset_tokens
+
+CREATE TABLE password_reset_tokens
+(
+    id          BIGSERIAL PRIMARY KEY,
+    token       TEXT      NOT NULL,
+    user_id     BIGINT    NOT NULL,
+    expiry_time TIMESTAMP NOT NULL,
+    used        BOOLEAN   NOT NULL DEFAULT FALSE
+);
+
 -- Enable RLS
 -- Bật RLS
 ALTER TABLE branches

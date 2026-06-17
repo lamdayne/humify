@@ -1,8 +1,11 @@
 package com.lamdayne.humify.auth.controller;
 
+import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
+import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +42,28 @@ public class AuthenticationController {
         authenticationService.logout(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(SuccessCode.LOGOUT_SUCCESS));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgot(@RequestBody @Valid ForgotPasswordRequest request) {
+        try {
+            CompanyContext.setAdmin(true);
+            authenticationService.forgot(request);
+            return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.FORGOT_PASSWORD_SUCCESS));
+        } finally {
+            CompanyContext.clear();
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> reset(@RequestBody @Valid ResetPasswordRequest request) {
+        try {
+            CompanyContext.setAdmin(true);
+            authenticationService.resetPassword(request);
+            return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.RESET_PASSWORD_SUCCESS));
+        } finally {
+            CompanyContext.clear();
+        }
     }
 
 }

@@ -42,4 +42,8 @@ public class SqidsUtil {
         throw new AppException(ErrorCode.INVALID_CODE);
     }
 
+    public String encode(List<Long> numbers) {
+        return sqids.encode(numbers);
+    }
+
 }
