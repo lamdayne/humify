@@ -39,6 +39,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${system.url}")
@@ -56,6 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
+    @Transactional
     public TokenResponse login(SignInRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -78,6 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public TokenResponse refresh(HttpServletRequest request) {
         String token = request.getHeader("x-refresh-token");
         if (StringUtils.isBlank(token)) {
@@ -102,6 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public void logout(HttpServletRequest request) {
         String token = request.getHeader("x-refresh-token");
         if (StringUtils.isBlank(token)) {
@@ -113,6 +117,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     public void forgot(ForgotPasswordRequest request) {
         User user = userService.findByEmail(request.getEmail());
 

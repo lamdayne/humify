@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RoleServiceImpl implements RoleService, RoleAccessService {
 
     private static final String SYSTEM_ROLE_PREFIX = "SYSTEM_";
@@ -267,6 +268,7 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
     }
 
     @Override
+    @Transactional
     public void assignCompanyAdmin(User user) {
         Role role = roleRepository.findByName(SystemRole.COMPANY_ADMIN.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));

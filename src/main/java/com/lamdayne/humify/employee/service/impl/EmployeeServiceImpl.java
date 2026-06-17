@@ -17,6 +17,7 @@ import com.lamdayne.humify.employee.repository.EmployeeRepository;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import com.lamdayne.humify.employee.validator.EmployeeValidator;
 import com.lamdayne.humify.position.service.PositionAccessService;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeMapper employeeMapper;
@@ -37,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DepartmentAccessService departmentAccessService;
 
     @Override
+    @Transactional
     public EmployeeResponse createEmployee(CreateEmployeeRequest request) {
         Long companyId = CompanyContext.getCompanyId();
         if (employeeRepository.existsByCompanyIdAndEmployeeCode(companyId, request.getEmployeeCode())) {
@@ -73,6 +76,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
@@ -83,6 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public void transferEmployee(Long id, TransferEmployeeRequest request) {
         Long companyId = CompanyContext.getCompanyId();
         Employee employee = employeeRepository.findById(id)
@@ -97,6 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public void updateEmployeeStatus(Long id, UpdateEmployeeStatusRequest request) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
@@ -107,6 +113,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public void updateEmployeePosition(Long id, UpdateEmployeePositionRequest request) {
         Long companyId = CompanyContext.getCompanyId();
         Employee employee = employeeRepository.findById(id)

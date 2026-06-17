@@ -12,7 +12,7 @@ import com.lamdayne.humify.department.repository.DepartmentRepository;
 import com.lamdayne.humify.department.service.DepartmentAccessService;
 import com.lamdayne.humify.department.service.DepartmentService;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DepartmentServiceImpl implements DepartmentService, DepartmentAccessService {
 
     private final DepartmentMapper departmentMapper;

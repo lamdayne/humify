@@ -34,6 +34,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CompanyServiceImpl implements CompanyService, CompanyAccessService {
 
     @Value("${system.url}")
@@ -134,6 +135,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     }
 
     @Override
+    @Transactional
     public CompanyResponse updateCompany(String companyCode, UpdateCompanyRequest request) {
         if (companyRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.COMPANY_EMAIL_EXISTED);
