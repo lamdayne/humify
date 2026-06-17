@@ -8,7 +8,7 @@ spring:
     open-in-view: true
 
 system:
-  url: ${SYSTEM_URL}
+  url: ${TEST_SYSTEM_URL}
   account:
     email: ${TEST_SYSTEM_EMAIL}
     password: ${TEST_SYSTEM_PASSWORD}

@@ -44,6 +44,10 @@ jobs:
           TEST_JWT_REFRESH_KEY: ${{ secrets.TEST_JWT_REFRESH_KEY }}
           TEST_SQIDS_COMPANY_KEY: ${{ secrets.TEST_SQIDS_COMPANY_KEY }}
           TEST_SQIDS_MIN_LENGTH: ${{ secrets.TEST_SQIDS_MIN_LENGTH }}
+          TEST_SYSTEM_URL: ${{ secrets.TEST_SYSTEM_URL }}
+          TEST_RESEND_FROM: ${{ secrets.TEST_RESEND_FROM }}
+          TEST_RESEND_API_KEY: ${{ secrets.TEST_RESEND_API_KEY }}
+          TEST_FORGOT_PASSWORD_TTL: ${{ secrets.TEST_FORGOT_PASSWORD_TTL }}
 
       - name: SonarCloud Analysis
         uses: sonarsource/sonarqube-scan-action@master
