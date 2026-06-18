@@ -3,11 +3,15 @@ package com.lamdayne.humify.company.dto.request;
 import com.lamdayne.humify.common.validator.EmailPattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CreateCompanyRequest implements Serializable {
 
     @NotBlank(message = "COMPANY_NAME_REQUIRED")
