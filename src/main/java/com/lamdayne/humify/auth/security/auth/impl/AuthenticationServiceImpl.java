@@ -13,6 +13,7 @@ import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.service.RefreshTokenService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.company.service.CompanyService;
 import com.lamdayne.humify.mail.dto.SendEmailEvent;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.service.UserService;
@@ -50,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtService jwtService;
     private final UserService userService;
+    private final CompanyService companyService;
     private final ApplicationEventPublisher publisher;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
@@ -175,5 +177,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         passwordResetToken.setUsed(Boolean.TRUE);
         passwordResetTokenRepository.save(passwordResetToken);
+    }
+
+    @Override
+    @Transactional
+    public void verifyCompany(HttpServletRequest request) {
+        String token = request.getHeader("x-verify-token");
+        if (StringUtils.isBlank(token)) {
+            throw new AppException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        companyService.verifyCompany(token);
+    }
+
+    @Override
+    @Transactional
+    public void resendVerifyCompany(HttpServletRequest request) {
+        String token = request.getHeader("x-verify-token");
+        if (StringUtils.isBlank(token)) {
+            throw new AppException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        companyService.resendVerification(token);
     }
 }

@@ -30,3 +30,5 @@ resend:
   api-key: ${RESEND_API_KEY}
   forgot-password:
     expiryTime: ${FORGOT_PASSWORD_TTL} # Minutes
+  company-verification:
+    expiryTime: ${COMPANY_VERIFY_TTL} # Minutes

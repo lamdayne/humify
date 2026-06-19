@@ -66,4 +66,28 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping("/verify-company")
+    public ResponseEntity<ApiResponse<Void>> verifyCompany(HttpServletRequest request) {
+        try {
+            CompanyContext.setAdmin(true);
+            authenticationService.verifyCompany(request);
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(SuccessCode.VERIFY_COMPANY_SUCCESS));
+        } finally {
+            CompanyContext.clear();
+        }
+    }
+
+    @PostMapping("/resend-verify")
+    public ResponseEntity<ApiResponse<Void>> resendVerification(HttpServletRequest request) {
+        try {
+            CompanyContext.setAdmin(true);
+            authenticationService.resendVerifyCompany(request);
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(SuccessCode.RESEND_EMAIL_SUCCESS));
+        } finally {
+            CompanyContext.clear();
+        }
+    }
+
 }
