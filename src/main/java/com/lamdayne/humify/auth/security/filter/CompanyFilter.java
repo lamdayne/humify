@@ -3,8 +3,10 @@ package com.lamdayne.humify.auth.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
+import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.enums.CompanyStatus;
 import com.lamdayne.humify.company.service.CompanyService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,6 +35,15 @@ public class CompanyFilter extends OncePerRequestFilter {
             String companyCode = request.getHeader("x-company-code");
             if (companyCode != null) {
                 Company company = companyService.getCompanyByCode(companyCode);
+
+                if (company.getStatus().equals(CompanyStatus.PENDING)) {
+                    throw new AppException(ErrorCode.COMPANY_PENDING);
+                }
+
+                if (company.getStatus().equals(CompanyStatus.LOCKED)) {
+                    throw new AppException(ErrorCode.COMPANY_LOCKED);
+                }
+
                 Long companyId = company.getId();
                 CompanyContext.setCompanyId(companyId);
             }

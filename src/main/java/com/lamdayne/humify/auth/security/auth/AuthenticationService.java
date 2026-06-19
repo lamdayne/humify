@@ -18,4 +18,8 @@ public interface AuthenticationService {
 
     void resetPassword(ResetPasswordRequest request);
 
+    void verifyCompany(HttpServletRequest request);
+
+    void resendVerifyCompany(HttpServletRequest request);
+
 }

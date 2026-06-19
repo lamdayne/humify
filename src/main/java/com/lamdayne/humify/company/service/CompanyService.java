@@ -18,4 +18,11 @@ public interface CompanyService {
     CompanyResponse updateCompany(String companyCode, UpdateCompanyRequest request);
 
     Company getCompanyByCode(String code);
+
+    void verifyCompany(String token);
+
+    void activeCompany(Long id);
+
+    void resendVerification(String token);
+
 }
