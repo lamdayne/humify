@@ -81,6 +81,11 @@ public enum ErrorCode {
     RESET_TOKEN_USED("RESET_TOKEN_USED", "Token has been used", HttpStatus.BAD_REQUEST),
     RESET_TOKEN_REQUIRED("RESET_TOKEN_REQUIRED", "Token is required", HttpStatus.BAD_REQUEST),
     CONFIRM_PASSWORD_REQUIRED("CONFIRM_PASSWORD_REQUIRED", "Confirm password is required", HttpStatus.BAD_REQUEST),
+    COMPANY_PENDING("COMPANY_PENDING", "Company is pending, please verify", HttpStatus.BAD_REQUEST),
+    COMPANY_LOCKED("COMPANY_LOCKED", "Company locked", HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRED("TOKEN_EXPIRED", "Token is expired", HttpStatus.BAD_REQUEST),
+    COMPANY_ALREADY_ACTIVE("COMPANY_ALREADY_ACTIVE", "Company already active", HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_EXPIRED("TOKEN_NOT_EXPIRED", "Token is not expired", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),

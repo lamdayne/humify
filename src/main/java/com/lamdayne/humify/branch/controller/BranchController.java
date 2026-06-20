@@ -68,6 +68,7 @@ public class BranchController {
     }
 
     @GetMapping("/company/{companyId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<List<BranchResponse>>> getBranchesByCompanyId(
             @PathVariable Long companyId
     ) {

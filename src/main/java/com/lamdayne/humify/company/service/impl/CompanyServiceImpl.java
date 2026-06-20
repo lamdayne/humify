@@ -9,11 +9,13 @@ import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
 import com.lamdayne.humify.company.dto.request.UpdateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
 import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.entity.CompanyVerification;
 import com.lamdayne.humify.company.enums.CompanyStatus;
 import com.lamdayne.humify.company.mapper.CompanyMapper;
 import com.lamdayne.humify.company.repository.CompanyRepository;
 import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.company.service.CompanyService;
+import com.lamdayne.humify.company.service.CompanyVerificationService;
 import com.lamdayne.humify.mail.dto.SendEmailEvent;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.repository.UserRepository;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +54,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     private final CompanyRepository companyRepository;
     private final ApplicationEventPublisher publisher;
     private final RoleAccessService roleAccessService;
+    private final CompanyVerificationService companyVerificationService;
 
     @Override
     @Transactional
@@ -69,35 +73,8 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
 
         company = companyRepository.save(company);
 
-        String tempPassword = generateTempPassword();
-        User user = User.builder()
-                .email(company.getEmail())
-                .password(passwordEncoder.encode(tempPassword))
-                .active(Boolean.TRUE)
-                .company(company)
-                .build();
-
-        user = userRepository.save(user);
-        roleAccessService.assignCompanyAdmin(user);
-
-        String urlLogin = String.format("%s/login?companyCode=%s", systemUrl, companyCode);
-
-        Map<String, Object> variables = new HashMap<>();
-
-        variables.put("companyCode", companyCode);
-        variables.put("companyName", company.getName());
-        variables.put("tempPassword", tempPassword);
-        variables.put("companyEmail", company.getEmail());
-        variables.put("urlLogin", urlLogin);
-
-        publisher.publishEvent(
-                SendEmailEvent.builder()
-                        .to(company.getEmail())
-                        .subject("[HRM] Account Activation Successful")
-                        .templateId("9ab89648-1b1e-466e-a5e2-091bfd5dd873")
-                        .variables(variables)
-                        .build()
-        );
+        String verificationToken = UUID.randomUUID().toString();
+        sendVerificationEmail(company, verificationToken);
 
         return companyMapper.toCompanyResponse(company);
     }
@@ -155,6 +132,87 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     }
 
     @Override
+    @Transactional
+    public void verifyCompany(String token) {
+        CompanyVerification companyVerification = companyVerificationService.findByToken(token);
+
+        if (companyVerification.getExpiredAt().isBefore(Instant.now())) {
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
+        }
+
+        doActiveCompany(companyVerification.getCompanyId());
+    }
+
+    @Override
+    @Transactional
+    public void activeCompany(Long id) {
+        doActiveCompany(id);
+    }
+
+    private void doActiveCompany(Long id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+
+        if (company.getStatus() == CompanyStatus.ACTIVE) {
+            throw new AppException(ErrorCode.COMPANY_ALREADY_ACTIVE);
+        }
+
+        company.setStatus(CompanyStatus.ACTIVE);
+        companyRepository.save(company);
+
+        String tempPassword = generateTempPassword();
+        User user = User.builder()
+                .email(company.getEmail())
+                .password(passwordEncoder.encode(tempPassword))
+                .active(Boolean.TRUE)
+                .company(company)
+                .build();
+
+        user = userRepository.save(user);
+        roleAccessService.assignCompanyAdmin(user);
+
+        String companyCode = company.getCompanyCode();
+        String urlLogin = String.format("%s/login?companyCode=%s", systemUrl, companyCode);
+
+        Map<String, Object> variables = new HashMap<>();
+
+        variables.put("companyCode", companyCode);
+        variables.put("companyName", company.getName());
+        variables.put("tempPassword", tempPassword);
+        variables.put("companyEmail", company.getEmail());
+        variables.put("urlLogin", urlLogin);
+
+        publisher.publishEvent(
+                SendEmailEvent.builder()
+                        .to(company.getEmail())
+                        .subject("[HRM] Account Activation Successful")
+                        .templateId("9ab89648-1b1e-466e-a5e2-091bfd5dd873")
+                        .variables(variables)
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void resendVerification(String token) {
+        CompanyVerification companyVerification = companyVerificationService.findByToken(token);
+
+        if (!companyVerification.getExpiredAt().isBefore(Instant.now())) {
+            throw new AppException(ErrorCode.TOKEN_NOT_EXPIRED);
+        }
+
+        Company company = companyRepository.findById(companyVerification.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+
+        if (company.getStatus() == CompanyStatus.ACTIVE) {
+            throw new AppException(ErrorCode.COMPANY_ALREADY_ACTIVE);
+        }
+
+        String verificationToken = UUID.randomUUID().toString();
+        sendVerificationEmail(company, verificationToken);
+    }
+
+    @Override
     public Company getReferenceById(Long id) {
         return companyRepository.getReferenceById(id);
     }
@@ -180,5 +238,25 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
             sb.append(CHARACTERS.charAt(SECURE_RANDOM.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
+    }
+
+    private void sendVerificationEmail(Company company, String token) {
+        companyVerificationService.save(CompanyVerification.builder()
+                .companyId(company.getId())
+                .token(token)
+                .build());
+
+        String verifyUrl = String.format("%s/verify-company?token=%s", systemUrl, token);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("companyName", company.getName());
+        variables.put("verifyUrl", verifyUrl);
+
+        publisher.publishEvent(SendEmailEvent.builder()
+                .to(company.getEmail())
+                .subject("[HRM] Verify company")
+                .templateId("6d3ce155-abe0-4901-93c9-57b7369ebf10")
+                .variables(variables)
+                .build());
     }
 }
