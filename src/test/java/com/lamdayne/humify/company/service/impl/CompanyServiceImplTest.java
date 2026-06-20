@@ -4,9 +4,11 @@ import com.lamdayne.humify.auth.service.RoleAccessService;
 import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
 import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.entity.CompanyVerification;
 import com.lamdayne.humify.company.enums.CompanyStatus;
 import com.lamdayne.humify.company.mapper.CompanyMapper;
 import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.company.service.CompanyVerificationService;
 import com.lamdayne.humify.mail.dto.SendEmailEvent;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.repository.UserRepository;
@@ -47,6 +49,9 @@ class CompanyServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher publisher;
+
+    @Mock
+    private CompanyVerificationService companyVerificationService;
 
     @InjectMocks
     private CompanyServiceImpl companyService;
@@ -99,8 +104,6 @@ class CompanyServiceImplTest {
         when(companyMapper.toCompany(request)).thenReturn(company);
         when(companyRepository.save(company)).thenReturn(company);
 
-        when(passwordEncoder.encode(anyString())).thenAnswer(i -> i.getArguments()[0].toString());
-
         when(companyMapper.toCompanyResponse(company)).thenReturn(response);
 
         CompanyResponse companyResponse = companyService.createCompany(request);
@@ -109,8 +112,7 @@ class CompanyServiceImplTest {
         assertThat(companyResponse.getTaxCode()).isEqualTo(request.getTaxCode());
 
         verify(companyRepository).save(company);
-        verify(userRepository).save(any(User.class));
-        verify(roleAccessService).assignCompanyAdmin(any());
+        verify(companyVerificationService).save(any(CompanyVerification.class));
 
         ArgumentCaptor<SendEmailEvent> captor = ArgumentCaptor.forClass(SendEmailEvent.class);
 
