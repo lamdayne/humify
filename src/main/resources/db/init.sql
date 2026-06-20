@@ -310,6 +310,17 @@ CREATE TABLE password_reset_tokens
     used        BOOLEAN   NOT NULL DEFAULT FALSE
 );
 
+-- Table: company_verifications
+CREATE TABLE company_verifications
+(
+    id         BIGSERIAL PRIMARY KEY,
+    company_id BIGINT    NOT NULL,
+    token      VARCHAR   NOT NULL,
+    expired_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
 -- Enable RLS
 -- Bật RLS
 ALTER TABLE branches
