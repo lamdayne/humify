@@ -144,19 +144,24 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         Page<Role> roles = roleRepository.findAll(pageable);
 
-        List<RoleResponse> roleResponses = roles.stream()
+        List<Role> filteredRoles = roles.stream()
                 .filter(role -> {
                     if (role.getName().startsWith(SYSTEM_ROLE_PREFIX)) {
                         return false;
                     }
                     return role.getIsSystem() || role.getCompany() != null;
                 })
-                .map(role -> RoleResponse.builder()
-                        .id(role.getId())
-                        .name(role.getName())
-                        .description(role.getDescription())
-                        .build()
-                ).toList();
+                .toList();
+
+        List<RoleResponse> roleResponses = filteredRoles.stream()
+                .map(role -> {
+                    List<Permission> permissions = roleHasPermissionRepository.findByRoleId(role.getId())
+                            .stream()
+                            .map(RoleHasPermission::getPermission)
+                            .toList();
+                    return RoleResponse.from(role, permissions);
+                })
+                .toList();
 
         return PageResponse.<RoleResponse>builder()
                 .pageNo(page)
@@ -176,11 +181,12 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
             throw new AppException(ErrorCode.ROLE_NOT_FOUND);
         }
 
-        return RoleResponse.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .description(role.getDescription())
-                .build();
+        List<Permission> permissions = roleHasPermissionRepository.findByRoleId(role.getId())
+                .stream()
+                .map(RoleHasPermission::getPermission)
+                .toList();
+
+        return RoleResponse.from(role, permissions);
     }
 
     private void validatePermissions(UserPrincipal user, List<Permission> permissions) {
