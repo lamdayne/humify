@@ -5,6 +5,7 @@ import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
 import com.lamdayne.humify.branch.dto.request.UpdateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.entity.Branch;
+import com.lamdayne.humify.branch.enums.BranchStatus;
 import com.lamdayne.humify.branch.mapper.BranchMapper;
 import com.lamdayne.humify.branch.repository.BranchRepository;
 import com.lamdayne.humify.branch.service.BranchAccessService;
@@ -70,7 +71,7 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
 
-        branch.setStatus(com.lamdayne.humify.branch.enums.BranchStatus.CLOSED);
+        branch.setStatus(BranchStatus.CLOSED);
 
         branchRepository.save(branch);
     }
