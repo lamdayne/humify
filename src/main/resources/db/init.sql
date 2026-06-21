@@ -365,6 +365,7 @@ CREATE POLICY tenant_isolation ON roles
     USING (
         current_setting('app.is_admin', true) = 'true'
         OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR (company_id IS NULL AND is_system = true)
     );
 
 CREATE POLICY tenant_isolation ON user_has_roles

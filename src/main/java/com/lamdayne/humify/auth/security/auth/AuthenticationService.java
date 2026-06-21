@@ -4,6 +4,8 @@ import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
+import com.lamdayne.humify.auth.dto.response.UserMeResponse;
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthenticationService {
@@ -21,5 +23,7 @@ public interface AuthenticationService {
     void verifyCompany(HttpServletRequest request);
 
     void resendVerifyCompany(HttpServletRequest request);
+
+    UserMeResponse me(UserPrincipal user);
 
 }
