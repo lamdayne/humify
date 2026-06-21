@@ -191,10 +191,14 @@ class BranchServiceImplTest {
     @Test
     void deleteBranch_success() {
         when(branchRepository.findById(100L)).thenReturn(Optional.of(branch));
-        doNothing().when(branchRepository).delete(branch);
+        when(branchRepository.save(branch)).thenReturn(branch);
 
         assertDoesNotThrow(() -> branchService.deleteBranch(100L));
-        verify(branchRepository).delete(branch);
+
+        assertThat(branch.getStatus()).isEqualTo(BranchStatus.CLOSED);
+
+        verify(branchRepository).save(branch);
+        verify(branchRepository, never()).delete(any(Branch.class));
     }
 
     // BR-SRV-10: existsByIdAndCompanyId - Thành công

@@ -70,7 +70,9 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
 
-        branchRepository.delete(branch);
+        branch.setStatus(com.lamdayne.humify.branch.enums.BranchStatus.CLOSED);
+
+        branchRepository.save(branch);
     }
 
     @Override
