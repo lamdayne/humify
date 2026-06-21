@@ -7,6 +7,7 @@ import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.department.dto.request.CreateDepartmentRequest;
+import com.lamdayne.humify.department.dto.request.UpdateDepartmentRequest;
 import com.lamdayne.humify.department.dto.response.DepartmentResponse;
 import com.lamdayne.humify.department.entity.Department;
 import com.lamdayne.humify.department.mapper.DepartmentMapper;
@@ -49,7 +50,7 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
 
     @Override
     @Transactional
-    public PageResponse<DepartmentResponse> getDepartmentByBranchId(Long branchId, int page, int size,String... sorts) {
+    public PageResponse<DepartmentResponse> getDepartmentByBranchId(Long branchId, int page, int size, String... sorts) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         Page<Department> departments = departmentRepository.findByBranchId(branchId, pageable);
         List<DepartmentResponse> departmentResponses = departments.stream().map(departmentMapper::toDepartmentResponse).toList();
@@ -61,6 +62,15 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
                 .totalElements(departments.getTotalElements())
                 .items(departmentResponses)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public DepartmentResponse updateDepartment(long id, UpdateDepartmentRequest request) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+        departmentMapper.updateDepartment(department, request);
+        return departmentMapper.toDepartmentResponse(departmentRepository.save(department));
     }
 
 

@@ -6,6 +6,7 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 
 import com.lamdayne.humify.department.dto.request.CreateDepartmentRequest;
+import com.lamdayne.humify.department.dto.request.UpdateDepartmentRequest;
 import com.lamdayne.humify.department.dto.response.DepartmentResponse;
 import com.lamdayne.humify.department.service.DepartmentService;
 import jakarta.validation.Valid;
@@ -28,10 +29,20 @@ public class DepartmentController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_CREATE', 'DEPARTMENT_FULL')")
-    public ResponseEntity<ApiResponse<DepartmentResponse>>createDepartment(@RequestBody @Valid CreateDepartmentRequest request) {
+    public ResponseEntity<ApiResponse<DepartmentResponse>> createDepartment(@RequestBody @Valid CreateDepartmentRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(SuccessCode.DEPARTMENT_CREATE_SUCCESS,departmentService.createDepartment(request)));
+                .body(ApiResponse.success(SuccessCode.DEPARTMENT_CREATE_SUCCESS, departmentService.createDepartment(request)));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_FULL')")
+    public ResponseEntity<ApiResponse<DepartmentResponse>> updateDepartment(@PathVariable Long id,
+                                                                            @RequestBody @Valid UpdateDepartmentRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(SuccessCode.DEPARTMENT_UPDATE_SUCCESS, "Update department info successfully"
+                        , departmentService.updateDepartment(id, request)));
     }
 
     @GetMapping("/branch/{branchId}")
@@ -47,5 +58,6 @@ public class DepartmentController {
                         SuccessCode.FOUND_DEPARTMENT_SUCCESS,
                         departmentService.getDepartmentByBranchId(branchId, page, size, sorts)));
     }
+
 
 }
