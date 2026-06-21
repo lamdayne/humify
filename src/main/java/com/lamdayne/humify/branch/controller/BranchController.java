@@ -2,6 +2,7 @@ package com.lamdayne.humify.branch.controller;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
+import com.lamdayne.humify.branch.dto.request.UpdateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.service.BranchService;
 import com.lamdayne.humify.common.response.ApiResponse;
@@ -39,6 +40,20 @@ public class BranchController {
                         SuccessCode.BRANCH_CREATE_SUCCESS,
                         branchService.createBranch(userPrincipal, request)
                 ));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_UPDATE', 'BRANCH_FULL')")
+    public ResponseEntity<ApiResponse<BranchResponse>> updateBranch(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateBranchRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.COMPANY_UPDATE_SUCCESS,
+                        branchService.updateBranch(id, request)
+                )
+        );
     }
 
     @GetMapping("/{id}")
