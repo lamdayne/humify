@@ -2,8 +2,10 @@ package com.lamdayne.humify.branch.service.impl;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
+import com.lamdayne.humify.branch.dto.request.UpdateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.entity.Branch;
+import com.lamdayne.humify.branch.enums.BranchStatus;
 import com.lamdayne.humify.branch.mapper.BranchMapper;
 import com.lamdayne.humify.branch.repository.BranchRepository;
 import com.lamdayne.humify.branch.service.BranchAccessService;
@@ -45,6 +47,33 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
         branch.setBranchCode(branchCode);
 
         return branchMapper.toBranchResponse(branchRepository.save(branch));
+    }
+
+    @Override
+    @Transactional
+    public BranchResponse updateBranch(Long id, UpdateBranchRequest request) {
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+
+        branch.setName(request.getName());
+        branch.setField(request.getField());
+        branch.setWebsite(request.getWebsite());
+        branch.setAddress(request.getAddress());
+        branch.setStandardHoursPerDay(request.getStandardHoursPerDay());
+        branch.setStatus(com.lamdayne.humify.branch.enums.BranchStatus.valueOf(request.getStatus()));
+
+        return branchMapper.toBranchResponse(branchRepository.save(branch));
+    }
+
+    @Override
+    @Transactional
+    public void deleteBranch(Long id) {
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+
+        branch.setStatus(BranchStatus.CLOSED);
+
+        branchRepository.save(branch);
     }
 
     @Override

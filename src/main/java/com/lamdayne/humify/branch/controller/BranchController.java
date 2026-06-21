@@ -2,6 +2,7 @@ package com.lamdayne.humify.branch.controller;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.branch.dto.request.CreateBranchRequest;
+import com.lamdayne.humify.branch.dto.request.UpdateBranchRequest;
 import com.lamdayne.humify.branch.dto.response.BranchResponse;
 import com.lamdayne.humify.branch.service.BranchService;
 import com.lamdayne.humify.common.response.ApiResponse;
@@ -41,6 +42,20 @@ public class BranchController {
                 ));
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_UPDATE', 'BRANCH_FULL')")
+    public ResponseEntity<ApiResponse<BranchResponse>> updateBranch(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateBranchRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.COMPANY_UPDATE_SUCCESS,
+                        branchService.updateBranch(id, request)
+                )
+        );
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<BranchResponse>> getBranchById(@PathVariable Long id) {
@@ -48,6 +63,18 @@ public class BranchController {
                 ApiResponse.success(
                         SuccessCode.FOUND_BRANCH_SUCCESS,
                         branchService.getBranchResponseById(id)
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_DELETE', 'BRANCH_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable Long id) {
+        branchService.deleteBranch(id);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.COMPANY_DELETE_SUCCESS,
+                        null
                 )
         );
     }
