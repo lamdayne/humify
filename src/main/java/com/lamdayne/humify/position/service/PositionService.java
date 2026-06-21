@@ -14,4 +14,10 @@ public interface PositionService {
     PositionResponse updatePosition(Long id, CreatePositionRequest request);
 
     void deletePosition(Long id);
+
+    com.lamdayne.humify.position.entity.Position getPositionById(Long id);
+
+    PositionResponse getPositionResponseById(Long id);
+
+    java.util.List<com.lamdayne.humify.position.entity.Position> getPositionsByDepartmentId(Long departmentId);
 }

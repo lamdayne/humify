@@ -104,4 +104,22 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
         }
         positionRepository.deleteById(id);
     }
+
+    @Override
+    public Position getPositionById(Long id) {
+        return positionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+    }
+
+    @Override
+    public PositionResponse getPositionResponseById(Long id) {
+        Position position = positionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+        return positionMapper.toPositionResponse(position);
+    }
+
+    @Override
+    public List<Position> getPositionsByDepartmentId(Long departmentId) {
+        return positionRepository.findAll();
+    }
 }
