@@ -32,6 +32,7 @@ public enum SuccessCode {
     // Branch
     BRANCH_CREATE_SUCCESS("BRANCH_CREATE_SUCCESS", "Branch created successfully"),
     FOUND_BRANCH_SUCCESS("FOUND_BRANCH_SUCCESS", "Branch found successfully"),
+    COMPANY_DELETE_SUCCESS("COMPANY_DELETE_SUCCESS", "Company deleted successfully"),
 
     // Position
     POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),

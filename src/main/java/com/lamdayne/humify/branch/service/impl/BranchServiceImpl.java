@@ -65,6 +65,15 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
     }
 
     @Override
+    @Transactional
+    public void deleteBranch(Long id) {
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_FOUND));
+
+        branchRepository.delete(branch);
+    }
+
+    @Override
     public List<BranchResponse> getBranchesByCompanyId(Long companyId) {
         List<Branch> branches = branchRepository.findByCompanyId(companyId);
         return branchMapper.toBranchResponseList(branches);

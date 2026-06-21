@@ -21,4 +21,6 @@ public interface BranchService {
     List<BranchResponse> getBranchesByCompanyId(Long companyId);
 
     PageResponse<BranchResponse> getAllBranches(int page, int size, String... sorts);
+
+    void deleteBranch(Long id);
 }

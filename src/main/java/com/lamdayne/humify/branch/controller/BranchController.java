@@ -67,6 +67,18 @@ public class BranchController {
         );
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_DELETE', 'BRANCH_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable Long id) {
+        branchService.deleteBranch(id);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.COMPANY_DELETE_SUCCESS,
+                        null
+                )
+        );
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_READ', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<BranchResponse>>> getAllBranches(
