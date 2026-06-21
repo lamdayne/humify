@@ -24,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
+import java.util.Optional;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +42,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        Long companyId = CompanyContext.getCompanyId();
+        if (companyId != null) {
+            return userRepository.existsByEmailAndCompanyId(email, companyId);
+        }
+        return userRepository.existsByEmailAndCompanyIsNull(email);
     }
 
     @Override
@@ -52,17 +58,43 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Long companyId = CompanyContext.getCompanyId();
+        if (companyId != null) {
+            return userRepository.findByEmailAndCompanyId(email, companyId)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        }
+
+        // Try to find if there is a system admin with this email first
+        Optional<User> systemUser = userRepository.findByEmailAndCompanyIsNull(email);
+        if (systemUser.isPresent()) {
+            return systemUser.get();
+        }
+
+        // Find all users across all companies with this email
+        List<User> users = userRepository.findAllByEmail(email);
+        if (users.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        } else if (users.size() == 1) {
+            return users.get(0);
+        } else {
+            // Multiple users found, but no company context in request header
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
     }
 
     @Override
     @Transactional
     public UserResponse create(CreateUserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long companyId = userPrincipal.getCompanyId();
+
+        boolean emailExists = companyId != null
+                ? userRepository.existsByEmailAndCompanyId(request.getEmail(), companyId)
+                : userRepository.existsByEmailAndCompanyIsNull(request.getEmail());
+
+        if (emailExists) {
             throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
         }
-
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
