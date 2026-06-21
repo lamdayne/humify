@@ -37,6 +37,8 @@ public enum SuccessCode {
     // Position
     POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),
     FOUND_POSITION_SUCCESS("FOUND_POSITION_SUCCESS", "Get positions data successfully"),
+    POSITION_UPDATE_SUCCESS("POSITION_UPDATE_SUCCESS", "Position updated successfully"),
+    POSITION_DELETE_SUCCESS("POSITION_DELETE_SUCCESS", "Position deleted successfully"),
 
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),

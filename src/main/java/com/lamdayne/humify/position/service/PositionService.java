@@ -10,4 +10,8 @@ public interface PositionService {
     PositionResponse createPosition(UserPrincipal userPrincipal, CreatePositionRequest request);
 
     PageResponse<PositionResponse> getAllPositions(int page, int size, String... sorts);
+
+    PositionResponse updatePosition(Long id, CreatePositionRequest request);
+
+    void deletePosition(Long id);
 }

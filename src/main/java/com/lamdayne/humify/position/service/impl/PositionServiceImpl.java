@@ -85,4 +85,23 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     public boolean existsByIdAndCompanyId(Long id, Long companyId) {
         return positionRepository.existsByIdAndCompanyId(id, companyId);
     }
+
+    @Override
+    @Transactional
+    public PositionResponse updatePosition(Long id, CreatePositionRequest request) {
+        Position position = positionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+        positionMapper.updatePosition(position, request);
+        Position saved = positionRepository.save(position);
+        return positionMapper.toPositionResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public void deletePosition(Long id) {
+        if (!positionRepository.existsById(id)) {
+            throw new AppException(ErrorCode.POSITION_NOT_FOUND);
+        }
+        positionRepository.deleteById(id);
+    }
 }

@@ -11,4 +11,7 @@ public interface PositionMapper {
     Position toPosition(CreatePositionRequest request);
 
     PositionResponse toPositionResponse(Position position);
+
+    @org.mapstruct.BeanMapping(nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
+    void updatePosition(@org.mapstruct.MappingTarget Position position, CreatePositionRequest request);
 }
