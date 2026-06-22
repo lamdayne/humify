@@ -111,6 +111,11 @@ public enum ErrorCode {
     EMPLOYEE_EMAIL_INVALID("EMPLOYEE_EMAIL_INVALID", "Employee email is invalid", HttpStatus.BAD_REQUEST),
     EMPLOYEE_CODE_EXISTS("EMPLOYEE_CODE_EXISTS", "Employee code exists", HttpStatus.BAD_REQUEST),
     EMPLOYEE_NOT_FOUND("EMPLOYEE_NOT_FOUND", "Employee not found", HttpStatus.NOT_FOUND),
+    EMPLOYEE_EMAIL_EXISTED("EMPLOYEE_EMAIL_EXISTED", "Employee email already existed", HttpStatus.BAD_REQUEST),
+
+    // Media
+    FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST);
 
     ;
     private String code;

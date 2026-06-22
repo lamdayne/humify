@@ -161,20 +161,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
-        }
-
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.getToken())
-                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
-
-        if (passwordResetToken.getExpiryTime().isBefore(Instant.now())) {
-            throw new AppException(ErrorCode.RESET_TOKEN_EXPIRED);
-        }
-
-        if (Boolean.TRUE.equals(passwordResetToken.getUsed())) {
-            throw new AppException(ErrorCode.RESET_TOKEN_USED);
-        }
+        PasswordResetToken passwordResetToken = resolveResetPassword(request);
 
         userService.resetPassword(passwordResetToken.getUserId(), request.getNewPassword());
 
@@ -217,4 +204,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .permissions(permissions)
                 .build();
     }
+
+    private PasswordResetToken resolveResetPassword(ResetPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+
+        if (passwordResetToken.getExpiryTime().isBefore(Instant.now())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_EXPIRED);
+        }
+
+        if (Boolean.TRUE.equals(passwordResetToken.getUsed())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_USED);
+        }
+
+        return passwordResetToken;
+    }
+
 }

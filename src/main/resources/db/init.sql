@@ -139,6 +139,7 @@ CREATE TABLE employees
     position_id   BIGINT          NOT NULL,
     employee_code VARCHAR(50)     NOT NULL,
     full_name     VARCHAR(255)    NOT NULL,
+    avatar_url    TEXT            NULL,
     date_of_birth DATE            NULL,
     gender        gender          NULL,
     email         VARCHAR(255)    NULL,
@@ -156,6 +157,7 @@ CREATE TABLE employees
 );
 
 CREATE UNIQUE INDEX uq_employees_company_code ON employees (company_id, employee_code);
+CREATE UNIQUE INDEX uq_employees_email_company_id ON employees(company_id, email);
 CREATE INDEX idx_employees_company_id ON employees (company_id);
 CREATE INDEX idx_employees_branch_id ON employees (branch_id);
 CREATE INDEX idx_employees_department_id ON employees (department_id);

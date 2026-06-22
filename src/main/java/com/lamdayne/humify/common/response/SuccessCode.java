@@ -62,8 +62,10 @@ public enum SuccessCode {
     USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
     USER_READ_SUCCESS("USER_READ_SUCCESS", "Get all user successfully"),
     USER_CHANGE_ROLE_SUCCESS("USER_CHANGE_ROLE_SUCCESS", "Change role successfully"),
-    USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully");
+    USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully"),
 
+    // Media
+    FILE_UPLOAD_SUCCESS("FILE_UPLOAD_SUCCESS", "File uploaded successfully");
 
 
     private String code;
