@@ -16,6 +16,7 @@ public class EmployeeResponse implements Serializable {
     private Long positionId;
     private String employeeCode;
     private String fullName;
+    private String avatarUrl;
     private LocalDate dateOfBirth;
     private Gender gender;
     private String email;

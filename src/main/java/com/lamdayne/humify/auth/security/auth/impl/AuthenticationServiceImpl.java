@@ -4,6 +4,7 @@ import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
+import com.lamdayne.humify.auth.dto.response.UserMeResponse;
 import com.lamdayne.humify.auth.entity.PasswordResetToken;
 import com.lamdayne.humify.auth.enums.TokenType;
 import com.lamdayne.humify.auth.repository.PasswordResetTokenRepository;
@@ -27,6 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -158,20 +161,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
-        }
-
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.getToken())
-                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
-
-        if (passwordResetToken.getExpiryTime().isBefore(Instant.now())) {
-            throw new AppException(ErrorCode.RESET_TOKEN_EXPIRED);
-        }
-
-        if (Boolean.TRUE.equals(passwordResetToken.getUsed())) {
-            throw new AppException(ErrorCode.RESET_TOKEN_USED);
-        }
+        PasswordResetToken passwordResetToken = resolveResetPassword(request);
 
         userService.resetPassword(passwordResetToken.getUserId(), request.getNewPassword());
 
@@ -200,4 +190,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         companyService.resendVerification(token);
     }
+
+    @Override
+    public UserMeResponse me(UserPrincipal user) {
+        List<String> permissions = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        return UserMeResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .companyId(user.getCompanyId())
+                .permissions(permissions)
+                .build();
+    }
+
+    private PasswordResetToken resolveResetPassword(ResetPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+
+        if (passwordResetToken.getExpiryTime().isBefore(Instant.now())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_EXPIRED);
+        }
+
+        if (Boolean.TRUE.equals(passwordResetToken.getUsed())) {
+            throw new AppException(ErrorCode.RESET_TOKEN_USED);
+        }
+
+        return passwordResetToken;
+    }
+
 }

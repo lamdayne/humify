@@ -53,4 +53,30 @@ public class PositionController {
                         positionService.getAllPositions(page, size, sorts)
                 ));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'POSITION_UPDATE', 'POSITION_FULL')")
+    public ResponseEntity<ApiResponse<PositionResponse>> updatePosition(
+            @PathVariable Long id,
+            @RequestBody @Valid CreatePositionRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.POSITION_UPDATE_SUCCESS,
+                        positionService.updatePosition(id, request)
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'POSITION_DELETE', 'POSITION_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deletePosition(@PathVariable Long id) {
+        positionService.deletePosition(id);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.POSITION_DELETE_SUCCESS,
+                        null
+                )
+        );
+    }
 }

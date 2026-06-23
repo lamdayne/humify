@@ -46,6 +46,8 @@ public class Employee extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private String fullName;
 
+    private String avatarUrl;
+
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)

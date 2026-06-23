@@ -17,6 +17,7 @@ public enum SuccessCode {
     RESET_PASSWORD_SUCCESS("RESET_PASSWORD_SUCCESS", "Reset Password Success"),
     VERIFY_COMPANY_SUCCESS("VERIFY_COMPANY_SUCCESS", "Verify Company Success"),
     RESEND_EMAIL_SUCCESS("RESEND_EMAIL_SUCCESS", "Resend Email Success"),
+    GET_MY_INFO_SUCCESS("GET_MY_INFO_SUCCESS", "Get My Info Success"),
 
     // Company
     COMPANY_CREATE_SUCCESS("COMPANY_CREATE_SUCCESS", "Company created successfully"),
@@ -27,14 +28,17 @@ public enum SuccessCode {
     // Department
     DEPARTMENT_CREATE_SUCCESS("DEPARTMENT_CREATE_SUCCESS", "Department created successfully" ),
     FOUND_DEPARTMENT_SUCCESS("FOUND_DEPARTMENT_SUCCESS", "Department found successfully"),
-
+    DEPARTMENT_UPDATE_SUCCESS("DEPARTMENT_UPDATE_SUCCESS", "Department update successfully"),
     // Branch
     BRANCH_CREATE_SUCCESS("BRANCH_CREATE_SUCCESS", "Branch created successfully"),
     FOUND_BRANCH_SUCCESS("FOUND_BRANCH_SUCCESS", "Branch found successfully"),
+    COMPANY_DELETE_SUCCESS("COMPANY_DELETE_SUCCESS", "Company deleted successfully"),
 
     // Position
     POSITION_CREATE_SUCCESS("POSITION_CREATE_SUCCESS", "Position created successfully"),
     FOUND_POSITION_SUCCESS("FOUND_POSITION_SUCCESS", "Get positions data successfully"),
+    POSITION_UPDATE_SUCCESS("POSITION_UPDATE_SUCCESS", "Position updated successfully"),
+    POSITION_DELETE_SUCCESS("POSITION_DELETE_SUCCESS", "Position deleted successfully"),
 
     // Role
     ROLE_CREATE_SUCCESS("ROLE_CREATE_SUCCESS", "Role created successfully"),
@@ -60,7 +64,9 @@ public enum SuccessCode {
     USER_CHANGE_ROLE_SUCCESS("USER_CHANGE_ROLE_SUCCESS", "Change role successfully"),
     USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully"),
 
-    ;
+    // Media
+    FILE_UPLOAD_SUCCESS("FILE_UPLOAD_SUCCESS", "File uploaded successfully");
+
 
     private String code;
     private String defaultMessage;

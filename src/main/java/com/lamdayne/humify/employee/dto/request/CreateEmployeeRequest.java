@@ -4,12 +4,15 @@ import com.lamdayne.humify.common.validator.EmailPattern;
 import com.lamdayne.humify.common.validator.EnumValue;
 import com.lamdayne.humify.employee.enums.EmployeeStatus;
 import com.lamdayne.humify.employee.enums.Gender;
+import com.lamdayne.humify.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 public class CreateEmployeeRequest {
@@ -26,11 +29,10 @@ public class CreateEmployeeRequest {
     @Positive(message = "POSITION_ID_INVALID")
     private Long positionId;
 
-    @NotBlank(message = "EMPLOYEE_CODE_REQUIRED")
-    private String employeeCode;
-
     @NotBlank(message = "EMPLOYEE_FULL_NAME_REQUIRED")
     private String fullName;
+
+    private String avatarUrl;
 
     private LocalDate dateOfBirth;
 
@@ -52,5 +54,8 @@ public class CreateEmployeeRequest {
     @NotNull(message = "EMPLOYEE_STATUS_REQUIRED")
     @EnumValue(name = "status", message = "EMPLOYEE_STATUS_INVALID", enumClass = EmployeeStatus.class)
     private String status;
+
+    @NotEmpty(message = "ROLE_ID_REQUIRED")
+    private List<Long> roleIds;
 
 }
