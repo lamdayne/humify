@@ -13,6 +13,7 @@ import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.entity.User;
+import com.lamdayne.humify.user.enums.PasswordFlag;
 import com.lamdayne.humify.user.mapper.UserMapper;
 import com.lamdayne.humify.user.repository.UserRepository;
 import com.lamdayne.humify.user.service.UserService;
@@ -167,6 +168,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void resetPassword(Long id, String newPassword) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (!Boolean.TRUE.equals(user.getActive()) && !user.getPassword().equals(PasswordFlag.PENDING_ACTIVATION.name())) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVATED);
+        }
+
+        if (user.getPassword().equals(PasswordFlag.PENDING_ACTIVATION.name())) {
+            user.setActive(true);
+        }
+
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

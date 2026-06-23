@@ -8,7 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-    boolean existsByCompanyIdAndEmployeeCode(Long companyId, String employeeCode);
 
     Optional<Employee> findByEmployeeCode(String employeeCode);
+
+    Optional<Employee> findFirstByCompanyIdAndEmployeeCodeStartingWithOrderByIdDesc(Long companyId, String prefix);
+
+    boolean existsByCompanyIdAndEmail(Long companyId, String email);
 }

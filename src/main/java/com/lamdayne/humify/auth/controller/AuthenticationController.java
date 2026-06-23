@@ -90,6 +90,18 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping("/set-password")
+    public ResponseEntity<ApiResponse<Void>> setPasswordNewAccount(@RequestBody @Valid ResetPasswordRequest request) {
+        try {
+            CompanyContext.setAdmin(true);
+            authenticationService.resetPassword(request);
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(SuccessCode.RESET_PASSWORD_SUCCESS));
+        } finally {
+            CompanyContext.clear();
+        }
+    }
+
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserMeResponse>> me(@AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok()

@@ -139,6 +139,7 @@ CREATE TABLE employees
     position_id   BIGINT          NOT NULL,
     employee_code VARCHAR(50)     NOT NULL,
     full_name     VARCHAR(255)    NOT NULL,
+    avatar_url    TEXT            NULL,
     date_of_birth DATE            NULL,
     gender        gender          NULL,
     email         VARCHAR(255)    NULL,
@@ -156,6 +157,7 @@ CREATE TABLE employees
 );
 
 CREATE UNIQUE INDEX uq_employees_company_code ON employees (company_id, employee_code);
+CREATE UNIQUE INDEX uq_employees_email_company_id ON employees(company_id, email);
 CREATE INDEX idx_employees_company_id ON employees (company_id);
 CREATE INDEX idx_employees_branch_id ON employees (branch_id);
 CREATE INDEX idx_employees_department_id ON employees (department_id);
@@ -335,43 +337,51 @@ ALTER TABLE roles
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_has_roles
     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE positions
+    DISABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
 CREATE POLICY tenant_isolation ON branches
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON employees
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON users
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON attendances
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON roles
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
         OR (company_id IS NULL AND is_system = true)
     );
 
 CREATE POLICY tenant_isolation ON user_has_roles
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE POLICY tenant_isolation ON positions
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE USER app_user WITH PASSWORD 'secret';

@@ -49,6 +49,10 @@ jobs:
           TEST_RESEND_API_KEY: ${{ secrets.TEST_RESEND_API_KEY }}
           TEST_FORGOT_PASSWORD_TTL: ${{ secrets.TEST_FORGOT_PASSWORD_TTL }}
           TEST_COMPANY_VERIFY_TTL: ${{ secrets.TEST_COMPANY_VERIFY_TTL }}
+          TEST_SET_PASSWORD_TTL: ${{ secrets.TEST_SET_PASSWORD_TTL }}
+          TEST_CLOUDINARY_CLOUD_NAME: ${{ secrets.TEST_CLOUDINARY_CLOUD_NAME }}
+          TEST_CLOUDINARY_API_KEY: ${{ secrets.TEST_CLOUDINARY_API_KEY }}
+          TEST_CLOUDINARY_API_SECRET: ${{ secrets.TEST_CLOUDINARY_API_SECRET }}
 
       - name: SonarCloud Analysis
         uses: sonarsource/sonarqube-scan-action@master
