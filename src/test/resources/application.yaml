@@ -34,3 +34,10 @@ resend:
     expiryTime: ${TEST_FORGOT_PASSWORD_TTL} # Minutes
   company-verification:
     expiryTime: ${TEST_COMPANY_VERIFY_TTL} # Minutes
+  set-password:
+    expiryTime: ${TEST_SET_PASSWORD_TTL} # Minutes
+
+cloudinary:
+  cloud-name: ${TEST_CLOUDINARY_CLOUD_NAME}
+  api-key: ${TEST_CLOUDINARY_API_KEY}
+  api-secret: ${TEST_CLOUDINARY_API_SECRET}

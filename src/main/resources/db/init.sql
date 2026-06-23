@@ -337,43 +337,51 @@ ALTER TABLE roles
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_has_roles
     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE positions
+    DISABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
 CREATE POLICY tenant_isolation ON branches
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON employees
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON users
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON attendances
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE POLICY tenant_isolation ON roles
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
         OR (company_id IS NULL AND is_system = true)
     );
 
 CREATE POLICY tenant_isolation ON user_has_roles
     USING (
         current_setting('app.is_admin', true) = 'true'
-        OR company_id = current_setting('app.company_id', true)::BIGINT
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE POLICY tenant_isolation ON positions
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE USER app_user WITH PASSWORD 'secret';

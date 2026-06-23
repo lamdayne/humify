@@ -169,6 +169,10 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(Long id, String newPassword) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        if (!Boolean.TRUE.equals(user.getActive()) && !user.getPassword().equals(PasswordFlag.PENDING_ACTIVATION.name())) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVATED);
+        }
+
         if (user.getPassword().equals(PasswordFlag.PENDING_ACTIVATION.name())) {
             user.setActive(true);
         }
