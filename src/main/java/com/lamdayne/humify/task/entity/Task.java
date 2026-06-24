@@ -1,6 +1,7 @@
 package com.lamdayne.humify.task.entity;
 
 import com.lamdayne.humify.common.base.BaseEntity;
+import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.project.entity.BoardColumn;
 import com.lamdayne.humify.project.entity.Project;
 import com.lamdayne.humify.project.entity.Sprint;
@@ -22,6 +23,10 @@ import java.time.Instant;
 @Entity
 @Table(name = "tasks")
 public class Task extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)

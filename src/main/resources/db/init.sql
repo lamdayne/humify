@@ -20,14 +20,6 @@ CREATE TYPE employee_status AS ENUM (
     'TERMINATED' -- Bị sa thải
     );
 
-CREATE TYPE project_status AS ENUM (
-    'PLANNING', -- Đang lập kế hoạch
-    'IN_PROGRESS', -- Đang thực hiện
-    'ON_HOLD', -- Tạm dừng
-    'COMPLETED', -- Đã hoàn thành
-    'CANCELLED' -- Đã bị hủy
-    );
-
 CREATE TYPE gender AS ENUM (
     'MALE',
     'FEMALE',
@@ -47,6 +39,61 @@ CREATE TYPE checked_status AS ENUM (
     'CHECKED_IN',
     'CHECKED_OUT',
     'NOT_CHECKED'
+    );
+
+CREATE TYPE column_category AS ENUM (
+    'TO_DO',
+    'IN_PROGRESS',
+    'DONE'
+    );
+
+CREATE TYPE project_invitation_status AS ENUM (
+    'PENDING',
+    'ACCEPTED',
+    'EXPIRED',
+    'REVOKED'
+    );
+
+CREATE TYPE project_member_status AS ENUM (
+    'ACTIVE',
+    'PENDING_APPROVAL'
+    );
+
+CREATE TYPE project_status AS ENUM (
+    'ACTIVE',
+    'COMPLETED',
+    'ARCHIVED'
+    );
+
+CREATE TYPE sprint_status AS ENUM (
+    'PLANNED',
+    'ACTIVE',
+    'COMPLETED'
+    );
+
+CREATE TYPE task_activity_action AS ENUM (
+    'CREATE_TASK',
+    'UPDATE_STATUS',
+    'CHANGE_ASSIGNEE',
+    'UPDATE_PRIORITY',
+    'CHANGE_SPRINT',
+    'UPDATE_POINTS',
+    'ADD_COMMENT',
+    'ADD_ATTACHMENT'
+    );
+
+CREATE TYPE task_priority AS ENUM (
+    'LOW',
+    'MEDIUM',
+    'HIGH',
+    'URGENT'
+    );
+
+CREATE TYPE task_type AS ENUM (
+    'STORY',
+    'TASK',
+    'BUG',
+    'EPIC'
     );
 
 -- Table: companies
@@ -322,6 +369,211 @@ CREATE TABLE company_verifications
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- Table: projects
+
+CREATE TABLE projects
+(
+    id          BIGSERIAL PRIMARY KEY,
+    company_id  BIGINT         NOT NULL,
+    creator_id  BIGINT         NOT NULL,
+    name        VARCHAR(255)   NOT NULL,
+    key         VARCHAR(10)    NOT NULL,
+    description TEXT,
+    status      project_status NOT NULL DEFAULT 'ACTIVE',
+    created_at  TIMESTAMPTZ             DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ             DEFAULT NOW(),
+    deleted_at  TIMESTAMPTZ,
+    CONSTRAINT fk_project_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_project_creator_id FOREIGN KEY (creator_id) REFERENCES users (id),
+    CONSTRAINT uq_project_company_key UNIQUE (company_id, key)
+);
+
+CREATE INDEX idx_project_company_id ON projects (company_id);
+
+-- Table: project_roles
+
+CREATE TABLE project_roles
+(
+    id          BIGSERIAL PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    code        VARCHAR(50)  NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- Table: project_members
+
+CREATE TABLE project_members
+(
+    id              BIGSERIAL PRIMARY KEY,
+    project_id      BIGINT                NOT NULL,
+    project_role_id BIGINT                NOT NULL,
+    user_id         BIGINT                NOT NULL,
+    status          project_member_status NOT NULL DEFAULT 'ACTIVE',
+    invited_email   VARCHAR(255),
+    joined_at       TIMESTAMPTZ                    DEFAULT NOW(),
+    CONSTRAINT fk_pm_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pm_project_role_id FOREIGN KEY (project_role_id) REFERENCES project_roles (id),
+    CONSTRAINT fk_pm_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT uq_project_user UNIQUE (project_id, user_id)
+);
+
+CREATE INDEX idx_prj_member_prj_user ON project_members (project_id, user_id);
+
+-- Table: project_invitations
+
+CREATE TABLE project_invitations
+(
+    id              BIGSERIAL PRIMARY KEY,
+    project_id      BIGINT                    NOT NULL,
+    project_role_id BIGINT                    NOT NULL,
+    inviter_id      BIGINT                    NOT NULL,
+    email           VARCHAR(255),
+    token           VARCHAR(255)              NOT NULL UNIQUE,
+    status          project_invitation_status NOT NULL DEFAULT 'PENDING',
+    expired_at      TIMESTAMPTZ               NOT NULL,
+    created_at      TIMESTAMPTZ                        DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ                        DEFAULT NOW(),
+    CONSTRAINT fk_pi_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pi_project_role_id FOREIGN KEY (project_role_id) REFERENCES project_roles (id),
+    CONSTRAINT fk_pi_inviter_id FOREIGN KEY (inviter_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_prj_invitation_token ON project_invitations (token);
+
+-- Table: sprints
+
+CREATE TABLE sprints
+(
+    id         BIGSERIAL PRIMARY KEY,
+    project_id BIGINT        NOT NULL,
+    name       VARCHAR(100)  NOT NULL,
+    goal       TEXT,
+    start_date TIMESTAMPTZ,
+    end_date   TIMESTAMPTZ,
+    status     sprint_status NOT NULL DEFAULT 'PLANNED',
+    created_at TIMESTAMPTZ            DEFAULT NOW(),
+    updated_at TIMESTAMPTZ            DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT fk_sprint_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+);
+
+
+-- Table: board_columns
+
+CREATE TABLE board_columns
+(
+    id         BIGSERIAL PRIMARY KEY,
+    project_id BIGINT          NOT NULL,
+    name       VARCHAR(100)    NOT NULL,
+    position   INTEGER         NOT NULL,
+    category   column_category NOT NULL DEFAULT 'TO_DO',
+    created_at TIMESTAMPTZ              DEFAULT NOW(),
+    updated_at TIMESTAMPTZ              DEFAULT NOW(),
+    CONSTRAINT fk_bc_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
+    CONSTRAINT uq_project_column_position UNIQUE (project_id, position)
+);
+
+-- Table: tasks
+
+CREATE TABLE tasks
+(
+    id              BIGSERIAL PRIMARY KEY,
+    company_id      BIGINT        NOT NULL,
+    project_id      BIGINT        NOT NULL,
+    sprint_id       BIGINT,
+    column_id       BIGINT        NOT NULL,
+    parent_id       BIGINT,
+    reporter_id     BIGINT        NOT NULL,
+    assignee_id     BIGINT,
+    task_key        VARCHAR(50)   NOT NULL UNIQUE,
+    title           VARCHAR(255)  NOT NULL,
+    description     TEXT,
+    priority        task_priority NOT NULL DEFAULT 'MEDIUM',
+    type            task_type     NOT NULL DEFAULT 'TASK',
+    points          INTEGER,
+    estimated_hours DOUBLE PRECISION,
+    logged_hours    DOUBLE PRECISION       DEFAULT 0.0,
+    position        DOUBLE PRECISION       DEFAULT 0.0,
+    due_date        TIMESTAMPTZ,
+    completed_at    TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ            DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ            DEFAULT NOW(),
+    deleted_at      TIMESTAMPTZ,
+    CONSTRAINT fk_task_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_task_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
+    CONSTRAINT fk_task_sprint_id FOREIGN KEY (sprint_id) REFERENCES sprints (id) ON DELETE SET NULL,
+    CONSTRAINT fk_task_column_id FOREIGN KEY (column_id) REFERENCES board_columns (id),
+    CONSTRAINT fk_task_parent_id FOREIGN KEY (parent_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_task_reporter_id FOREIGN KEY (reporter_id) REFERENCES users (id),
+    CONSTRAINT fk_task_assignee_id FOREIGN KEY (assignee_id) REFERENCES users (id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_tasks_project_id ON tasks (project_id);
+CREATE INDEX idx_tasks_sprint_id ON tasks (sprint_id);
+CREATE INDEX idx_tasks_assignee_id ON tasks (assignee_id);
+
+-- Table: task_comments
+
+CREATE TABLE task_comments
+(
+    id         BIGSERIAL PRIMARY KEY,
+    task_id    BIGINT NOT NULL,
+    parent_id  BIGINT,
+    author_id  BIGINT NOT NULL,
+    content    TEXT   NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_tc_task_id FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_tc_parent_id FOREIGN KEY (parent_id) REFERENCES task_comments (id) ON DELETE CASCADE,
+    CONSTRAINT fk_tc_author_id FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+
+-- Table: task_attachments
+
+CREATE TABLE task_attachments
+(
+    id          BIGSERIAL PRIMARY KEY,
+    task_id     BIGINT       NOT NULL,
+    file_name   VARCHAR(255) NOT NULL,
+    file_url    TEXT         NOT NULL,
+    file_size   BIGINT,
+    uploaded_by BIGINT       NOT NULL,
+    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ta_task_id FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_ta_uploader FOREIGN KEY (uploaded_by) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- Table: task_activities
+
+CREATE TABLE task_activities
+(
+    id         BIGSERIAL PRIMARY KEY,
+    task_id    BIGINT       NOT NULL,
+    user_id    BIGINT       NOT NULL,
+    action     VARCHAR(100) NOT NULL,
+    old_value  TEXT,
+    new_value  TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_tac_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_tac_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- Table: task_worklogs
+
+CREATE TABLE task_worklogs
+(
+    id               BIGSERIAL PRIMARY KEY,
+    task_id          BIGINT           NOT NULL,
+    user_id          BIGINT           NOT NULL,
+    time_spent_hours DOUBLE PRECISION NOT NULL,
+    description      TEXT,
+    logged_at        TIMESTAMPTZ DEFAULT NOW(),
+    created_at       TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_tw_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_tw_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 
 -- Enable RLS
 -- Bật RLS
@@ -339,6 +591,10 @@ ALTER TABLE user_has_roles
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE positions
     DISABLE ROW LEVEL SECURITY;
+ALTER TABLE projects
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks
+    ENABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
 CREATE POLICY tenant_isolation ON branches
@@ -384,5 +640,24 @@ CREATE POLICY tenant_isolation ON positions
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
+CREATE POLICY tenant_isolation ON projects
+    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+
+CREATE POLICY tenant_isolation ON tasks
+    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+
 CREATE USER app_user WITH PASSWORD 'secret';
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;
+-- Tables
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;
+
+-- Sequences
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app_user;
+
+-- Future tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_user;
+
+-- Future sequences
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT USAGE, SELECT ON SEQUENCES TO app_user;
