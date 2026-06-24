@@ -10,6 +10,7 @@ import com.lamdayne.humify.auth.repository.PermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleHasPermissionRepository;
 import com.lamdayne.humify.auth.repository.RoleRepository;
 import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
+import com.lamdayne.humify.project.service.ProjectRoleService;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class ApplicationInitService {
     private final UserService userService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProjectRoleService projectRoleService;
     private final PermissionRepository permissionRepository;
     private final UserHasRoleRepository userHasRoleRepository;
     private final RoleHasPermissionRepository roleHasPermissionRepository;
@@ -46,6 +48,7 @@ public class ApplicationInitService {
         initPermissions();
         initSystemRoles();
         initSystemAccount();
+        projectRoleService.initProjectRole();
     }
 
     private void initPermissions() {
