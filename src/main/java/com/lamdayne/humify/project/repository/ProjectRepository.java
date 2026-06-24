@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
-    boolean existsByCompanyIdAndKey(Long companyId, String key);
+public interface ProjectRepository extends JpaRepository<Project, Long> {
+    boolean existsByCompany_IdAndKey(Long companyId, String key);
 
-    Page<Project> findProjectByCompany_Id(Long companyId,Pageable pageable);
+    Page<Project> findByCompany_Id(Long companyId,Pageable pageable);
 
 
 }

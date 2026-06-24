@@ -11,7 +11,6 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
-
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "status", ignore = true)

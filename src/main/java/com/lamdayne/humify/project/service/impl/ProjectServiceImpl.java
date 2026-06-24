@@ -3,6 +3,7 @@ package com.lamdayne.humify.project.service.impl;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.repository.CompanyRepository;
 import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
@@ -19,9 +20,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,27 +35,31 @@ public class ProjectServiceImpl implements ProjectService {
 
 
    private final ProjectRepository projectRepository;
-   private final CompanyRepository companyRepository;
    private final UserRepository userRepository;
    private final ProjectMapper projectMapper;
 
     @Override
     public ProjectResponse createProject(CreateProjectRequest request) {
-        Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.COMPANY_NOT_FOUND));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User creator = userRepository.findById(request.getCreatorId())
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.USER_NOT_FOUND));
-        if (projectRepository.existsByCompanyIdAndKey(
-                company.getId(),
-                request.getKey()
+        String email = authentication.getName(); // vì bạn dùng email làm login
 
-        )) {
+        User creator = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Company company = creator.getCompany();
+
+        if (projectRepository.existsByCompany_IdAndKey(company.getId(), request.getKey())) {
             throw new AppException(ErrorCode.PROJECT_KEY_EXISTED);
         }
         Project project = projectMapper.toEntity(request);
+        if (projectRepository.existsByCompany_IdAndKey(
+                company.getId(),
+                request.getKey()
+        )) {
+            throw new AppException(ErrorCode.PROJECT_KEY_EXISTED);
+        }
+
         project.setCompany(company);
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
@@ -65,14 +70,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public PageResponse<ProjectResponse> getAllProject(int page, int size, String... sorts) {
-        Sort sort;
-
-        if (sorts == null || sorts.length == 0) {
-            sort = Sort.by("id").ascending();
-        } else {
-            sort = Sort.by(sorts);
-        }
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
 
 
         Page<Project> projects = projectRepository.findAll(pageable);
@@ -113,8 +111,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public PageResponse<ProjectResponse> getProjectsByCompany(Long companyId, int page, int size, String... sorts) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sorts));
-        Page<Project> projects =projectRepository.findProjectByCompany_Id(companyId, pageable);
+        Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
+        Page<Project> projects =projectRepository.findByCompany_Id(companyId, pageable);
         List<ProjectResponse> items = projects.stream().map(projectMapper::toResponse).toList();
 
         return PageResponse.<ProjectResponse>builder()
