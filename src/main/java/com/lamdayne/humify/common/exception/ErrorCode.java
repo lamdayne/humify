@@ -115,9 +115,57 @@ public enum ErrorCode {
 
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
-    FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST);
+    FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST),
 
-    ;
+    // Project
+    PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found", HttpStatus.NOT_FOUND),
+    PROJECT_KEY_EXISTED("PROJECT_KEY_EXISTED", "Project key already exists in this company", HttpStatus.BAD_REQUEST),
+    PROJECT_KEY_INVALID("PROJECT_KEY_INVALID", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
+    
+    // Member
+    MEMBER_ALREADY_EXISTS("MEMBER_ALREADY_EXISTS", "User is already a member of this project", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_FOUND("MEMBER_NOT_FOUND", "Member not found in this project", HttpStatus.NOT_FOUND),
+    
+    // Invitation
+    INVITATION_NOT_FOUND("INVITATION_NOT_FOUND", "Invitation link is invalid or not found", HttpStatus.NOT_FOUND),
+    INVITATION_EXPIRED("INVITATION_EXPIRED", "Invitation link has expired", HttpStatus.BAD_REQUEST),
+    INVITATION_REVOKED("INVITATION_REVOKED", "Invitation link has been revoked", HttpStatus.BAD_REQUEST),
+    INVITATION_EMAIL_MISMATCH("INVITATION_EMAIL_MISMATCH", "Authenticated email does not match invited email", HttpStatus.FORBIDDEN),
+    
+    // Sprint
+    SPRINT_NOT_FOUND("SPRINT_NOT_FOUND", "Sprint not found", HttpStatus.NOT_FOUND),
+    SPRINT_STATUS_INVALID("SPRINT_STATUS_INVALID", "Invalid sprint status transition", HttpStatus.BAD_REQUEST),
+    SPRINT_DATES_INVALID("SPRINT_DATES_INVALID", "End date must be after start date", HttpStatus.BAD_REQUEST),
+    
+    // Column
+    COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
+    COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
+    
+    // Task
+    TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found", HttpStatus.NOT_FOUND),
+    TASK_PARENT_LOOP("TASK_PARENT_LOOP", "Task cannot be a sub-task of itself or create loops", HttpStatus.BAD_REQUEST),
+    TASK_ESTIMATE_INVALID("TASK_ESTIMATE_INVALID", "Estimated hours or story points must be positive", HttpStatus.BAD_REQUEST),
+    
+    // Comment
+    COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", HttpStatus.NOT_FOUND),
+    COMMENT_PARENT_NOT_FOUND("COMMENT_PARENT_NOT_FOUND", "Reply target comment not found", HttpStatus.BAD_REQUEST),
+    
+    // Attachment
+    ATTACHMENT_NOT_FOUND("ATTACHMENT_NOT_FOUND", "Attachment not found", HttpStatus.NOT_FOUND),
+    
+    // Worklog
+    WORKLOG_NOT_FOUND("WORKLOG_NOT_FOUND", "Worklog entry not found", HttpStatus.NOT_FOUND),
+    WORKLOG_HOURS_INVALID("WORKLOG_HOURS_INVALID", "Logged hours must be greater than zero", HttpStatus.BAD_REQUEST),
+    
+    // KPI
+    KPI_NOT_FOUND("KPI_NOT_FOUND", "KPI not found", HttpStatus.NOT_FOUND),
+    KPI_WEIGHT_INVALID("KPI_WEIGHT_INVALID", "Total weight of KPIs cannot exceed 1.0 (100%)", HttpStatus.BAD_REQUEST),
+    
+    // Performance Review
+    REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
+    REVIEW_PERIOD_DUPLICATE("REVIEW_PERIOD_DUPLICATE", "Review for this employee in this period already exists", HttpStatus.BAD_REQUEST),
+    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST);
+
     private String code;
     private String defaultMessage;
     private HttpStatus status;
