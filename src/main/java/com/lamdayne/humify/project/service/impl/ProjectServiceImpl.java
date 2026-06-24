@@ -49,7 +49,7 @@ public class ProjectServiceImpl implements ProjectService {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
-        if (projectRepository.existsByCompany_IdAndKey(companyId, request.getKey())) {
+        if (projectRepository.existsByCompanyIdAndKey(companyId, request.getKey())) {
             throw new AppException(ErrorCode.PROJECT_KEY_EXISTED);
         }
 
@@ -105,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public PageResponse<ProjectResponse> getProjectsByCompany(Long companyId, int page, int size, String... sorts) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
-        Page<Project> projects =projectRepository.findByCompany_Id(companyId, pageable);
+        Page<Project> projects =projectRepository.findByCompanyId(companyId, pageable);
         List<ProjectResponse> items = projects.stream().map(projectMapper::toResponse).toList();
 
         return PageResponse.<ProjectResponse>builder()

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    boolean existsByCompany_IdAndKey(Long companyId, String key);
+    boolean existsByCompanyIdAndKey(Long companyId, String key);
 
-    Page<Project> findByCompany_Id(Long companyId,Pageable pageable);
+    Page<Project> findByCompanyId(Long companyId,Pageable pageable);
 
 
 }

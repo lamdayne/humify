@@ -91,11 +91,9 @@ public class ProjectController {
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "PAGE_NO_INVALID")
             int page,
-
             @RequestParam(defaultValue = "10")
             @Min(value = 10, message = "PAGE_SIZE_INVALID")
             int size,
-
             @RequestParam(required = false)
             String... sorts
     ){
@@ -140,24 +138,4 @@ public class ProjectController {
 
     }
 
-    @GetMapping("/company/{companyId}")
-    public ResponseEntity<ApiResponse<PageResponse<ProjectResponse>>> getProjectByCompanyId(
-            @PathVariable Long companyId,
-            @RequestParam(defaultValue = "0")
-            @Min(value = 0,message = "PAGE_NO_INVALID")
-            int page,
-            @RequestParam(defaultValue = "10")
-            @Min(value = 10,message = "PAGE_SIZE_INVALID")
-            int size,
-            @RequestParam(required = false)
-            String... sorts
-    )
-    {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        SuccessCode.PROJECT_READ_SUCCESS,
-                        projectService.getProjectsByCompany(companyId,page,size,sorts)));
-
-
-    }
 }
