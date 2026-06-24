@@ -121,7 +121,9 @@ public enum ErrorCode {
     PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found", HttpStatus.NOT_FOUND),
     PROJECT_KEY_EXISTED("PROJECT_KEY_EXISTED", "Project key already exists in this company", HttpStatus.BAD_REQUEST),
     PROJECT_KEY_INVALID("PROJECT_KEY_INVALID", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
-    
+    PROJECT_ROLE_INVALID("PROJECT_ROLE_INVALID", "Project role invalid", HttpStatus.BAD_REQUEST),
+    PROJECT_ROLE_NOT_FOUND("PROJECT_ROLE_NOT_FOUND", "Project role not found", HttpStatus.NOT_FOUND),
+
     // Member
     MEMBER_ALREADY_EXISTS("MEMBER_ALREADY_EXISTS", "User is already a member of this project", HttpStatus.BAD_REQUEST),
     MEMBER_NOT_FOUND("MEMBER_NOT_FOUND", "Member not found in this project", HttpStatus.NOT_FOUND),
@@ -164,7 +166,9 @@ public enum ErrorCode {
     // Performance Review
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
     REVIEW_PERIOD_DUPLICATE("REVIEW_PERIOD_DUPLICATE", "Review for this employee in this period already exists", HttpStatus.BAD_REQUEST),
-    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST);
+    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST)
+
+    ;
 
     private String code;
     private String defaultMessage;

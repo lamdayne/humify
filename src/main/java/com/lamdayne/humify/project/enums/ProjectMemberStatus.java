@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public enum ProjectMemberStatus {
     ACTIVE,
-    PENDING_APPROVAL
+    PENDING_APPROVAL,
+    INACTIVE
 }

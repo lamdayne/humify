@@ -56,7 +56,8 @@ CREATE TYPE project_invitation_status AS ENUM (
 
 CREATE TYPE project_member_status AS ENUM (
     'ACTIVE',
-    'PENDING_APPROVAL'
+    'PENDING_APPROVAL',
+    'INACTIVE'
     );
 
 CREATE TYPE project_status AS ENUM (
