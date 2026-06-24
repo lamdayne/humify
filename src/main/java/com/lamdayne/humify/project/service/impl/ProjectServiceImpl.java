@@ -1,5 +1,6 @@
 package com.lamdayne.humify.project.service.impl;
 
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
@@ -32,8 +33,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
-
-
+    private final CompanyRepository companyRepository;
    private final ProjectRepository projectRepository;
    private final UserRepository userRepository;
    private final ProjectMapper projectMapper;
@@ -41,30 +41,23 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse createProject(CreateProjectRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         String email = authentication.getName(); // vì bạn dùng email làm login
-
         User creator = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Company company = creator.getCompany();
+        long companyId = CompanyContext.getCompanyId();
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
-        if (projectRepository.existsByCompany_IdAndKey(company.getId(), request.getKey())) {
+        if (projectRepository.existsByCompany_IdAndKey(companyId, request.getKey())) {
             throw new AppException(ErrorCode.PROJECT_KEY_EXISTED);
         }
+
         Project project = projectMapper.toEntity(request);
-        if (projectRepository.existsByCompany_IdAndKey(
-                company.getId(),
-                request.getKey()
-        )) {
-            throw new AppException(ErrorCode.PROJECT_KEY_EXISTED);
-        }
-
         project.setCompany(company);
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
         projectRepository.save(project);
-
         return projectMapper.toResponse(project);
     }
 
