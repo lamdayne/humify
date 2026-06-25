@@ -21,27 +21,6 @@ public class SprintController {
 
     private final SprintService sprintService;
 
-    @PostMapping("/projects/{projectId}/sprints")
-    public ResponseEntity<ApiResponse<SprintResponse>> createSprint(
-            @PathVariable Long projectId,
-            @Valid @RequestBody CreateSprintRequest request) {
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.SPRINT_CREATE_SUCCESS,
-                        sprintService.createSprint(projectId, request)
-                ));
-    }
-
-    @GetMapping("/projects/{projectId}/sprints")
-    public ResponseEntity<ApiResponse<List<SprintResponse>>> getSprints(
-            @PathVariable Long projectId,
-            @RequestParam(required = false) SprintStatus status) {
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.SPRINT_READ_SUCCESS,
-                        sprintService.getSprints(projectId, status)
-                ));
-    }
 
     @PutMapping("/sprints/{id}")
     public ResponseEntity<ApiResponse<SprintResponse>> updateSprint(

@@ -17,9 +17,8 @@ import com.lamdayne.humify.project.service.SprintService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class SprintServiceImpl implements SprintService {
         // Dùng mapper ở đây
         return sprints.stream()
                 .map(sprintMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -82,7 +81,7 @@ public class SprintServiceImpl implements SprintService {
         Sprint sprint = sprintRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SPRINT_NOT_FOUND));
 
-        SprintStatus newStatus = request.getStatus();
+        SprintStatus newStatus = SprintStatus.valueOf(request.getStatus());
 
         if (newStatus == SprintStatus.ACTIVE && sprint.getStatus() != SprintStatus.ACTIVE) {
             boolean hasActiveSprint = sprintRepository.existsByProjectIdAndStatus(
