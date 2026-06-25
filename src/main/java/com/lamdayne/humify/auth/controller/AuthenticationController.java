@@ -114,9 +114,14 @@ public class AuthenticationController {
 
     @GetMapping("/social-login")
     public ResponseEntity<ApiResponse<SocialLoginResposne>> socialLogin(
-            @RequestParam(name = "type",defaultValue = "google") String type
+            @RequestParam(name = "type", defaultValue = "google", required = false) String type
     ) {
-        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.GET_LOGIN_URL_SUCCESS));
+        return ResponseEntity.ok().body(
+                ApiResponse.success(
+                        SuccessCode.GET_LOGIN_URL_SUCCESS,
+                        authenticationService.generateLoginUrl(type)
+                )
+        );
     }
 
 }
