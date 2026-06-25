@@ -8,6 +8,7 @@ import com.lamdayne.humify.project.dto.request.UpdateColumnRequest;
 import com.lamdayne.humify.project.dto.response.BoardColumnResponse;
 import com.lamdayne.humify.project.entity.BoardColumn;
 import com.lamdayne.humify.project.entity.Project;
+import com.lamdayne.humify.project.enums.ColumnCategory;
 import com.lamdayne.humify.project.mapper.BoardColumnMapper;
 import com.lamdayne.humify.project.repository.BoardColumnRepository;
 import com.lamdayne.humify.project.repository.ProjectRepository;
@@ -52,7 +53,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         BoardColumn boardColumn = BoardColumn.builder()
                 .project(project)
                 .name(request.getName())
-                .category(request.getCategory())
+                .category(ColumnCategory.valueOf(request.getCategory()))
                 .position(newPosition)
                 .build();
 

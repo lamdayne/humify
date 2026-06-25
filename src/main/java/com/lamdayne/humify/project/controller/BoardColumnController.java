@@ -19,42 +19,6 @@ import java.util.List;
 public class BoardColumnController {
 
     private final BoardColumnService boardColumnService;
-
-    @GetMapping("/projects/{projectId}/columns")
-    public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> getColumns(
-            @PathVariable(name = "projectId") Long projectId
-    ) {
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.COLUMN_READ_SUCCESS,
-                        boardColumnService.getColumns(projectId)
-                ));
-    }
-
-    @PostMapping("/projects/{projectId}/columns")
-    public ResponseEntity<ApiResponse<BoardColumnResponse>> createColumn(
-            @PathVariable(name = "projectId") Long projectId,
-            @RequestBody @Valid CreateColumnRequest request
-    ) {
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.COLUMN_CREATE_SUCCESS,
-                        boardColumnService.createColumn(projectId, request)
-                ));
-    }
-
-    @PutMapping("/projects/{projectId}/columns/reorder")
-    public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> reorderColumns(
-            @PathVariable(name = "projectId") Long projectId,
-            @RequestBody @Valid ReorderColumnsRequest request
-    ) {
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.COLUMN_REORDER_SUCCESS,
-                        boardColumnService.reorderColumns(projectId, request)
-                ));
-    }
-
     @PutMapping("/columns/{id}")
     public ResponseEntity<ApiResponse<BoardColumnResponse>> updateColumn(
             @PathVariable(name = "id") Long id,

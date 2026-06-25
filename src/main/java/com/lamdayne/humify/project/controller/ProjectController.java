@@ -5,15 +5,9 @@
     import com.lamdayne.humify.common.response.PageResponse;
     import com.lamdayne.humify.common.response.SuccessCode;
     import com.lamdayne.humify.project.dto.request.*;
-    import com.lamdayne.humify.project.dto.response.InvitationResponse;
-    import com.lamdayne.humify.project.dto.response.ProjectMemberResponse;
-    import com.lamdayne.humify.project.dto.response.ProjectResponse;
-    import com.lamdayne.humify.project.dto.response.SprintResponse;
+    import com.lamdayne.humify.project.dto.response.*;
     import com.lamdayne.humify.project.enums.SprintStatus;
-    import com.lamdayne.humify.project.service.ProjectInvitationService;
-    import com.lamdayne.humify.project.service.ProjectMemberService;
-    import com.lamdayne.humify.project.service.ProjectService;
-    import com.lamdayne.humify.project.service.SprintService;
+    import com.lamdayne.humify.project.service.*;
     import jakarta.validation.Valid;
     import jakarta.validation.constraints.Min;
     import lombok.RequiredArgsConstructor;
@@ -34,6 +28,8 @@
         private final ProjectService projectService;
         private final ProjectInvitationService projectInvitationService;
         private final SprintService sprintService;
+        private final BoardColumnService boardColumnService;
+
 
         @PostMapping("/{projectId}/invitations")
         public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
@@ -178,5 +174,43 @@
                             sprintService.getSprints(projectId, status)
                     ));
         }
+
+        @GetMapping("/{projectId}/columns")
+        public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> getColumns(
+                @PathVariable(name = "projectId") Long projectId
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_READ_SUCCESS,
+                            boardColumnService.getColumns(projectId)
+                    ));
+        }
+
+        @PostMapping("/{projectId}/columns")
+        public ResponseEntity<ApiResponse<BoardColumnResponse>> createColumn(
+                @PathVariable(name = "projectId") Long projectId,
+                @RequestBody @Valid CreateColumnRequest request
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_CREATE_SUCCESS,
+                            boardColumnService.createColumn(projectId, request)
+                    ));
+        }
+
+        @PutMapping("/{projectId}/columns/reorder")
+        public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> reorderColumns(
+                @PathVariable(name = "projectId") Long projectId,
+                @RequestBody @Valid ReorderColumnsRequest request
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_REORDER_SUCCESS,
+                            boardColumnService.reorderColumns(projectId, request)
+                    ));
+        }
+
+
+
 
     }
