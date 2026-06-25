@@ -36,7 +36,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','DEPARTMENT_UPDATE', 'DEPARTMENT_FULL')")
     public ResponseEntity<ApiResponse<DepartmentResponse>> updateDepartment(@PathVariable Long id,
                                                                             @RequestBody @Valid UpdateDepartmentRequest request) {
         return ResponseEntity
