@@ -140,9 +140,10 @@ public enum ErrorCode {
     
     // Sprint
     SPRINT_NOT_FOUND("SPRINT_NOT_FOUND", "Sprint not found", HttpStatus.NOT_FOUND),
+    SPRINT_NAME_REQUIRED("SPRINT_NAME_REQUIRED", "Sprint name is required", HttpStatus.BAD_REQUEST),
     SPRINT_STATUS_INVALID("SPRINT_STATUS_INVALID", "Invalid sprint status transition", HttpStatus.BAD_REQUEST),
     SPRINT_DATES_INVALID("SPRINT_DATES_INVALID", "End date must be after start date", HttpStatus.BAD_REQUEST),
-    
+    SPRINT_ALREADY_ACTIVE("SPRINT_ALREADY_ACTIVE", "There is already an active sprint in this project", HttpStatus.BAD_REQUEST),
     // Column
     COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
     COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
