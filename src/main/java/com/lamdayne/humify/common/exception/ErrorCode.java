@@ -147,6 +147,7 @@ public enum ErrorCode {
     // Column
     COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
     COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
+    COLUMN_REORDER_INVALID("COLUMN_REORDER_INVALID", "Column reorder request is invalid", HttpStatus.BAD_REQUEST),
     
     // Task
     TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found", HttpStatus.NOT_FOUND),
