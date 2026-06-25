@@ -3,9 +3,13 @@ package com.lamdayne.humify.project.controller;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
+import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
 import com.lamdayne.humify.project.dto.request.UpdateMemberRoleRequest;
+import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
 import com.lamdayne.humify.project.dto.response.ProjectMemberResponse;
+import com.lamdayne.humify.project.dto.response.ProjectResponse;
 import com.lamdayne.humify.project.service.ProjectMemberService;
+import com.lamdayne.humify.project.service.ProjectService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
 
     private final ProjectMemberService projectMemberService;
+    private final ProjectService projectService;
 
     @GetMapping("/{projectId}/members")
     public ResponseEntity<ApiResponse<PageResponse<ProjectMemberResponse>>> findAllMemberByProjectId(
@@ -65,6 +70,67 @@ public class ProjectController {
                         SuccessCode.MEMBER_APPROVE_SUCCESS,
                         projectMemberService.approveMember(projectId, userId)
                 ));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ProjectResponse>>  createProject(
+            @RequestBody @Valid CreateProjectRequest request
+    ){
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_CREATE_SUCCESS,
+                        projectService.createProject(request)
+                ));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<ProjectResponse>>> getAllProjects(
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "PAGE_NO_INVALID")
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Min(value = 10, message = "PAGE_SIZE_INVALID")
+            int size,
+            @RequestParam(required = false)
+            String... sorts
+    ){
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_READ_SUCCESS,
+                        projectService.getAllProject(page, size, sorts)
+                ));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(
+            @PathVariable long id
+    ){
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_READ_SUCCESS,
+                        projectService.getById(id)
+                ));
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
+            @PathVariable long id, @RequestBody @Valid UpdateProjectRequest request
+    ){
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_UPDATE_SUCCESS,
+                        projectService.updateProject(id, request)
+                ));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteProject(
+            @PathVariable long id
+    ){
+        projectService.deleteProject(id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.PROJECT_DELETE_SUCCESS));
     }
 
 }

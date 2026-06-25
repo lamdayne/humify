@@ -59,7 +59,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         ProjectMember projectMember = projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
 
-        ProjectRole projectRole = projectRoleRepository.findByName(request.getCode().name())
+        ProjectRole projectRole = projectRoleRepository.findByName(request.getCode())
                         .orElseThrow(() -> new AppException(ErrorCode.PROJECT_ROLE_NOT_FOUND));
 
         projectMember.setProjectRole(projectRole);
