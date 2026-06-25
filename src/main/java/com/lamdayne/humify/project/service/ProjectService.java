@@ -6,17 +6,17 @@ import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
 import com.lamdayne.humify.project.dto.response.ProjectResponse;
 
 public interface ProjectService {
+
     ProjectResponse createProject(CreateProjectRequest request);
+
     PageResponse<ProjectResponse> getAllProject(int page, int size, String... sorts);
+
     ProjectResponse getById(Long id);
+
     ProjectResponse updateProject(Long id, UpdateProjectRequest request);
+
     void deleteProject(Long id);
 
-    PageResponse<ProjectResponse> getProjectsByCompany(
-            Long companyId,
-            int page,
-            int size,
-            String... sorts);
+    PageResponse<ProjectResponse> getProjectsByCompany(Long companyId, int page, int size, String... sorts);
 
-
-};
+}

@@ -14,6 +14,6 @@ import java.io.Serializable;
 public class UpdateMemberRoleRequest implements Serializable {
 
     @EnumValue(name = "project_role_code", message = "PROJECT_ROLE_INVALID", enumClass = ProjectRoleCode.class)
-    private ProjectRoleCode code;
+    private String code;
 
 }

@@ -123,6 +123,9 @@ public enum ErrorCode {
     PROJECT_KEY_INVALID("PROJECT_KEY_INVALID", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
     PROJECT_ROLE_INVALID("PROJECT_ROLE_INVALID", "Project role invalid", HttpStatus.BAD_REQUEST),
     PROJECT_ROLE_NOT_FOUND("PROJECT_ROLE_NOT_FOUND", "Project role not found", HttpStatus.NOT_FOUND),
+    PROJECT_NAME_REQUIRED("PROJECT_NAME_REQUIRED", "Project name can not blank", HttpStatus.BAD_REQUEST),
+    PROJECT_KEY_REQUIRED("PROJECT_KEY_REQUIRED", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
+    PROJECT_STATUS_INVALID("PROJECT_STATUS_INVALID", "Project status is invalid", HttpStatus.BAD_REQUEST),
 
     // Member
     MEMBER_ALREADY_EXISTS("MEMBER_ALREADY_EXISTS", "User is already a member of this project", HttpStatus.BAD_REQUEST),
