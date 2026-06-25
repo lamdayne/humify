@@ -33,7 +33,6 @@
         private final ProjectInvitationService projectInvitationService;
 
         @PostMapping("/{projectId}/invitations")
-        @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_FULL') or @projectSecurityExpression.isManager(#projectId)")
         public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
                 @PathVariable Long projectId,
                 @AuthenticationPrincipal UserPrincipal userPrincipal,

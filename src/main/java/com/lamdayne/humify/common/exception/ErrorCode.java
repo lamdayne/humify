@@ -136,6 +136,7 @@ public enum ErrorCode {
     INVITATION_EXPIRED("INVITATION_EXPIRED", "Invitation link has expired", HttpStatus.BAD_REQUEST),
     INVITATION_REVOKED("INVITATION_REVOKED", "Invitation link has been revoked", HttpStatus.BAD_REQUEST),
     INVITATION_EMAIL_MISMATCH("INVITATION_EMAIL_MISMATCH", "Authenticated email does not match invited email", HttpStatus.FORBIDDEN),
+    INVITATION_TOKEN_REQUIRED("INVITATION_TOKEN_REQUIRED", "Invitation token is required", HttpStatus.BAD_REQUEST),
     
     // Sprint
     SPRINT_NOT_FOUND("SPRINT_NOT_FOUND", "Sprint not found", HttpStatus.NOT_FOUND),
