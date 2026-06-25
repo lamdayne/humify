@@ -3,6 +3,7 @@ package com.lamdayne.humify.auth.controller;
 import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
+import com.lamdayne.humify.auth.dto.response.SocialLoginResposne;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
 import com.lamdayne.humify.auth.dto.response.UserMeResponse;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
@@ -109,6 +110,13 @@ public class AuthenticationController {
                         SuccessCode.GET_MY_INFO_SUCCESS,
                         authenticationService.me(user)
                 ));
+    }
+
+    @GetMapping("/social-login")
+    public ResponseEntity<ApiResponse<SocialLoginResposne>> socialLogin(
+            @RequestParam(name = "type",defaultValue = "google") String type
+    ) {
+        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.GET_LOGIN_URL_SUCCESS));
     }
 
 }

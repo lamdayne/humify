@@ -18,6 +18,7 @@ public enum SuccessCode {
     VERIFY_COMPANY_SUCCESS("VERIFY_COMPANY_SUCCESS", "Verify Company Success"),
     RESEND_EMAIL_SUCCESS("RESEND_EMAIL_SUCCESS", "Resend Email Success"),
     GET_MY_INFO_SUCCESS("GET_MY_INFO_SUCCESS", "Get My Info Success"),
+    GET_LOGIN_URL_SUCCESS("GET_LOGIN_URL_SUCCESS", "Get Login Url Success"),
 
     // Company
     COMPANY_CREATE_SUCCESS("COMPANY_CREATE_SUCCESS", "Company created successfully"),
