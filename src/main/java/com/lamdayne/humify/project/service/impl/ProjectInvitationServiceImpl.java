@@ -107,6 +107,7 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
                 .roleCode(invitation.getProjectRole().getCode())
                 .roleName(invitation.getProjectRole().getName())
                 .email(invitation.getEmail())
+                .companyCode(invitation.getProject().getCompany().getCompanyCode())
                 .build();
     }
 

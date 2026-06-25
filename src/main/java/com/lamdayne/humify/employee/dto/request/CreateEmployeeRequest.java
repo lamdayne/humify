@@ -4,7 +4,6 @@ import com.lamdayne.humify.common.validator.EmailPattern;
 import com.lamdayne.humify.common.validator.EnumValue;
 import com.lamdayne.humify.employee.enums.EmployeeStatus;
 import com.lamdayne.humify.employee.enums.Gender;
-import com.lamdayne.humify.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -646,11 +646,17 @@ POLICY tenant_isolation ON positions
 
 CREATE
 POLICY tenant_isolation ON projects
-    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
 
 CREATE
 POLICY tenant_isolation ON tasks
-    USING (company_id = current_setting('app.company_id', true)::BIGINT);
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
 
 CREATE
 USER app_user WITH PASSWORD 'secret';

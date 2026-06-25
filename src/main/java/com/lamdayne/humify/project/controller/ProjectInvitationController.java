@@ -1,6 +1,7 @@
 package com.lamdayne.humify.project.controller;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.project.dto.request.AcceptInvitationRequest;
@@ -25,9 +26,14 @@ public class ProjectInvitationController {
     public ResponseEntity<ApiResponse<ValidateInvitationResponse>> validateInvitation(
             @RequestParam String token
     ) {
-        ValidateInvitationResponse response = projectInvitationService.validateInvitation(token);
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(SuccessCode.INVITATION_VALIDATE_SUCCESS, response));
+        try {
+            CompanyContext.setAdmin(true);
+            ValidateInvitationResponse response = projectInvitationService.validateInvitation(token);
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(SuccessCode.INVITATION_VALIDATE_SUCCESS, response));
+        } finally {
+            CompanyContext.clear();
+        }
     }
 
     @PostMapping("/accept")

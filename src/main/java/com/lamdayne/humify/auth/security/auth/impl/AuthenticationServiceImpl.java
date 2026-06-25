@@ -203,10 +203,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
+        String companyCode = null;
+        if (user.getCompanyId() != null) {
+            try {
+                companyCode = companyService.getCompanyById(user.getCompanyId()).getCompanyCode();
+            } catch (Exception ignored) {
+                log.warn("Company code not found");
+            }
+        }
+
         return UserMeResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .companyId(user.getCompanyId())
+                .companyCode(companyCode)
                 .permissions(permissions)
                 .build();
     }
