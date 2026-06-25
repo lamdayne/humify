@@ -9,7 +9,9 @@ import com.lamdayne.humify.project.dto.response.ValidateInvitationResponse;
 
 public interface ProjectInvitationService {
 
-    InvitationResponse createInvitation(Long projectId, CreateInvitationRequest request);
+    InvitationResponse createInvitation(Long projectId, UserPrincipal userPrincipal, CreateInvitationRequest request);
+
     ValidateInvitationResponse validateInvitation(String token);
+
     ProjectMemberResponse acceptInvitation(UserPrincipal userPrincipal, AcceptInvitationRequest request);
 }

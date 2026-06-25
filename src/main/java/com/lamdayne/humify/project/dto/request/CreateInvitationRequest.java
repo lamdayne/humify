@@ -8,11 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateInvitationRequest {
-
-    @Email(message = "EMAIL_INVALID")
     private String email;
 
-    @NotNull(message = "PROJECT_ROLE_NOT_FOUND")
+    @NotNull(message = "ROLE_ID_REQUIRED")
     private Long projectRoleId;
 
     private Long ttlMinutes = 10080L;
