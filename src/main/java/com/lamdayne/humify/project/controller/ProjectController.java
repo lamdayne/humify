@@ -3,7 +3,6 @@ package com.lamdayne.humify.project.controller;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
-import com.lamdayne.humify.company.dto.response.CompanyResponse;
 import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
 import com.lamdayne.humify.project.dto.request.UpdateMemberRoleRequest;
 import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
@@ -12,10 +11,8 @@ import com.lamdayne.humify.project.dto.response.ProjectResponse;
 import com.lamdayne.humify.project.service.ProjectMemberService;
 import com.lamdayne.humify.project.service.ProjectService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -116,7 +113,7 @@ public class ProjectController {
 
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
             @PathVariable long id, @RequestBody @Valid UpdateProjectRequest request
     ){
@@ -127,15 +124,13 @@ public class ProjectController {
                 ));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProject(
             @PathVariable long id
     ){
         projectService.deleteProject(id);
         return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.PROJECT_DELETE_SUCCESS));
-
+                .body(ApiResponse.success(SuccessCode.PROJECT_DELETE_SUCCESS));
     }
 
 }

@@ -92,14 +92,12 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
 
         return projectMapper.toResponse(project);
-
     }
 
     @Override
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
         projectRepository.delete(project);
-
     }
 
     @Override
