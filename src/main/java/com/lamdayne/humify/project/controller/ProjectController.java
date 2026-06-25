@@ -4,16 +4,10 @@
     import com.lamdayne.humify.common.response.ApiResponse;
     import com.lamdayne.humify.common.response.PageResponse;
     import com.lamdayne.humify.common.response.SuccessCode;
-    import com.lamdayne.humify.project.dto.request.CreateInvitationRequest;
-    import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
-    import com.lamdayne.humify.project.dto.request.UpdateMemberRoleRequest;
-    import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
-    import com.lamdayne.humify.project.dto.response.InvitationResponse;
-    import com.lamdayne.humify.project.dto.response.ProjectMemberResponse;
-    import com.lamdayne.humify.project.dto.response.ProjectResponse;
-    import com.lamdayne.humify.project.service.ProjectInvitationService;
-    import com.lamdayne.humify.project.service.ProjectMemberService;
-    import com.lamdayne.humify.project.service.ProjectService;
+    import com.lamdayne.humify.project.dto.request.*;
+    import com.lamdayne.humify.project.dto.response.*;
+    import com.lamdayne.humify.project.enums.SprintStatus;
+    import com.lamdayne.humify.project.service.*;
     import jakarta.validation.Valid;
     import jakarta.validation.constraints.Min;
     import lombok.RequiredArgsConstructor;
@@ -21,6 +15,8 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.web.bind.annotation.*;
+
+    import java.util.List;
 
     @RestController
     @RequiredArgsConstructor
@@ -30,6 +26,9 @@
         private final ProjectMemberService projectMemberService;
         private final ProjectService projectService;
         private final ProjectInvitationService projectInvitationService;
+        private final SprintService sprintService;
+        private final BoardColumnService boardColumnService;
+
 
         @PostMapping("/{projectId}/invitations")
         public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
@@ -152,5 +151,65 @@
             return ResponseEntity.ok()
                     .body(ApiResponse.success(SuccessCode.PROJECT_DELETE_SUCCESS));
         }
+
+        @PostMapping("/{projectId}/sprints")
+        public ResponseEntity<ApiResponse<SprintResponse>> createSprint(
+                @PathVariable Long projectId,
+                @Valid @RequestBody CreateSprintRequest request) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.SPRINT_CREATE_SUCCESS,
+                            sprintService.createSprint(projectId, request)
+                    ));
+        }
+
+        @GetMapping("/{projectId}/sprints")
+        public ResponseEntity<ApiResponse<List<SprintResponse>>> getSprints(
+                @PathVariable Long projectId,
+                @RequestParam(required = false) SprintStatus status) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.SPRINT_READ_SUCCESS,
+                            sprintService.getSprints(projectId, status)
+                    ));
+        }
+
+        @GetMapping("/{projectId}/columns")
+        public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> getColumns(
+                @PathVariable(name = "projectId") Long projectId
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_READ_SUCCESS,
+                            boardColumnService.getColumns(projectId)
+                    ));
+        }
+
+        @PostMapping("/{projectId}/columns")
+        public ResponseEntity<ApiResponse<BoardColumnResponse>> createColumn(
+                @PathVariable(name = "projectId") Long projectId,
+                @RequestBody @Valid CreateColumnRequest request
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_CREATE_SUCCESS,
+                            boardColumnService.createColumn(projectId, request)
+                    ));
+        }
+
+        @PutMapping("/{projectId}/columns/reorder")
+        public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> reorderColumns(
+                @PathVariable(name = "projectId") Long projectId,
+                @RequestBody @Valid ReorderColumnsRequest request
+        ) {
+            return ResponseEntity.ok()
+                    .body(ApiResponse.success(
+                            SuccessCode.COLUMN_REORDER_SUCCESS,
+                            boardColumnService.reorderColumns(projectId, request)
+                    ));
+        }
+
+
+
 
     }
