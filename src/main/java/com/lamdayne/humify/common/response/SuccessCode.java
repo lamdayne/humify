@@ -79,6 +79,7 @@ public enum SuccessCode {
     MEMBER_UPDATE_ROLE_SUCCESS("MEMBER_UPDATE_ROLE_SUCCESS", "Member role updated successfully"),
     MEMBER_REMOVE_SUCCESS("MEMBER_REMOVE_SUCCESS", "Member removed from project successfully"),
     MEMBER_APPROVE_SUCCESS("MEMBER_APPROVE_SUCCESS", "Member approved successfully"),
+    MEMBER_JOIN_SUCCESS("MEMBER_JOIN_SUCCESS", "Member joined successfully"),
     
     // Invitation
     INVITATION_CREATE_SUCCESS("INVITATION_CREATE_SUCCESS", "Invitation link generated successfully"),
