@@ -147,17 +147,26 @@ public enum ErrorCode {
     SPRINT_STATUS_INVALID("SPRINT_STATUS_INVALID", "Invalid sprint status transition", HttpStatus.BAD_REQUEST),
     SPRINT_DATES_INVALID("SPRINT_DATES_INVALID", "End date must be after start date", HttpStatus.BAD_REQUEST),
     SPRINT_ALREADY_ACTIVE("SPRINT_ALREADY_ACTIVE", "There is already an active sprint in this project", HttpStatus.BAD_REQUEST),
+    SPRINT_ID_REQUIRED("SPRINT_ID_REQUIRED", "Sprint id is required", HttpStatus.BAD_REQUEST),
+
     // Column
     COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
     COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
     COLUMN_REORDER_INVALID("COLUMN_REORDER_INVALID", "Column reorder request is invalid", HttpStatus.BAD_REQUEST),
     COLUMN_CATEGORY_INVALID("COLUMN_CATEGORY_INVALID", "Column category is invalid", HttpStatus.BAD_REQUEST),
     COLUMN_NAME_REQUIRED("COLUMN_NAME_REQUIRED", "Column name is required", HttpStatus.BAD_REQUEST),
+    COLUMN_ID_REQUIRED("COLUMN_ID_REQUIRED", "Column id is required", HttpStatus.BAD_REQUEST),
 
     // Task
     TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found", HttpStatus.NOT_FOUND),
     TASK_PARENT_LOOP("TASK_PARENT_LOOP", "Task cannot be a sub-task of itself or create loops", HttpStatus.BAD_REQUEST),
     TASK_ESTIMATE_INVALID("TASK_ESTIMATE_INVALID", "Estimated hours or story points must be positive", HttpStatus.BAD_REQUEST),
+    TASK_TITLE_REQUIRED("TASK_TITLE_REQUIRED", "Task title is required", HttpStatus.BAD_REQUEST),
+    TASK_PRIORITY_INVALID("TASK_PRIORITY_INVALID", "Task priority is invalid", HttpStatus.BAD_REQUEST),
+    TASK_TYPE_INVALID("TASK_TYPE_INVALID", "Task type is invalid", HttpStatus.BAD_REQUEST),
+    TASK_POINTS_INVALID("TASK_POINTS_INVALID", "Task points is invalid", HttpStatus.BAD_REQUEST),
+    TASK_ESTIMATED_HOURS_INVALID("TASK_ESTIMATED_HOURS_INVALID", "Estimated hours or story points is invalid", HttpStatus.BAD_REQUEST),
+    TASK_DUE_DATE_MUST_BE_FUTURE("TASK_DUE_DATE_MUST_BE_FUTURE", "Task due date must be future", HttpStatus.BAD_REQUEST),
     
     // Comment
     COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", HttpStatus.NOT_FOUND),
