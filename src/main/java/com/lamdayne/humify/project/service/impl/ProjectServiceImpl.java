@@ -11,9 +11,15 @@ import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
 import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
 import com.lamdayne.humify.project.dto.response.ProjectResponse;
 import com.lamdayne.humify.project.entity.Project;
+import com.lamdayne.humify.project.entity.ProjectMember;
+import com.lamdayne.humify.project.entity.ProjectRole;
+import com.lamdayne.humify.project.enums.ProjectMemberStatus;
+import com.lamdayne.humify.project.enums.ProjectRoleCode;
 import com.lamdayne.humify.project.enums.ProjectStatus;
 import com.lamdayne.humify.project.mapper.ProjectMapper;
+import com.lamdayne.humify.project.repository.ProjectMemberRepository;
 import com.lamdayne.humify.project.repository.ProjectRepository;
+import com.lamdayne.humify.project.repository.ProjectRoleRepository;
 import com.lamdayne.humify.project.service.ProjectService;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.repository.UserRepository;
@@ -33,10 +39,13 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
+
+    private final ProjectMapper projectMapper;
+    private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
-   private final ProjectRepository projectRepository;
-   private final UserRepository userRepository;
-   private final ProjectMapper projectMapper;
+    private final ProjectRepository projectRepository;
+    private final ProjectRoleRepository projectRoleRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectResponse createProject(CreateProjectRequest request) {
@@ -57,7 +66,20 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCompany(company);
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
-        projectRepository.save(project);
+        project = projectRepository.save(project);
+
+        ProjectRole projectRole = projectRoleRepository.findByName(ProjectRoleCode.MANAGER.name())
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_ROLE_NOT_FOUND));
+
+        ProjectMember projectMember = ProjectMember.builder()
+                .project(project)
+                .projectRole(projectRole)
+                .status(ProjectMemberStatus.ACTIVE)
+                .user(creator)
+                .build();
+
+        projectMemberRepository.save(projectMember);
+
         return projectMapper.toResponse(project);
     }
 
@@ -103,7 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public PageResponse<ProjectResponse> getProjectsByCompany(Long companyId, int page, int size, String... sorts) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
-        Page<Project> projects =projectRepository.findByCompanyId(companyId, pageable);
+        Page<Project> projects = projectRepository.findByCompanyId(companyId, pageable);
         List<ProjectResponse> items = projects.stream().map(projectMapper::toResponse).toList();
 
         return PageResponse.<ProjectResponse>builder()

@@ -151,7 +151,9 @@ public enum ErrorCode {
     COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
     COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
     COLUMN_REORDER_INVALID("COLUMN_REORDER_INVALID", "Column reorder request is invalid", HttpStatus.BAD_REQUEST),
-    
+    COLUMN_CATEGORY_INVALID("COLUMN_CATEGORY_INVALID", "Column category is invalid", HttpStatus.BAD_REQUEST),
+    COLUMN_NAME_REQUIRED("COLUMN_NAME_REQUIRED", "Column name is required", HttpStatus.BAD_REQUEST),
+
     // Task
     TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found", HttpStatus.NOT_FOUND),
     TASK_PARENT_LOOP("TASK_PARENT_LOOP", "Task cannot be a sub-task of itself or create loops", HttpStatus.BAD_REQUEST),
