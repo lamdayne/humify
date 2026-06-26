@@ -22,5 +22,5 @@ public class UpdateColumnRequest implements Serializable {
             message = "COLUMN_CATEGORY_INVALID",
             enumClass = ColumnCategory.class
     )
-    private ColumnCategory category;
+    private String category;
 }

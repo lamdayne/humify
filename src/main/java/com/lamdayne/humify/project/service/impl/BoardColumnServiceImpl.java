@@ -67,7 +67,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 .orElseThrow(() -> new AppException(ErrorCode.COLUMN_NOT_FOUND));
 
         boardColumn.setName(request.getName());
-        boardColumn.setCategory(request.getCategory());
+        boardColumn.setCategory(ColumnCategory.valueOf(request.getCategory()));
 
         return boardColumnMapper.toBoardColumnResponse(boardColumnRepository.save(boardColumn));
     }
