@@ -220,7 +220,7 @@ CREATE TABLE users
     company_id  BIGINT,
     employee_id BIGINT,
     email       VARCHAR(255) NOT NULL,
-    password    VARCHAR(255) NOT NULL,
+    password    VARCHAR(255) NULL,
     is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -242,6 +242,21 @@ CREATE UNIQUE INDEX uq_users_employee
     ON users (employee_id) WHERE deleted_at IS NULL;
 
 CREATE INDEX idx_users_company_id ON users (company_id);
+
+-- Table: user_social_accounts
+
+CREATE TABLE user_social_accounts
+(
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     BIGINT       NOT NULL,
+    company_id  BIGINT       NOT NULL,
+    provider    VARCHAR(50)  NOT NULL,
+    provider_id VARCHAR(255) NOT NULL,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT fk_user_social_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_user_social_company_id FOREIGN KEY (company_id) REFERENCES companies (id),
+    CONSTRAINT uq_user_social_provider UNIQUE (company_id, provider, provider_id)
+);
 
 -- Table: attendances
 
@@ -592,6 +607,8 @@ ALTER TABLE projects
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks
     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_social_accounts
+    ENABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
 CREATE
@@ -653,6 +670,13 @@ POLICY tenant_isolation ON projects
 
 CREATE
 POLICY tenant_isolation ON tasks
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON user_social_accounts
     USING (
         current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT

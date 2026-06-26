@@ -17,4 +17,6 @@ public interface RoleAccessService {
 
     void assignCompanyAdmin(User user);
 
+    void assignEmployeeRole(User user);
+
 }

@@ -28,7 +28,6 @@ public class User extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Builder.Default

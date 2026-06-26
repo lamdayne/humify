@@ -1,5 +1,6 @@
 package com.lamdayne.humify.auth.entity;
 
+import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class UserSocialAccount {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
     @Column(nullable = false, length = 50)
     private String provider;

@@ -7,6 +7,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
+import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
@@ -179,5 +180,23 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findByEmailAndCompanyId(String email, Long companyId) {
+        return userRepository.findByEmailAndCompanyId(email, companyId);
+    }
+
+    @Override
+    @Transactional
+    public User createUser(String email, Company company) {
+        User user = User.builder()
+                .email(email)
+                .password(null)
+                .company(company)
+                .active(true)
+                .build();
+
+        return userRepository.save(user);
     }
 }

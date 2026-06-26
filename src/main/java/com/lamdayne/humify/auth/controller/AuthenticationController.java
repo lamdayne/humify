@@ -3,10 +3,12 @@ package com.lamdayne.humify.auth.controller;
 import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
+import com.lamdayne.humify.auth.dto.request.SocialLoginRequest;
 import com.lamdayne.humify.auth.dto.response.SocialLoginResposne;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
 import com.lamdayne.humify.auth.dto.response.UserMeResponse;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
+import com.lamdayne.humify.auth.security.oauth2.GoogleOAuthService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.response.ApiResponse;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final GoogleOAuthService googleOAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<TokenResponse>> login(@RequestBody @Valid SignInRequest request) {
@@ -120,6 +123,18 @@ public class AuthenticationController {
                 ApiResponse.success(
                         SuccessCode.GET_LOGIN_URL_SUCCESS,
                         authenticationService.generateLoginUrl(type)
+                )
+        );
+    }
+
+    @PostMapping("/social/callback")
+    public ResponseEntity<ApiResponse<TokenResponse>> socialCallback(
+            @RequestBody @Valid SocialLoginRequest request
+    ) {
+        return ResponseEntity.ok().body(
+                ApiResponse.success(
+                        SuccessCode.LOGIN_SUCCESS,
+                        googleOAuthService.authenticateAndFetchProfile(request)
                 )
         );
     }

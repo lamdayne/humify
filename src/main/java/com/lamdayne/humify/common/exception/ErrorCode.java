@@ -87,6 +87,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED("TOKEN_EXPIRED", "Token is expired", HttpStatus.BAD_REQUEST),
     COMPANY_ALREADY_ACTIVE("COMPANY_ALREADY_ACTIVE", "Company already active", HttpStatus.BAD_REQUEST),
     TOKEN_NOT_EXPIRED("TOKEN_NOT_EXPIRED", "Token is not expired", HttpStatus.BAD_REQUEST),
+    EXCHANGE_FAILED("EXCHANGE_FAILED", "Exchange failed", HttpStatus.BAD_REQUEST),
+    ID_TOKEN_INVALID("ID_TOKEN_INVALID", "ID token is invalid", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),

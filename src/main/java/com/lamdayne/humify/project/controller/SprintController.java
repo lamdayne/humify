@@ -17,7 +17,6 @@ public class SprintController {
 
     private final SprintService sprintService;
 
-
     @PutMapping("/sprints/{id}")
     public ResponseEntity<ApiResponse<SprintResponse>> updateSprint(
             @PathVariable Long id,
