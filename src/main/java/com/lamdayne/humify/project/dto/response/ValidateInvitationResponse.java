@@ -14,4 +14,5 @@ public class ValidateInvitationResponse {
     private String roleCode;
     private String roleName;
     private String email;
+    private String companyCode;
 }

@@ -3,6 +3,7 @@ package com.lamdayne.humify.auth.security.auth;
 import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
+import com.lamdayne.humify.auth.dto.response.SocialLoginResposne;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
 import com.lamdayne.humify.auth.dto.response.UserMeResponse;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
@@ -25,5 +26,7 @@ public interface AuthenticationService {
     void resendVerifyCompany(HttpServletRequest request);
 
     UserMeResponse me(UserPrincipal user);
+
+    SocialLoginResposne generateLoginUrl(String type);
 
 }

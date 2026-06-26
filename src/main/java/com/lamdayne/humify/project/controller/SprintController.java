@@ -2,25 +2,20 @@ package com.lamdayne.humify.project.controller;
 
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
-import com.lamdayne.humify.project.dto.request.CreateSprintRequest;
 import com.lamdayne.humify.project.dto.request.UpdateSprintRequest;
 import com.lamdayne.humify.project.dto.request.UpdateSprintStatusRequest;
 import com.lamdayne.humify.project.dto.response.SprintResponse;
-import com.lamdayne.humify.project.enums.SprintStatus;
 import com.lamdayne.humify.project.service.SprintService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class SprintController {
 
     private final SprintService sprintService;
-
 
     @PutMapping("/sprints/{id}")
     public ResponseEntity<ApiResponse<SprintResponse>> updateSprint(

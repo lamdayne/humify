@@ -288,4 +288,19 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
         userHasRoleRepository.save(userHasRole);
     }
 
+    @Override
+    @Transactional
+    public void assignEmployeeRole(User user) {
+        Role role = roleRepository.findByName(SystemRole.EMPLOYEE.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        UserHasRole userHasRole = UserHasRole.builder()
+                .role(role)
+                .user(user)
+                .company(user.getCompany())
+                .build();
+
+        userHasRoleRepository.save(userHasRole);
+    }
+
 }

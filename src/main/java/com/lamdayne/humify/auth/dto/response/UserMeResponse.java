@@ -11,5 +11,6 @@ public class UserMeResponse {
     private Long id;
     private String email;
     private Long companyId;
+    private String companyCode;
     private List<String> permissions;
 }

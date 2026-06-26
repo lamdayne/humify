@@ -2,8 +2,6 @@ package com.lamdayne.humify.project.controller;
 
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
-import com.lamdayne.humify.project.dto.request.CreateColumnRequest;
-import com.lamdayne.humify.project.dto.request.ReorderColumnsRequest;
 import com.lamdayne.humify.project.dto.request.UpdateColumnRequest;
 import com.lamdayne.humify.project.dto.response.BoardColumnResponse;
 import com.lamdayne.humify.project.service.BoardColumnService;
@@ -11,8 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

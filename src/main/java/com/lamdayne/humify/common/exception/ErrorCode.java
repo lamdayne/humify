@@ -30,6 +30,7 @@ public enum ErrorCode {
     BRANCH_FIELD_REQUIRED("BRANCH_FIELD_REQUIRED", "Branch field cannot be blank", HttpStatus.BAD_REQUEST),
     BRANCH_CODE_EXISTED("BRANCH_CODE_EXISTED", "Branch code already exists in this company", HttpStatus.BAD_REQUEST),
     BRANCH_ID_INVALID("BRANCH_ID_INVALID", "Branch ID is invalid", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_PROVIDER("UNSUPPORTED_PROVIDER", "Unsupported provider", HttpStatus.BAD_REQUEST),
 
     // Position
     POSITION_NAME_REQUIRED("POSITION_NAME_REQUIRED", "Position name cannot be blank", HttpStatus.BAD_REQUEST),
@@ -86,6 +87,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED("TOKEN_EXPIRED", "Token is expired", HttpStatus.BAD_REQUEST),
     COMPANY_ALREADY_ACTIVE("COMPANY_ALREADY_ACTIVE", "Company already active", HttpStatus.BAD_REQUEST),
     TOKEN_NOT_EXPIRED("TOKEN_NOT_EXPIRED", "Token is not expired", HttpStatus.BAD_REQUEST),
+    EXCHANGE_FAILED("EXCHANGE_FAILED", "Exchange failed", HttpStatus.BAD_REQUEST),
+    ID_TOKEN_INVALID("ID_TOKEN_INVALID", "ID token is invalid", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),

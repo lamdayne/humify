@@ -2,11 +2,14 @@ package com.lamdayne.humify.user.service;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.entity.User;
+
+import java.util.Optional;
 
 public interface UserService {
 
@@ -27,5 +30,9 @@ public interface UserService {
     void changePassword(Long id, ChangePasswordRequest request, UserPrincipal userPrincipal);
 
     void resetPassword(Long id, String newPassword);
+
+    Optional<User> findByEmailAndCompanyId(String email, Long companyId);
+
+    User createUser(String email, Company company);
 
 }
