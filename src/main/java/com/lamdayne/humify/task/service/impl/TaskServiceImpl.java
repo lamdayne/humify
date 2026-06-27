@@ -126,24 +126,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse updateTask(UpdateTaskRequest request) {
+    public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
         return null;
     }
 
     @Override
-    public TaskResponse assignTask(AssignTaskRequest request) {
+    public TaskResponse assignTask(Long taskId, AssignTaskRequest request) {
         return null;
     }
 
     @Override
-    public TaskResponse moveTask(MoveTaskRequest request) {
+    public TaskResponse moveTask(Long taskId, MoveTaskRequest request) {
         return null;
     }
 
     @Override
     public void deleteTask(Long id) {
-
+        Task task = taskRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+        taskRepository.delete(task);
     }
-
 
 }

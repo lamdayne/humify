@@ -17,11 +17,11 @@ public interface TaskService {
 
     TaskDetailResponse getTaskById(Long id);
 
-    TaskResponse updateTask(UpdateTaskRequest request);
+    TaskResponse updateTask(Long taskId, UpdateTaskRequest request);
 
-    TaskResponse assignTask(AssignTaskRequest request);
+    TaskResponse assignTask(Long taskId, AssignTaskRequest request);
 
-    TaskResponse moveTask(MoveTaskRequest request);
+    TaskResponse moveTask(Long taskId, MoveTaskRequest request);
 
     void deleteTask(Long id);
 
