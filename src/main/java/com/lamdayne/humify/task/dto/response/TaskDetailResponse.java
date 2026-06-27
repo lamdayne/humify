@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class TaskDetailResponse {
     private Long id;
     private Long projectId;

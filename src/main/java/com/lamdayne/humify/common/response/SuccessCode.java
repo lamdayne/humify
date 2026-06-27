@@ -108,6 +108,7 @@ public enum SuccessCode {
     TASK_DELETE_SUCCESS("TASK_DELETE_SUCCESS", "Task deleted successfully"),
     TASK_MOVE_SUCCESS("TASK_MOVE_SUCCESS", "Task moved successfully"),
     TASK_ASSIGN_SUCCESS("TASK_ASSIGN_SUCCESS", "Task assigned successfully"),
+    TASK_REORDER_SUCCESS("TASK_REORDER_SUCCESS", "Task reordered successfully"),
     
     // Comment
     COMMENT_CREATE_SUCCESS("COMMENT_CREATE_SUCCESS", "Comment posted successfully"),

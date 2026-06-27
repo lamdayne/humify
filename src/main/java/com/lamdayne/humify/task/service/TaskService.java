@@ -2,10 +2,7 @@ package com.lamdayne.humify.task.service;
 
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.PageResponse;
-import com.lamdayne.humify.task.dto.request.AssignTaskRequest;
-import com.lamdayne.humify.task.dto.request.CreateTaskRequest;
-import com.lamdayne.humify.task.dto.request.MoveTaskRequest;
-import com.lamdayne.humify.task.dto.request.UpdateTaskRequest;
+import com.lamdayne.humify.task.dto.request.*;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 
@@ -24,5 +21,7 @@ public interface TaskService {
     TaskResponse moveTask(Long taskId, MoveTaskRequest request);
 
     void deleteTask(Long id);
+
+    TaskResponse reorderTask(Long taskId, ReorderTaskRequest request);
 
 }

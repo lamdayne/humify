@@ -8,6 +8,9 @@ import com.lamdayne.humify.project.dto.request.*;
 import com.lamdayne.humify.project.dto.response.*;
 import com.lamdayne.humify.project.enums.SprintStatus;
 import com.lamdayne.humify.project.service.*;
+import com.lamdayne.humify.task.dto.request.CreateTaskRequest;
+import com.lamdayne.humify.task.dto.response.TaskResponse;
+import com.lamdayne.humify.task.service.TaskService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +26,12 @@ import java.util.List;
 @RequestMapping("/projects")
 public class ProjectController {
 
-    private final ProjectMemberService projectMemberService;
-    private final ProjectService projectService;
-    private final ProjectInvitationService projectInvitationService;
+    private final TaskService taskService;
     private final SprintService sprintService;
+    private final ProjectService projectService;
     private final BoardColumnService boardColumnService;
+    private final ProjectMemberService projectMemberService;
+    private final ProjectInvitationService projectInvitationService;
 
 
     @PostMapping("/{projectId}/invitations")
@@ -205,6 +209,33 @@ public class ProjectController {
                 .body(ApiResponse.success(
                         SuccessCode.COLUMN_REORDER_SUCCESS,
                         boardColumnService.reorderColumns(projectId, request)
+                ));
+    }
+
+    @PostMapping("/{projectId}/tasks")
+    public ResponseEntity<ApiResponse<TaskResponse>> createTask(
+            @PathVariable Long projectId,
+            @RequestBody @Valid CreateTaskRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        SuccessCode.TASK_CREATE_SUCCESS,
+                        taskService.createTask(userPrincipal, projectId, request)
+                ));
+    }
+
+    @GetMapping("/{projectId}/tasks")
+    public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(
+            @PathVariable Long projectId,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "PAGE_NO_INVALID") int page,
+            @RequestParam(defaultValue = "10") @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
+            @RequestParam(required = false) String... sorts
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.TASK_READ_SUCCESS,
+                        taskService.getTaskByProjectId(projectId, page, size, sorts)
                 ));
     }
 
