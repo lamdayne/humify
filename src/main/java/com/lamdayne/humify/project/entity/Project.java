@@ -32,6 +32,10 @@ public class Project extends BaseEntity {
     @Column(nullable = false)
     private String key;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Long issueCounter = 0L;
+
     private String description;
 
     @Builder.Default

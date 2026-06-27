@@ -35,4 +35,6 @@ public interface UserService {
 
     User createUser(String email, Company company);
 
+    User getUserById(Long id);
+
 }

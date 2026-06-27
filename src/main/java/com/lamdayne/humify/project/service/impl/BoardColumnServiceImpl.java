@@ -154,4 +154,9 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
         boardColumnRepository.saveAll(remainingColumns);
     }
+
+    @Override
+    public BoardColumn findById(Long id) {
+        return boardColumnRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.COLUMN_NOT_FOUND));
+    }
 }

@@ -167,6 +167,7 @@ public enum ErrorCode {
     TASK_POINTS_INVALID("TASK_POINTS_INVALID", "Task points is invalid", HttpStatus.BAD_REQUEST),
     TASK_ESTIMATED_HOURS_INVALID("TASK_ESTIMATED_HOURS_INVALID", "Estimated hours or story points is invalid", HttpStatus.BAD_REQUEST),
     TASK_DUE_DATE_MUST_BE_FUTURE("TASK_DUE_DATE_MUST_BE_FUTURE", "Task due date must be future", HttpStatus.BAD_REQUEST),
+    INVALID_MOVE_TASK("INVALID_MOVE_TASK", "Move task is invalid", HttpStatus.BAD_REQUEST),
     
     // Comment
     COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", HttpStatus.NOT_FOUND),

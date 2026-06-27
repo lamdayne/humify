@@ -105,4 +105,9 @@ public class SprintServiceImpl implements SprintService {
         sprintRepository.delete(sprint);
 
     }
+
+    @Override
+    public Sprint findById(Long id) {
+        return sprintRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SPRINT_NOT_FOUND));
+    }
 }

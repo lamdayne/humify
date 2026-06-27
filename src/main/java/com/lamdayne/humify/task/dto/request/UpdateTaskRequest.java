@@ -9,14 +9,7 @@ import lombok.Getter;
 import java.time.Instant;
 
 @Getter
-public class CreateTaskRequest {
-
-    private Long sprintId;
-
-    @NotNull(message = "COLUMN_ID_REQUIRED")
-    private Long columnId;
-
-    private Long parentId;
+public class UpdateTaskRequest {
 
     @NotBlank(message = "TASK_TITLE_REQUIRED")
     private String title;
@@ -29,8 +22,6 @@ public class CreateTaskRequest {
     @EnumValue(name = "task_type", message = "TASK_TYPE_INVALID", enumClass = TaskType.class)
     private String type;
 
-    private Long assigneeId;
-
     @Min(value = 0, message = "TASK_POINTS_INVALID")
     private Integer points;
 
@@ -39,5 +30,4 @@ public class CreateTaskRequest {
 
     @Future(message = "TASK_DUE_DATE_MUST_BE_FUTURE")
     private Instant dueDate;
-
 }

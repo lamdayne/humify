@@ -384,16 +384,17 @@ CREATE TABLE company_verifications
 
 CREATE TABLE projects
 (
-    id          BIGSERIAL PRIMARY KEY,
-    company_id  BIGINT         NOT NULL,
-    creator_id  BIGINT         NOT NULL,
-    name        VARCHAR(255)   NOT NULL,
-    key         VARCHAR(10)    NOT NULL,
-    description TEXT,
-    status      project_status NOT NULL DEFAULT 'ACTIVE',
-    created_at  TIMESTAMPTZ             DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ             DEFAULT NOW(),
-    deleted_at  TIMESTAMPTZ,
+    id            BIGSERIAL PRIMARY KEY,
+    company_id    BIGINT         NOT NULL,
+    creator_id    BIGINT         NOT NULL,
+    name          VARCHAR(255)   NOT NULL,
+    key           VARCHAR(10)    NOT NULL,
+    issue_counter BIGINT         NOT NULL DEFAULT 0,
+    description   TEXT,
+    status        project_status NOT NULL DEFAULT 'ACTIVE',
+    created_at    TIMESTAMPTZ             DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ             DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ,
     CONSTRAINT fk_project_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
     CONSTRAINT fk_project_creator_id FOREIGN KEY (creator_id) REFERENCES users (id),
     CONSTRAINT uq_project_company_key UNIQUE (company_id, key)
