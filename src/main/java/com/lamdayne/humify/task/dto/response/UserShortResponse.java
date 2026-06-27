@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReporterInfo {
+public class UserShortResponse {
     private Long id;
     private String fullName;
 }

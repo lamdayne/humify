@@ -76,9 +76,11 @@ public class Task extends BaseEntity {
 
     private Double estimatedHours;
 
-    private Double loggedHours;
+    @Builder.Default
+    private Double loggedHours = 0.0;
 
-    private Double position;
+    @Builder.Default
+    private Double position = 0.0;
 
     private Instant dueDate;
 

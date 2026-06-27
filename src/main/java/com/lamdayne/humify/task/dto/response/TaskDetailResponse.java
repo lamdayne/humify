@@ -6,10 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Builder
-public class TaskResponse {
+public class TaskDetailResponse {
     private Long id;
     private Long projectId;
     private String projectKey;
@@ -28,6 +29,8 @@ public class TaskResponse {
     private Instant completedAt;
     private UserShortResponse reporter;
     private UserShortResponse assignee;
+    @Builder.Default
+    private List<SubtaskResponse> subtasks = List.of();
     private Instant createdAt;
     private Instant updatedAt;
 }

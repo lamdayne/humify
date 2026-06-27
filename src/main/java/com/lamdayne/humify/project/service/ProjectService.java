@@ -4,6 +4,7 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.project.dto.request.CreateProjectRequest;
 import com.lamdayne.humify.project.dto.request.UpdateProjectRequest;
 import com.lamdayne.humify.project.dto.response.ProjectResponse;
+import com.lamdayne.humify.project.entity.Project;
 
 public interface ProjectService {
 
@@ -18,5 +19,7 @@ public interface ProjectService {
     void deleteProject(Long id);
 
     PageResponse<ProjectResponse> getProjectsByCompany(Long companyId, int page, int size, String... sorts);
+
+    Project findById(Long id);
 
 }
