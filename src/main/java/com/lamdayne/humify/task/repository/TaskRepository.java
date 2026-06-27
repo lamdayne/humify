@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
@@ -19,4 +22,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "project", "reporter", "assignee", "sprint", "column", "parent"
     })
     Page<Task> findAllByProjectId(Long projectId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "project", "sprint", "column", "parent", "reporter", "assignee"
+    })
+    Optional<Task> findDetailById(Long id);
+
+    @EntityGraph(attributePaths = {"column", "assignee"})
+    List<Task> findByParentId(Long parentId);
+
 }

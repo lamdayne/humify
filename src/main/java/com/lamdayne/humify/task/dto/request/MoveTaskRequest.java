@@ -8,4 +8,6 @@ import lombok.Getter;
 public class MoveTaskRequest {
     private Long columnId;
     private Long sprintId;
+    private Long beforeTaskId;
+    private Long afterTaskId;
 }
