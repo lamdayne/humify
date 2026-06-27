@@ -445,7 +445,7 @@ CREATE TABLE project_invitations
     expired_at      TIMESTAMPTZ               NOT NULL,
     created_at      TIMESTAMPTZ                        DEFAULT NOW(),
     updated_at      TIMESTAMPTZ                        DEFAULT NOW(),
-    deleted_at      TIMESTAMPZ,
+    deleted_at      TIMESTAMPTZ,
     CONSTRAINT fk_pi_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
     CONSTRAINT fk_pi_project_role_id FOREIGN KEY (project_role_id) REFERENCES project_roles (id),
     CONSTRAINT fk_pi_inviter_id FOREIGN KEY (inviter_id) REFERENCES users (id) ON DELETE CASCADE
