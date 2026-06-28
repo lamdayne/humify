@@ -1,17 +1,21 @@
 package com.lamdayne.humify.task.controller;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.task.dto.request.*;
+import com.lamdayne.humify.task.dto.response.CommentResponse;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 import com.lamdayne.humify.task.dto.response.WorklogResponse;
+import com.lamdayne.humify.task.service.TaskCommentService;
 import com.lamdayne.humify.task.service.TaskService;
 import com.lamdayne.humify.task.service.TaskWorkLogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +27,7 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskWorkLogService taskWorkLogService;
+    private final TaskCommentService taskCommentService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDetailResponse>> getTaskById(
@@ -109,4 +114,26 @@ public class TaskController {
                         taskWorkLogService.getByTask(taskId)));
     }
 
+    @PostMapping("/{taskId}/comments")
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(
+            @PathVariable Long taskId,
+            @Valid @RequestBody CreateCommentRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.COMMENT_CREATE_SUCCESS,
+                        taskCommentService.createComment(taskId, request, userPrincipal.getId())
+                ));
+    }
+
+    @GetMapping("/{taskId}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getComments(@PathVariable Long taskId) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.COMMENT_READ_SUCCESS,
+                        taskCommentService.getCommentsByTaskId(taskId)
+                ));
+    }
 }

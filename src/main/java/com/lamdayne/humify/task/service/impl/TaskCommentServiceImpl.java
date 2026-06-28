@@ -16,9 +16,8 @@ import com.lamdayne.humify.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +54,14 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     }
 
     @Override
+    @Transactional
     public List<CommentResponse> getCommentsByTaskId(Long taskId) {
         if (!taskRepository.existsById(taskId)) {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
         return taskCommentRepository.findByTaskIdOrderByCreatedAtAsc(taskId).stream()
                 .map(taskCommentMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
