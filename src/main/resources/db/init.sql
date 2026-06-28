@@ -97,6 +97,19 @@ CREATE TYPE task_type AS ENUM (
     'EPIC'
     );
 
+CREATE TYPE kpi_status AS ENUM (
+    'IN_PROGRESS',
+    'ARCHIVED',
+    'FAILED'
+    );
+
+CREATE TYPE performance_review_status AS ENUM (
+    'DRAFT',
+    'SELF_REVIEW',
+    'MANAGER_REVIEW',
+    'COMPLETED'
+    );
+
 -- Table: companies
 
 CREATE TABLE companies
@@ -586,6 +599,55 @@ CREATE TABLE task_worklogs
     CONSTRAINT fk_tw_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
     CONSTRAINT fk_tw_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+
+-- Table: kpis
+
+CREATE TABLE kpis
+(
+    id            BIGSERIAL PRIMARY KEY,
+    company_id    BIGINT           NOT NULL,
+    employee_id   BIGINT           NOT NULL,
+    title         VARCHAR(255)     NOT NULL,
+    description   TEXT,
+    target_value  DOUBLE PRECISION NOT NULL,
+    current_value DOUBLE PRECISION          DEFAULT 0.0,
+    unit          VARCHAR(50)      NOT NULL,
+    start_date    DATE             NOT NULL,
+    end_date      DATE             NOT NULL,
+    status        kpi_status       NOT NULL DEFAULT 'IN_PROGRESS',
+    created_at    TIMESTAMPTZ               DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ               DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ,
+    CONSTRAINT fk_kpi_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_kpi_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_kpi_employee_id ON kpis (employee_id);
+
+-- Table: performance_reviews
+
+CREATE TABLE performance_reviews
+(
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT                    NOT NULL,
+    employee_id    BIGINT                    NOT NULL,
+    reviewer_id    BIGINT                    NOT NULL,
+    review_period  VARCHAR(100)              NOT NULL,
+    self_score     DOUBLE PRECISION,
+    reviewer_score DOUBLE PRECISION,
+    final_score    DOUBLE PRECISION,
+    feedback       TEXT,
+    status         performance_review_status NOT NULL DEFAULT 'DRAFT',
+    created_at     TIMESTAMPTZ                        DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ                        DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ,
+    CONSTRAINT fk_pr_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pr_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pr_reviewer FOREIGN KEY (reviewer_id) REFERENCES users (id)
+);
+
+CREATE INDEX idx_perf_review_employee_id ON performance_reviews (employee_id);
 
 
 -- Enable RLS

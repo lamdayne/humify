@@ -29,6 +29,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.support.TransactionTemplate;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
@@ -44,6 +46,7 @@ public class GoogleOAuthService {
     private final EmployeeRepository employeeRepository;
     private final UserDetailsService userDetailsService;
     private final CompanyAccessService companyAccessService;
+    private final TransactionTemplate transactionTemplate;
     private final UserSocialAccountRepository userSocialAccountRepository;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
@@ -61,7 +64,7 @@ public class GoogleOAuthService {
 
         try {
             CompanyContext.setCompanyId(company.getId());
-            return handleLogin(email, providerId, company);
+            return transactionTemplate.execute(status -> handleLogin(email, providerId, company));
         } finally {
             CompanyContext.setCompanyId(null);
         }
