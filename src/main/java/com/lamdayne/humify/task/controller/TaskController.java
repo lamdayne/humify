@@ -4,6 +4,11 @@ import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.task.dto.request.*;
+import com.lamdayne.humify.task.dto.response.CommentResponse;
+import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
+import com.lamdayne.humify.task.dto.response.TaskResponse;
+import com.lamdayne.humify.task.dto.response.WorklogResponse;
+import com.lamdayne.humify.task.service.TaskCommentService;
 import com.lamdayne.humify.task.dto.response.AttachmentResponse;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
@@ -29,6 +34,7 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskWorkLogService taskWorkLogService;
+    private final TaskCommentService taskCommentService;
     private final TaskAttachmentService taskAttachmentService;
 
     @PostMapping(value = "/{taskId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -127,4 +133,26 @@ public class TaskController {
                         taskWorkLogService.getByTask(taskId)));
     }
 
+    @PostMapping("/{taskId}/comments")
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(
+            @PathVariable Long taskId,
+            @Valid @RequestBody CreateCommentRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.COMMENT_CREATE_SUCCESS,
+                        taskCommentService.createComment(taskId, request, userPrincipal.getId())
+                ));
+    }
+
+    @GetMapping("/{taskId}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getComments(@PathVariable Long taskId) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.COMMENT_READ_SUCCESS,
+                        taskCommentService.getCommentsByTaskId(taskId)
+                ));
+    }
 }
