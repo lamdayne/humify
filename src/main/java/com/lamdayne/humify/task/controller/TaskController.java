@@ -9,14 +9,21 @@ import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 import com.lamdayne.humify.task.dto.response.WorklogResponse;
 import com.lamdayne.humify.task.service.TaskCommentService;
+import com.lamdayne.humify.task.dto.response.AttachmentResponse;
+import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
+import com.lamdayne.humify.task.dto.response.TaskResponse;
+import com.lamdayne.humify.task.dto.response.WorklogResponse;
+import com.lamdayne.humify.task.service.TaskAttachmentService;
 import com.lamdayne.humify.task.service.TaskService;
 import com.lamdayne.humify.task.service.TaskWorkLogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +35,18 @@ public class TaskController {
     private final TaskService taskService;
     private final TaskWorkLogService taskWorkLogService;
     private final TaskCommentService taskCommentService;
+    private final TaskAttachmentService taskAttachmentService;
+
+    @PostMapping(value = "/{taskId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long taskId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        AttachmentResponse response = taskAttachmentService.addAttachment(userPrincipal, taskId, file);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(SuccessCode.ATTACHMENT_UPLOAD_SUCCESS, response));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDetailResponse>> getTaskById(
