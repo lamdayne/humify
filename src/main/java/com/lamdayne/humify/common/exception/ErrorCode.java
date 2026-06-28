@@ -173,6 +173,7 @@ public enum ErrorCode {
     // Comment
     COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", HttpStatus.NOT_FOUND),
     COMMENT_PARENT_NOT_FOUND("COMMENT_PARENT_NOT_FOUND", "Reply target comment not found", HttpStatus.BAD_REQUEST),
+    COMMENT_CONTENT_REQUIRED("COMMENT_CONTENT_REQUIRED", "Comment content is required", HttpStatus.BAD_REQUEST),
     FORBIDDEN_ACTION("FORBIDDEN_ACTION", "You do not have permission to perform this action", HttpStatus.FORBIDDEN),
     // Attachment
     ATTACHMENT_NOT_FOUND("ATTACHMENT_NOT_FOUND", "Attachment not found", HttpStatus.NOT_FOUND),
