@@ -4,18 +4,11 @@ import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.task.dto.request.*;
-import com.lamdayne.humify.task.dto.response.CommentResponse;
+import com.lamdayne.humify.task.dto.response.*;
+import com.lamdayne.humify.task.service.*;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 import com.lamdayne.humify.task.dto.response.WorklogResponse;
-import com.lamdayne.humify.task.service.TaskCommentService;
-import com.lamdayne.humify.task.dto.response.AttachmentResponse;
-import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
-import com.lamdayne.humify.task.dto.response.TaskResponse;
-import com.lamdayne.humify.task.dto.response.WorklogResponse;
-import com.lamdayne.humify.task.service.TaskAttachmentService;
-import com.lamdayne.humify.task.service.TaskService;
-import com.lamdayne.humify.task.service.TaskWorkLogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +29,21 @@ public class TaskController {
     private final TaskWorkLogService taskWorkLogService;
     private final TaskCommentService taskCommentService;
     private final TaskAttachmentService taskAttachmentService;
+    private final TaskActivityService taskActivityService;
+
+    @GetMapping("/{taskId}/activities")
+    public ResponseEntity<ApiResponse<List<ActivityResponse>>> getTaskActivities(
+            @PathVariable Long taskId
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.TASK_READ_SUCCESS,
+                        taskActivityService.getActivities(taskId)
+                )
+        );
+    }
+
 
     @PostMapping(value = "/{taskId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
