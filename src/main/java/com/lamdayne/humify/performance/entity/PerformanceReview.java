@@ -40,6 +40,7 @@ public class PerformanceReview extends BaseEntity {
 
     private Double finalScore;
 
+    @Column(name = "feedback")
     private String feedBack;
 
     @Builder.Default
