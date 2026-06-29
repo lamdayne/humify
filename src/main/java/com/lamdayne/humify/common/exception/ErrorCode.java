@@ -189,8 +189,11 @@ public enum ErrorCode {
     // Performance Review
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
     REVIEW_PERIOD_DUPLICATE("REVIEW_PERIOD_DUPLICATE", "Review for this employee in this period already exists", HttpStatus.BAD_REQUEST),
-    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST)
-
+    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST),
+    REVIEW_CREATE_SUCCESS("REVIEW_CREATE_SUCCESS", "Performance review created successfully", HttpStatus.CREATED),
+    REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Performance reviews retrieved successfully", HttpStatus.OK),
+    REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Performance review updated successfully", HttpStatus.OK),
+    SCORE_REQUIRED("SCORE_REQUIRED", "Score is required", HttpStatus.BAD_REQUEST),
     ;
 
     private String code;
