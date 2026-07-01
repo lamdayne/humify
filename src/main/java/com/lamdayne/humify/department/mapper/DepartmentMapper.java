@@ -18,8 +18,8 @@ import java.util.List;
 public interface DepartmentMapper {
     Department toDepartment(CreateDepartmentRequest request);
     @Mapping(source = "branch.id", target = "branchId")
-    List<DepartmentResponse> toDepartmentResponse(List<Department> departments);
     DepartmentResponse toDepartmentResponse(Department department);
+    List<DepartmentResponse> toDepartmentResponse(List<Department> departments);
     @Mapping(target = "branch", ignore = true)
     void updateDepartment(@MappingTarget Department department, UpdateDepartmentRequest request);
 }
