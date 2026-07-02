@@ -1,6 +1,7 @@
 package com.lamdayne.humify.project.entity;
 
 import com.lamdayne.humify.project.enums.ColumnCategory;
+import com.lamdayne.humify.task.entity.Task;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,5 +46,8 @@ public class BoardColumn {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "column", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 
 }

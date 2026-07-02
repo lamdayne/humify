@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class UserShortResponse {
     private Long id;
-    private String fullName;
+    private String email;
 }

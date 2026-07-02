@@ -99,7 +99,7 @@ CREATE TYPE task_type AS ENUM (
 
 CREATE TYPE kpi_status AS ENUM (
     'IN_PROGRESS',
-    'ARCHIVED',
+    'ACHIEVED',
     'FAILED'
     );
 
@@ -613,6 +613,7 @@ CREATE TABLE kpis
     target_value  DOUBLE PRECISION NOT NULL,
     current_value DOUBLE PRECISION          DEFAULT 0.0,
     unit          VARCHAR(50)      NOT NULL,
+    weight        DOUBLE PRECISION NOT NULL,
     start_date    DATE             NOT NULL,
     end_date      DATE             NOT NULL,
     status        kpi_status       NOT NULL DEFAULT 'IN_PROGRESS',
