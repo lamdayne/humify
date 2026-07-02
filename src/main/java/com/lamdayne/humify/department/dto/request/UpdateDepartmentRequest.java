@@ -2,7 +2,11 @@ package com.lamdayne.humify.department.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class UpdateDepartmentRequest {
     @NotNull(message = "BRANCH_ID_REQUIRED")
     private Long branchId;
