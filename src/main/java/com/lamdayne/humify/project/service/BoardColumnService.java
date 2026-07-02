@@ -22,4 +22,6 @@ public interface BoardColumnService {
 
     BoardColumn findById(Long id);
 
+    void createDefaultColumns(Long projectId);
+
 }

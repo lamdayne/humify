@@ -24,6 +24,7 @@ public class TaskResponse {
     private Integer points;
     private Double estimatedHours;
     private Double loggedHours;
+    private Double position;
     private Instant dueDate;
     private Instant completedAt;
     private UserShortResponse reporter;

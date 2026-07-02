@@ -22,4 +22,6 @@ public interface ProjectService {
 
     Project findById(Long id);
 
+    Long incrementAndGetIssueCounter(Long projectId);
+
 }

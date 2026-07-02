@@ -102,9 +102,16 @@ public class BoardColumnServiceImpl implements BoardColumnService {
             }
         }
 
+        int temp = -1;
+        for (BoardColumn column : columns) {
+            column.setPosition(temp--);
+        }
+        boardColumnRepository.saveAll(columns);
+        boardColumnRepository.flush();
+
         for (int i = 0; i < request.getColumnIds().size(); i++) {
             BoardColumn column = columnMap.get(request.getColumnIds().get(i));
-            column.setPosition(i);
+            column.setPosition(i + 1);
         }
 
         List<BoardColumn> savedColumns = boardColumnRepository.saveAll(columns);
@@ -141,7 +148,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
         }
 
-
         boardColumnRepository.delete(boardColumn);
 
         List<BoardColumn> remainingColumns = boardColumnRepository.findAllByProjectIdOrderByPositionAsc(projectId);
@@ -158,5 +164,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Override
     public BoardColumn findById(Long id) {
         return boardColumnRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.COLUMN_NOT_FOUND));
+    }
+
+    @Override
+    public void createDefaultColumns(Long projectId) {
+
     }
 }

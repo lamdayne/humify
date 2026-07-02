@@ -142,5 +142,11 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
     }
 
+    @Override
+    public Long incrementAndGetIssueCounter(Long projectId) {
+        projectRepository.incrementIssueCounter(projectId);
+        return projectRepository.getIssueCounter(projectId);
+    }
+
 
 }

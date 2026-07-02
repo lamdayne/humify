@@ -74,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
             assignee = userService.getUserById(request.getAssigneeId());
         }
 
-        long next = project.getIssueCounter() + 1;
+        long next = projectService.incrementAndGetIssueCounter(projectId);
         Double maxPosition = taskRepository.findMaxPositionByColumnId(request.getColumnId());
 
         double newPosition = (maxPosition == null) ? 1000.0 : maxPosition + 1000.0;
@@ -152,6 +152,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse moveTask(Long taskId, MoveTaskRequest request) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 
@@ -212,11 +213,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private double calculatePosition(Double beforePos, Double afterPos) {
-        final double GAP = 1.0;
+        final double GAP = 1000.0;
         if (beforePos == null && afterPos == null) return GAP;
         if (beforePos == null) return afterPos / 2.0;
-        if (afterPos == null) return beforePos / 2.0;
-        return (afterPos + beforePos) / GAP;
+        if (afterPos == null) return beforePos +  GAP;
+        return (afterPos + beforePos) / 2.0;
     }
 
 }
