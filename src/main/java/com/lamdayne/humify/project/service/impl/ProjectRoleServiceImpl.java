@@ -1,5 +1,6 @@
 package com.lamdayne.humify.project.service.impl;
 
+import com.lamdayne.humify.project.dto.response.ProjectRoleResponse;
 import com.lamdayne.humify.project.entity.ProjectRole;
 import com.lamdayne.humify.project.enums.ProjectRoleEnum;
 import com.lamdayne.humify.project.repository.ProjectRoleRepository;
@@ -36,5 +37,17 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
             projectRoleRepository.saveAll(toInsert);
             log.info("Insert new {} project roles", toInsert.size());
         }
+    }
+
+    @Override
+    public List<ProjectRoleResponse> getAllProjectRole() {
+        return projectRoleRepository.findAll().stream()
+                .map(pr -> ProjectRoleResponse.builder()
+                        .id(pr.getId())
+                        .name(pr.getName())
+                        .description(pr.getDescription())
+                        .code(pr.getCode())
+                        .build()
+                ).toList();
     }
 }
