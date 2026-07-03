@@ -1,5 +1,6 @@
 package com.lamdayne.humify.user.mapper;
 
+import com.lamdayne.humify.task.dto.response.UserShortResponse;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.entity.User;
@@ -11,5 +12,7 @@ public interface UserMapper {
     User toUser(CreateUserRequest request);
 
     UserResponse toResponse(User user);
+
+    UserShortResponse toShort(User user);
 
 }

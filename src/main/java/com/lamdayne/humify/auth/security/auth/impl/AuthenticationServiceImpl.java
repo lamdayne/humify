@@ -3,9 +3,11 @@ package com.lamdayne.humify.auth.security.auth.impl;
 import com.lamdayne.humify.auth.dto.request.ForgotPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.ResetPasswordRequest;
 import com.lamdayne.humify.auth.dto.request.SignInRequest;
+import com.lamdayne.humify.auth.dto.response.SocialLoginResposne;
 import com.lamdayne.humify.auth.dto.response.TokenResponse;
 import com.lamdayne.humify.auth.dto.response.UserMeResponse;
 import com.lamdayne.humify.auth.entity.PasswordResetToken;
+import com.lamdayne.humify.auth.enums.AuthProvider;
 import com.lamdayne.humify.auth.enums.TokenType;
 import com.lamdayne.humify.auth.repository.PasswordResetTokenRepository;
 import com.lamdayne.humify.auth.security.auth.AuthenticationService;
@@ -23,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -32,6 +35,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.yaml.snakeyaml.util.UriEncoder;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -55,6 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final UserService userService;
     private final CompanyService companyService;
+    private final OAuth2ClientProperties properties;
     private final ApplicationEventPublisher publisher;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
@@ -197,11 +203,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
+        String companyCode = null;
+        if (user.getCompanyId() != null) {
+            try {
+                companyCode = companyService.getCompanyById(user.getCompanyId()).getCompanyCode();
+            } catch (Exception ignored) {
+                log.warn("Company code not found");
+            }
+        }
+
         return UserMeResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .companyId(user.getCompanyId())
+                .companyCode(companyCode)
                 .permissions(permissions)
+                .build();
+    }
+
+    @Override
+    public SocialLoginResposne generateLoginUrl(String type) {
+        if (!type.equalsIgnoreCase(AuthProvider.GOOGLE.name())) {
+            throw new AppException(ErrorCode.UNSUPPORTED_PROVIDER);
+        }
+
+        var registration = properties.getRegistration().get(AuthProvider.GOOGLE.name().toLowerCase());
+        var provider = properties.getProvider().get(AuthProvider.GOOGLE.name().toLowerCase());
+
+        String state = UUID.randomUUID().toString();
+
+        String loginUrl = UriComponentsBuilder
+                .fromUriString(provider.getAuthorizationUri())
+                .queryParam("client_id", registration.getClientId())
+                .queryParam("redirect_uri", registration.getRedirectUri())
+                .queryParam("response_type", "code")
+                .queryParam("scope", UriEncoder.encode(String.join(" ", registration.getScope())))
+                .queryParam("state", state)
+                .build()
+                .toUriString();
+
+        return SocialLoginResposne.builder()
+                .loginUrl(loginUrl)
                 .build();
     }
 

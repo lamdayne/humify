@@ -30,6 +30,7 @@ public enum ErrorCode {
     BRANCH_FIELD_REQUIRED("BRANCH_FIELD_REQUIRED", "Branch field cannot be blank", HttpStatus.BAD_REQUEST),
     BRANCH_CODE_EXISTED("BRANCH_CODE_EXISTED", "Branch code already exists in this company", HttpStatus.BAD_REQUEST),
     BRANCH_ID_INVALID("BRANCH_ID_INVALID", "Branch ID is invalid", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_PROVIDER("UNSUPPORTED_PROVIDER", "Unsupported provider", HttpStatus.BAD_REQUEST),
 
     // Position
     POSITION_NAME_REQUIRED("POSITION_NAME_REQUIRED", "Position name cannot be blank", HttpStatus.BAD_REQUEST),
@@ -86,6 +87,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED("TOKEN_EXPIRED", "Token is expired", HttpStatus.BAD_REQUEST),
     COMPANY_ALREADY_ACTIVE("COMPANY_ALREADY_ACTIVE", "Company already active", HttpStatus.BAD_REQUEST),
     TOKEN_NOT_EXPIRED("TOKEN_NOT_EXPIRED", "Token is not expired", HttpStatus.BAD_REQUEST),
+    EXCHANGE_FAILED("EXCHANGE_FAILED", "Exchange failed", HttpStatus.BAD_REQUEST),
+    ID_TOKEN_INVALID("ID_TOKEN_INVALID", "ID token is invalid", HttpStatus.BAD_REQUEST),
 
     // Role
     ROLE_NAME_REQUIRED("ROLE_NAME_REQUIRED", "Role name can not blank", HttpStatus.BAD_REQUEST),
@@ -115,9 +118,84 @@ public enum ErrorCode {
 
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
-    FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST);
+    FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST),
 
+    // Project
+    PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found", HttpStatus.NOT_FOUND),
+    PROJECT_KEY_EXISTED("PROJECT_KEY_EXISTED", "Project key already exists in this company", HttpStatus.BAD_REQUEST),
+    PROJECT_KEY_INVALID("PROJECT_KEY_INVALID", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
+    PROJECT_ROLE_INVALID("PROJECT_ROLE_INVALID", "Project role invalid", HttpStatus.BAD_REQUEST),
+    PROJECT_ROLE_NOT_FOUND("PROJECT_ROLE_NOT_FOUND", "Project role not found", HttpStatus.NOT_FOUND),
+    PROJECT_NAME_REQUIRED("PROJECT_NAME_REQUIRED", "Project name can not blank", HttpStatus.BAD_REQUEST),
+    PROJECT_KEY_REQUIRED("PROJECT_KEY_REQUIRED", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
+    PROJECT_STATUS_INVALID("PROJECT_STATUS_INVALID", "Project status is invalid", HttpStatus.BAD_REQUEST),
+
+    // Member
+    MEMBER_ALREADY_EXISTS("MEMBER_ALREADY_EXISTS", "User is already a member of this project", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_FOUND("MEMBER_NOT_FOUND", "Member not found in this project", HttpStatus.NOT_FOUND),
+    
+    // Invitation
+    INVITATION_NOT_FOUND("INVITATION_NOT_FOUND", "Invitation link is invalid or not found", HttpStatus.NOT_FOUND),
+    INVITATION_EXPIRED("INVITATION_EXPIRED", "Invitation link has expired", HttpStatus.BAD_REQUEST),
+    INVITATION_REVOKED("INVITATION_REVOKED", "Invitation link has been revoked", HttpStatus.BAD_REQUEST),
+    INVITATION_EMAIL_MISMATCH("INVITATION_EMAIL_MISMATCH", "Authenticated email does not match invited email", HttpStatus.FORBIDDEN),
+    INVITATION_TOKEN_REQUIRED("INVITATION_TOKEN_REQUIRED", "Invitation token is required", HttpStatus.BAD_REQUEST),
+    
+    // Sprint
+    SPRINT_NOT_FOUND("SPRINT_NOT_FOUND", "Sprint not found", HttpStatus.NOT_FOUND),
+    SPRINT_NAME_REQUIRED("SPRINT_NAME_REQUIRED", "Sprint name is required", HttpStatus.BAD_REQUEST),
+    SPRINT_STATUS_INVALID("SPRINT_STATUS_INVALID", "Invalid sprint status transition", HttpStatus.BAD_REQUEST),
+    SPRINT_DATES_INVALID("SPRINT_DATES_INVALID", "End date must be after start date", HttpStatus.BAD_REQUEST),
+    SPRINT_ALREADY_ACTIVE("SPRINT_ALREADY_ACTIVE", "There is already an active sprint in this project", HttpStatus.BAD_REQUEST),
+    SPRINT_ID_REQUIRED("SPRINT_ID_REQUIRED", "Sprint id is required", HttpStatus.BAD_REQUEST),
+
+    // Column
+    COLUMN_NOT_FOUND("COLUMN_NOT_FOUND", "Board column not found", HttpStatus.NOT_FOUND),
+    COLUMN_POSITION_INVALID("COLUMN_POSITION_INVALID", "Column position is invalid", HttpStatus.BAD_REQUEST),
+    COLUMN_REORDER_INVALID("COLUMN_REORDER_INVALID", "Column reorder request is invalid", HttpStatus.BAD_REQUEST),
+    COLUMN_CATEGORY_INVALID("COLUMN_CATEGORY_INVALID", "Column category is invalid", HttpStatus.BAD_REQUEST),
+    COLUMN_NAME_REQUIRED("COLUMN_NAME_REQUIRED", "Column name is required", HttpStatus.BAD_REQUEST),
+    COLUMN_ID_REQUIRED("COLUMN_ID_REQUIRED", "Column id is required", HttpStatus.BAD_REQUEST),
+
+    // Task
+    TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found", HttpStatus.NOT_FOUND),
+    TASK_PARENT_LOOP("TASK_PARENT_LOOP", "Task cannot be a sub-task of itself or create loops", HttpStatus.BAD_REQUEST),
+    TASK_ESTIMATE_INVALID("TASK_ESTIMATE_INVALID", "Estimated hours or story points must be positive", HttpStatus.BAD_REQUEST),
+    TASK_TITLE_REQUIRED("TASK_TITLE_REQUIRED", "Task title is required", HttpStatus.BAD_REQUEST),
+    TASK_PRIORITY_INVALID("TASK_PRIORITY_INVALID", "Task priority is invalid", HttpStatus.BAD_REQUEST),
+    TASK_TYPE_INVALID("TASK_TYPE_INVALID", "Task type is invalid", HttpStatus.BAD_REQUEST),
+    TASK_POINTS_INVALID("TASK_POINTS_INVALID", "Task points is invalid", HttpStatus.BAD_REQUEST),
+    TASK_ESTIMATED_HOURS_INVALID("TASK_ESTIMATED_HOURS_INVALID", "Estimated hours or story points is invalid", HttpStatus.BAD_REQUEST),
+    TASK_DUE_DATE_MUST_BE_FUTURE("TASK_DUE_DATE_MUST_BE_FUTURE", "Task due date must be future", HttpStatus.BAD_REQUEST),
+    INVALID_MOVE_TASK("INVALID_MOVE_TASK", "Move task is invalid", HttpStatus.BAD_REQUEST),
+    TASK_ASSIGNEE_ID_REQUIRED("TASK_ASSIGNEE_ID_REQUIRED", "Assignee id is required", HttpStatus.BAD_REQUEST),
+    
+    // Comment
+    COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", HttpStatus.NOT_FOUND),
+    COMMENT_PARENT_NOT_FOUND("COMMENT_PARENT_NOT_FOUND", "Reply target comment not found", HttpStatus.BAD_REQUEST),
+    COMMENT_CONTENT_REQUIRED("COMMENT_CONTENT_REQUIRED", "Comment content is required", HttpStatus.BAD_REQUEST),
+    FORBIDDEN_ACTION("FORBIDDEN_ACTION", "You do not have permission to perform this action", HttpStatus.FORBIDDEN),
+    // Attachment
+    ATTACHMENT_NOT_FOUND("ATTACHMENT_NOT_FOUND", "Attachment not found", HttpStatus.NOT_FOUND),
+    
+    // Worklog
+    WORKLOG_NOT_FOUND("WORKLOG_NOT_FOUND", "Worklog entry not found", HttpStatus.NOT_FOUND),
+    WORKLOG_HOURS_INVALID("WORKLOG_HOURS_INVALID", "Logged hours must be greater than zero", HttpStatus.BAD_REQUEST),
+    
+    // KPI
+    KPI_NOT_FOUND("KPI_NOT_FOUND", "KPI not found", HttpStatus.NOT_FOUND),
+    KPI_WEIGHT_INVALID("KPI_WEIGHT_INVALID", "Total weight of KPIs cannot exceed 1.0 (100%)", HttpStatus.BAD_REQUEST),
+    
+    // Performance Review
+    REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
+    REVIEW_PERIOD_DUPLICATE("REVIEW_PERIOD_DUPLICATE", "Review for this employee in this period already exists", HttpStatus.BAD_REQUEST),
+    REVIEW_STATUS_INVALID("REVIEW_STATUS_INVALID", "Invalid performance review status transition", HttpStatus.BAD_REQUEST),
+    REVIEW_CREATE_SUCCESS("REVIEW_CREATE_SUCCESS", "Performance review created successfully", HttpStatus.CREATED),
+    REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Performance reviews retrieved successfully", HttpStatus.OK),
+    REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Performance review updated successfully", HttpStatus.OK),
+    SCORE_REQUIRED("SCORE_REQUIRED", "Score is required", HttpStatus.BAD_REQUEST),
     ;
+
     private String code;
     private String defaultMessage;
     private HttpStatus status;

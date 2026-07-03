@@ -14,4 +14,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findFirstByCompanyIdAndEmployeeCodeStartingWithOrderByIdDesc(Long companyId, String prefix);
 
     boolean existsByCompanyIdAndEmail(Long companyId, String email);
+
+    Optional<Employee> findByEmailAndCompanyId(String email, Long companyId);
 }

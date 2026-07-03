@@ -41,7 +41,8 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private final String[] WHITE_LIST = {
-            "/auth/**"
+            "/auth/**",
+            "/invitations/validate"
     };
 
     private final String[] PUBLIC_POST_ENDPOINTS = {
