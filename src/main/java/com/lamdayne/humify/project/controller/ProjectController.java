@@ -30,9 +30,9 @@ public class ProjectController {
     private final SprintService sprintService;
     private final ProjectService projectService;
     private final BoardColumnService boardColumnService;
+    private final ProjectRoleService projectRoleService;
     private final ProjectMemberService projectMemberService;
     private final ProjectInvitationService projectInvitationService;
-
 
     @PostMapping("/{projectId}/invitations")
     public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
@@ -236,6 +236,15 @@ public class ProjectController {
                 .body(ApiResponse.success(
                         SuccessCode.TASK_READ_SUCCESS,
                         taskService.getTaskByProjectId(projectId, page, size, sorts)
+                ));
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<ApiResponse<List<ProjectRoleResponse>>> getProjectRole() {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_READ_SUCCESS,
+                        projectRoleService.getAllProjectRole()
                 ));
     }
 

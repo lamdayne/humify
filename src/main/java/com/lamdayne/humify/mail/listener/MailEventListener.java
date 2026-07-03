@@ -4,8 +4,9 @@ import com.lamdayne.humify.mail.dto.SendEmailEvent;
 import com.lamdayne.humify.mail.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class MailEventListener {
 
     private final MailService mailService;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onSendEmailEvent(SendEmailEvent event) {
         if (event.getTemplateId() != null && !event.getTemplateId().isBlank()) {
             mailService.sendEmailWithTemplatePlatform(

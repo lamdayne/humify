@@ -68,6 +68,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @Transactional
     public void deleteMember(Long projectId, Long userId) {
         ProjectMember projectMember = projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
@@ -77,6 +78,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @Transactional
     public ProjectMemberResponse approveMember(Long projectId, Long userId) {
         ProjectMember projectMember = projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));

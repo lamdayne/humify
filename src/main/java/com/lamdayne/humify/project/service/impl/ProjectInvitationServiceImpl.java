@@ -3,6 +3,7 @@ package com.lamdayne.humify.project.service.impl;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.mail.dto.SendEmailEvent;
 import com.lamdayne.humify.project.dto.request.AcceptInvitationRequest;
 import com.lamdayne.humify.project.dto.request.CreateInvitationRequest;
 import com.lamdayne.humify.project.dto.response.InvitationResponse;
@@ -24,11 +25,14 @@ import com.lamdayne.humify.user.entity.User;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -44,6 +48,7 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
     private final ProjectRoleRepository projectRoleRepository;
     private final ProjectMemberMapper projectMemberMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ProjectInvitationRepository projectInvitationRepository;
 
     @Override
@@ -58,10 +63,11 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
         String token = UUID.randomUUID().toString();
         Instant expiredAt = Instant.now().plus(request.getTtlMinutes(), ChronoUnit.MINUTES);
 
+        User inviter = em.getReference(User.class, userPrincipal.getId());
         ProjectInvitation invitation = ProjectInvitation.builder()
                 .project(project)
                 .projectRole(projectRole)
-                .inviter(em.getReference(User.class, userPrincipal.getId()))
+                .inviter(inviter)
                 .email(request.getEmail())
                 .token(token)
                 .status(ProjectInvitationStatus.PENDING)
@@ -71,6 +77,21 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
         projectInvitationRepository.save(invitation);
 
         String inviteLink = String.format("%s/invite?token=%s", systemUrl, token);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("inviter", inviter.getEmail());
+        variables.put("inviteLink", inviteLink);
+
+        if (request.getEmail() != null) {
+            applicationEventPublisher.publishEvent(
+                    SendEmailEvent.builder()
+                            .to(request.getEmail())
+                            .subject(String.format("[%s] Invite join project", project.getName()))
+                            .templateId("81953386-15d8-4677-9f5b-55d2a1d25ee3")
+                            .variables(variables)
+                            .build()
+            );
+        }
 
         return InvitationResponse.builder()
                 .id(invitation.getId())
