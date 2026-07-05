@@ -651,6 +651,87 @@ CREATE TABLE performance_reviews
 CREATE INDEX idx_perf_review_employee_id ON performance_reviews (employee_id);
 
 
+-- Table: employee_educations
+
+CREATE TABLE employee_educations
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    employee_id          BIGINT NOT NULL,
+    degree_level         VARCHAR(255) NULL,
+    school_name          VARCHAR(255) NULL,
+    major                VARCHAR(255) NULL,
+    start_year           INTEGER NULL,
+    end_year             INTEGER NULL,
+    gpa                  DOUBLE PRECISION NULL,
+    certificate_file_url TEXT NULL,
+    note                 TEXT NULL,
+    created_at           TIMESTAMPTZ DEFAULT NOW(),
+    updated_at           TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at           TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_edu FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_certifications
+
+CREATE TABLE employee_certifications
+(
+    id                     BIGSERIAL PRIMARY KEY,
+    employee_id            BIGINT       NOT NULL,
+    name                   VARCHAR(255) NOT NULL,
+    certification_code     VARCHAR(255) NULL,
+    issued_by              VARCHAR(255) NULL,
+    issued_date            DATE NULL,
+    expired_date           DATE NULL,
+    score_or_level         VARCHAR(255) NULL,
+    certification_file_url TEXT NULL,
+    created_at             TIMESTAMPTZ DEFAULT NOW(),
+    updated_at             TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at             TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_cert FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_work_experiences
+
+CREATE TABLE employee_work_experiences
+(
+    id                 BIGSERIAL PRIMARY KEY,
+    employee_id        BIGINT NOT NULL,
+    company_name       VARCHAR(255) NULL,
+    position           VARCHAR(255) NULL,
+    start_date         DATE NULL,
+    end_date           DATE NULL,
+    description        TEXT NULL,
+    reason_for_leaving VARCHAR(255) NULL,
+    created_at         TIMESTAMPTZ DEFAULT NOW(),
+    updated_at         TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at         TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_exp FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_id_documents
+
+CREATE TABLE employee_id_documents
+(
+    id              BIGSERIAL PRIMARY KEY,
+    employee_id     BIGINT      NOT NULL,
+    id_type         VARCHAR(20) NOT NULL,
+    id_number       VARCHAR(50) NOT NULL,
+    issued_date     DATE NULL,
+    issued_place    VARCHAR(255) NULL,
+    expired_date    DATE NULL,
+    front_image_url TEXT NULL,
+    back_image_url  TEXT NULL,
+    is_current      BOOLEAN     NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ          DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ          DEFAULT NOW(),
+    deleted_at      TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_iddoc FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
 -- Enable RLS
 -- Bật RLS
 ALTER TABLE branches
