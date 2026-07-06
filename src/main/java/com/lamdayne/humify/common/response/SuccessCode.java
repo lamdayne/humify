@@ -138,7 +138,15 @@ public enum SuccessCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Get review data successfully"),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Review updated successfully"),
     REVIEW_SUBMIT_SUCCESS("REVIEW_SUBMIT_SUCCESS", "Review submitted successfully"),
-    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully");
+    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully"),
+
+    // Employee Certification
+    EMPLOYEE_CERTIFICATION_CREATE_SUCCESS("EMPLOYEE_CERTIFICATION_CREATE_SUCCESS", "Employee certification added successfully"),
+    EMPLOYEE_CERTIFICATION_UPDATE_SUCCESS("EMPLOYEE_CERTIFICATION_UPDATE_SUCCESS", "Employee certification updated successfully"),
+    EMPLOYEE_CERTIFICATION_DELETE_SUCCESS("EMPLOYEE_CERTIFICATION_DELETE_SUCCESS", "Employee certification deleted successfully"),
+    EMPLOYEE_CERTIFICATION_READ_SUCCESS("EMPLOYEE_CERTIFICATION_READ_SUCCESS", "Employee certification read successfully"),
+
+    ;
 
     private String code;
     private String defaultMessage;

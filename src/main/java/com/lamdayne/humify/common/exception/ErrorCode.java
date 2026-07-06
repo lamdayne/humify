@@ -194,6 +194,11 @@ public enum ErrorCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Performance reviews retrieved successfully", HttpStatus.OK),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Performance review updated successfully", HttpStatus.OK),
     SCORE_REQUIRED("SCORE_REQUIRED", "Score is required", HttpStatus.BAD_REQUEST),
+
+    // Employee Certification
+    EMPLOYEE_CERTIFICATION_NAME_REQUIRED("EMPLOYEE_CERTIFICATION_NAME_REQUIRED", "Employee certification name can not blank", HttpStatus.BAD_REQUEST),
+    EMPLOYEE_CERTIFICATION_NOT_FOUND("EMPLOYEE_CERTIFICATION_NOT_FOUND", "Employee certification not found", HttpStatus.NOT_FOUND),
+
     ;
 
     private String code;
