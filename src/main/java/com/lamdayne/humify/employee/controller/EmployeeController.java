@@ -6,8 +6,10 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeCertificationResponse;
+import com.lamdayne.humify.employee.dto.response.EmployeeIdDocumentResponse;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 import com.lamdayne.humify.employee.service.EmployeeCertificationService;
+import com.lamdayne.humify.employee.service.EmployeeIdDocumentService;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -18,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/employees")
@@ -25,6 +29,57 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final EmployeeCertificationService employeeCertificationService;
+    private final EmployeeIdDocumentService idDocumentService;
+
+    @PostMapping("/{employeeId}/id-documents")
+    public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> createDocument(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody EmployeeIdDocumentRequest request
+    ) {
+        EmployeeIdDocumentResponse response = idDocumentService.addDocument(employeeId, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS, response));
+    }
+
+    @GetMapping("/{employeeId}/id-documents")
+    public ResponseEntity<ApiResponse<List<EmployeeIdDocumentResponse>>> getDocuments(
+            @PathVariable Long employeeId
+    ) {
+        List<EmployeeIdDocumentResponse> response = idDocumentService.getDocuments(employeeId);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_ID_DOCUMENT_READ_SUCCESS, response));
+    }
+
+    @GetMapping("/{employeeId}/id-documents/{id}")
+    public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> getDocumentDetail(
+            @PathVariable Long employeeId,
+            @PathVariable Long id
+    ) {
+        EmployeeIdDocumentResponse response = idDocumentService.getDocumentDetail(employeeId, id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_ID_DOCUMENT_READ_SUCCESS, response));
+    }
+
+    @PutMapping("/{employeeId}/id-documents/{id}")
+    public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> updateDocument(
+            @PathVariable Long employeeId,
+            @PathVariable Long id,
+            @Valid @RequestBody EmployeeIdDocumentRequest request
+    ) {
+        EmployeeIdDocumentResponse response = idDocumentService.updateDocument(employeeId, id, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_ID_DOCUMENT_UPDATE_SUCCESS, response));
+    }
+
+    @DeleteMapping("/{employeeId}/id-documents/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteDocument(
+            @PathVariable Long employeeId,
+            @PathVariable Long id
+    ) {
+        idDocumentService.deleteDocument(employeeId, id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_ID_DOCUMENT_DELETE_SUCCESS, null));
+    }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_CREATE', 'EMPLOYEE_FULL')")
