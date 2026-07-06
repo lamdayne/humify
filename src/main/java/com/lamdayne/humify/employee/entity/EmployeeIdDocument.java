@@ -29,14 +29,14 @@ public class EmployeeIdDocument extends BaseEntity {
 
     private String issuedPlace;
 
-    private String expiredDate;
+    private LocalDate expiredDate;
 
     private String frontImageUrl;
 
     private String backImageUrl;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_current")
     private Boolean current =  Boolean.TRUE;
 
 }

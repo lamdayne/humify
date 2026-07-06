@@ -115,6 +115,7 @@ public enum ErrorCode {
     EMPLOYEE_CODE_EXISTS("EMPLOYEE_CODE_EXISTS", "Employee code exists", HttpStatus.BAD_REQUEST),
     EMPLOYEE_NOT_FOUND("EMPLOYEE_NOT_FOUND", "Employee not found", HttpStatus.NOT_FOUND),
     EMPLOYEE_EMAIL_EXISTED("EMPLOYEE_EMAIL_EXISTED", "Employee email already existed", HttpStatus.BAD_REQUEST),
+    EMPLOYEE_ID_DOCUMENT_NOT_FOUND("EMPLOYEE_ID_DOCUMENT_NOT_FOUND", "Employee ID document not found", HttpStatus.NOT_FOUND),
 
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
