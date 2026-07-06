@@ -153,6 +153,11 @@ public enum SuccessCode {
     EMPLOYEE_CERTIFICATION_DELETE_SUCCESS("EMPLOYEE_CERTIFICATION_DELETE_SUCCESS", "Employee certification deleted successfully"),
     EMPLOYEE_CERTIFICATION_READ_SUCCESS("EMPLOYEE_CERTIFICATION_READ_SUCCESS", "Employee certification read successfully"),
 
+    // Employee Education
+    EMPLOYEE_EDUCATION_CREATE_SUCCESS("EMPLOYEE_EDUCATION_CREATE_SUCCESS", "Employee education created successfully"),
+    EMPLOYEE_EDUCATION_READ_SUCCESS("EMPLOYEE_EDUCATION_READ_SUCCESS", "Get employee education successfully"),
+    EMPLOYEE_EDUCATION_UPDATE_SUCCESS("EMPLOYEE_EDUCATION_UPDATE_SUCCESS", "Employee education updated successfully"),
+    EMPLOYEE_EDUCATION_DELETE_SUCCESS("EMPLOYEE_EDUCATION_DELETE_SUCCESS", "Employee education deleted successfully")
     ;
 
     private String code;
