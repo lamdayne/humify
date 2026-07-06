@@ -110,6 +110,38 @@ CREATE TYPE performance_review_status AS ENUM (
     'COMPLETED'
     );
 
+CREATE TYPE leave_request_status AS ENUM (
+    'PENDING',
+    'APPROVED',
+    'REJECTED',
+    'CANCELLED'
+    );
+
+CREATE TYPE leave_session_type AS ENUM (
+    'FULL_DAY',
+    'MORNING',
+    'AFTERNOON'
+    );
+
+CREATE TYPE contract_status AS ENUM (
+    'ACTIVE',
+    'EXPIRED',
+    'TERMINATED'
+    );
+
+CREATE TYPE payroll_period_status AS ENUM (
+    'DRAFT',
+    'PENDING_APPROVAL',
+    'APPROVED',
+    'PAID'
+    );
+
+CREATE TYPE payslip_status AS ENUM (
+    'DRAFT',
+    'SENT',
+    'PAID'
+    );
+
 -- Table: companies
 
 CREATE TABLE companies
@@ -730,6 +762,83 @@ CREATE TABLE employee_id_documents
     deleted_at      TIMESTAMPTZ,
     CONSTRAINT fk_employee_id_iddoc FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
 );
+
+
+-- Table: leave_types
+
+CREATE TABLE leave_types
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT       NOT NULL,
+    name                VARCHAR(100) NOT NULL,
+    code                VARCHAR(50)  NOT NULL,
+    max_days            INTEGER      NULL,
+    is_paid             BOOLEAN      NOT NULL DEFAULT TRUE,
+    requires_attachment BOOLEAN      NOT NULL DEFAULT FALSE,
+    description         TEXT         NULL,
+    created_at          TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ  NULL,
+    CONSTRAINT fk_leave_types_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_leave_types_company_code ON leave_types (company_id, code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_leave_types_company ON leave_types (company_id);
+
+
+-- Table: leave_balances
+
+CREATE TABLE leave_balances
+(
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT      NOT NULL,
+    employee_id    BIGINT      NOT NULL,
+    leave_type_id  BIGINT      NOT NULL,
+    year           INTEGER     NOT NULL,
+    allocated_days INTEGER     NOT NULL DEFAULT 12,
+    used_days      INTEGER     NOT NULL DEFAULT 0,
+    pending_days   INTEGER     NOT NULL DEFAULT 0,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ,
+    CONSTRAINT fk_leave_balances_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_balances_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_balances_types FOREIGN KEY (leave_type_id) REFERENCES leave_types (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_leave_balances_emp_type_year ON leave_balances (employee_id, leave_type_id, year);
+CREATE INDEX idx_leave_balances_company ON leave_balances (company_id);
+CREATE INDEX idx_leave_balances_employee ON leave_balances (employee_id);
+
+CREATE TABLE leave_requests
+(
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT               NOT NULL,
+    employee_id    BIGINT               NOT NULL,
+    leave_type_id  BIGINT               NOT NULL,
+    start_date     DATE                 NOT NULL,
+    end_date       DATE                 NOT NULL,
+    duration_days  INTEGER              NOT NULL,
+    session_type   leave_session_type   NOT NULL DEFAULT 'FULL_DAY',
+    reason         TEXT                 NOT NULL,
+    attachment_url TEXT                 NULL,
+    status         leave_request_status NOT NULL DEFAULT 'PENDING',
+    approver_id    BIGINT               NULL,
+    approver_note  TEXT                 NULL,
+    approved_at    TIMESTAMPTZ          NULL,
+    created_at     TIMESTAMPTZ          NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ          NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ          NULL,
+    CONSTRAINT fk_leave_requests_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_requests_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_requests_types FOREIGN KEY (leave_type_id) REFERENCES leave_types (id),
+    CONSTRAINT fk_leave_requests_approver FOREIGN KEY (approver_id) REFERENCES users (id)
+);
+
+CREATE INDEX idx_leave_requests_company ON leave_requests (company_id);
+CREATE INDEX idx_leave_requests_employee ON leave_requests (employee_id);
+CREATE INDEX idx_leave_requests_status ON leave_requests (status);
+CREATE INDEX idx_leave_requests_dates ON leave_requests (start_date, end_date);
 
 
 -- Enable RLS
