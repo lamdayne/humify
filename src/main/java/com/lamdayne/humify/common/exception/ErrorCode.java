@@ -200,6 +200,13 @@ public enum ErrorCode {
     EMPLOYEE_CERTIFICATION_NAME_REQUIRED("EMPLOYEE_CERTIFICATION_NAME_REQUIRED", "Employee certification name can not blank", HttpStatus.BAD_REQUEST),
     EMPLOYEE_CERTIFICATION_NOT_FOUND("EMPLOYEE_CERTIFICATION_NOT_FOUND", "Employee certification not found", HttpStatus.NOT_FOUND),
 
+    //Employee Education
+    EMPLOYEE_EDUCATION_NOT_FOUND("EMPLOYEE_EDUCATION_NOT_FOUND", "Employee education not found", HttpStatus.NOT_FOUND),
+    DEGREE_LEVEL_REQUIRED("DEGREE_LEVEL_REQUIRED", "Degree level cannot be blank", HttpStatus.BAD_REQUEST),
+    SCHOOL_NAME_REQUIRED("SCHOOL_NAME_REQUIRED", "School name cannot be blank", HttpStatus.BAD_REQUEST),
+    START_YEAR_REQUIRED("START_YEAR_REQUIRED", "Start year cannot be null", HttpStatus.BAD_REQUEST),
+    START_YEAR_AFTER_END_YEAR("START_YEAR_AFTER_END_YEAR", "Start year cannot be after end year", HttpStatus.BAD_REQUEST)
+
     ;
 
     private String code;

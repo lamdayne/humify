@@ -6,9 +6,11 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeCertificationResponse;
+import com.lamdayne.humify.employee.dto.response.EmployeeEducationResponse;
 import com.lamdayne.humify.employee.dto.response.EmployeeIdDocumentResponse;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 import com.lamdayne.humify.employee.service.EmployeeCertificationService;
+import com.lamdayne.humify.employee.service.EmployeeEducationService;
 import com.lamdayne.humify.employee.service.EmployeeIdDocumentService;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final EmployeeCertificationService employeeCertificationService;
     private final EmployeeIdDocumentService idDocumentService;
+    private final EmployeeEducationService employeeEducationService;
 
     @PostMapping("/{employeeId}/id-documents")
     public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> createDocument(
@@ -232,6 +235,70 @@ public class EmployeeController {
                 .body(ApiResponse.success(
                         SuccessCode.EMPLOYEE_CERTIFICATION_DELETE_SUCCESS
                 ));
+    }
+
+    // education của khiemlee
+    @PostMapping("/{employeeId}/educations")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeEducationResponse>> createEducation(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody CreateEmployeeEducationRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_EDUCATION_CREATE_SUCCESS,
+                        employeeEducationService.createEducation(employeeId, request)
+                ));
+    }
+
+    @GetMapping("/{employeeId}/educations")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<List<EmployeeEducationResponse>>> getEducations(
+            @PathVariable Long employeeId) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_EDUCATION_READ_SUCCESS,
+                        employeeEducationService.getEducationsByEmployeeId(employeeId)
+                ));
+    }
+
+    @GetMapping("/{employeeId}/educations/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeEducationResponse>> getEducationDetail(
+            @PathVariable Long employeeId,
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_EDUCATION_READ_SUCCESS,
+                        employeeEducationService.getEducationDetail(employeeId, id)
+                ));
+    }
+
+    @PutMapping("/{employeeId}/educations/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeEducationResponse>> updateEducation(
+            @PathVariable Long employeeId,
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateEmployeeEducationRequest request) {
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_EDUCATION_UPDATE_SUCCESS,
+                        employeeEducationService.updateEducation(employeeId, id, request)
+                ));
+    }
+
+    @DeleteMapping("/{employeeId}/educations/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteEducation(
+            @PathVariable Long employeeId,
+            @PathVariable Long id) {
+
+        employeeEducationService.deleteEducation(employeeId, id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_EDUCATION_DELETE_SUCCESS));
     }
 
 }
