@@ -13,6 +13,10 @@ public enum SuccessCode {
     LEAVE_BALANCE_READ_SUCCESS("LEAVE_BALANCE_READ_SUCCESS", "Get leave balances successfully"),
     LEAVE_BALANCE_UPDATE_SUCCESS("LEAVE_BALANCE_UPDATE_SUCCESS", "Leave balance updated successfully"),
 
+    LEAVE_TYPE_CREATE_SUCCESS("LEAVE_TYPE_CREATE_SUCCESS", "Leave type created successfully"),
+    LEAVE_TYPE_READ_SUCCESS("LEAVE_TYPE_READ_SUCCESS", "Get leave types successfully"),
+    LEAVE_TYPE_UPDATE_SUCCESS("LEAVE_TYPE_UPDATE_SUCCESS", "Leave type updated successfully"),
+    LEAVE_TYPE_DELETE_SUCCESS("LEAVE_TYPE_DELETE_SUCCESS", "Leave type deleted successfully"),
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),

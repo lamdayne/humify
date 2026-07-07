@@ -17,6 +17,13 @@ public enum ErrorCode {
     ALLOCATED_DAYS_REQUIRED("ALLOCATED_DAYS_REQUIRED", "Allocated days cannot be null", HttpStatus.BAD_REQUEST),
     ALLOCATED_DAYS_INVALID("ALLOCATED_DAYS_INVALID", "Allocated days must be positive or zero", HttpStatus.BAD_REQUEST),
 
+    LEAVE_TYPE_NOT_FOUND("LEAVE_TYPE_NOT_FOUND", "Leave type not found", HttpStatus.NOT_FOUND),
+    LEAVE_TYPE_CODE_EXISTED("LEAVE_TYPE_CODE_EXISTED", "Leave type code already existed", HttpStatus.BAD_REQUEST),
+    LEAVE_TYPE_IN_USE("LEAVE_TYPE_IN_USE", "Cannot delete leave type because it is being used in active requests", HttpStatus.BAD_REQUEST),
+    LEAVE_TYPE_NAME_REQUIRED("LEAVE_TYPE_NAME_REQUIRED", "Leave type name cannot be blank", HttpStatus.BAD_REQUEST),
+    LEAVE_TYPE_NAME_MAX_LENGTH("LEAVE_TYPE_NAME_MAX_LENGTH", "Leave type name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
+    LEAVE_TYPE_CODE_REQUIRED("LEAVE_TYPE_CODE_REQUIRED", "Leave type code cannot be blank", HttpStatus.BAD_REQUEST),
+    LEAVE_TYPE_CODE_INVALID("LEAVE_TYPE_CODE_INVALID", "Leave type code must contain only uppercase letters and underscores", HttpStatus.BAD_REQUEST),
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),
