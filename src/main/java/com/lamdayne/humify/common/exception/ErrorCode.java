@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    // Attendance
+    LEAVE_BALANCE_NOT_FOUND("LEAVE_BALANCE_NOT_FOUND", "Leave balance not found", HttpStatus.NOT_FOUND),
+
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),

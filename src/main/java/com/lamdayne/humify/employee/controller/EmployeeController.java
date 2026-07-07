@@ -1,5 +1,8 @@
 package com.lamdayne.humify.employee.controller;
 
+import com.lamdayne.humify.attendance.dto.request.UpdateLeaveBalanceRequest;
+import com.lamdayne.humify.attendance.dto.response.LeaveBalanceResponse;
+import com.lamdayne.humify.attendance.service.LeaveBalanceService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
@@ -33,6 +36,27 @@ public class EmployeeController {
     private final EmployeeCertificationService employeeCertificationService;
     private final EmployeeIdDocumentService idDocumentService;
     private final EmployeeEducationService employeeEducationService;
+    private final LeaveBalanceService leaveBalanceService;
+
+    @GetMapping("/{employeeId}/leave-balances")
+    public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) Integer year
+    ) {
+        List<LeaveBalanceResponse> response = leaveBalanceService.getLeaveBalances(employeeId, year);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.LEAVE_BALANCE_READ_SUCCESS, response));
+    }
+
+    @PutMapping("/{employeeId}/leave-balances")
+    public ResponseEntity<ApiResponse<LeaveBalanceResponse>> updateLeaveBalance(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody UpdateLeaveBalanceRequest request
+    ) {
+        LeaveBalanceResponse response = leaveBalanceService.updateLeaveBalance(employeeId, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.LEAVE_BALANCE_UPDATE_SUCCESS, response));
+    }
 
     @PostMapping("/{employeeId}/id-documents")
     public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> createDocument(
