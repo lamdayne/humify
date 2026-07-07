@@ -138,7 +138,9 @@ public enum SuccessCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Get review data successfully"),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Review updated successfully"),
     REVIEW_SUBMIT_SUCCESS("REVIEW_SUBMIT_SUCCESS", "Review submitted successfully"),
-    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully");
+    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully"),
+    //excel
+    EMPLOYEE_IMPORT_SUCCESS("EMPLOYEE_IMPORT_SUCCESS", "Employee imported successfully"),;
 
     private String code;
     private String defaultMessage;

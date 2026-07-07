@@ -194,7 +194,11 @@ public enum ErrorCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Performance reviews retrieved successfully", HttpStatus.OK),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Performance review updated successfully", HttpStatus.OK),
     SCORE_REQUIRED("SCORE_REQUIRED", "Score is required", HttpStatus.BAD_REQUEST),
-    ;
+    //excel
+    EXCEL_TOO_MANY_ROWS("EXCEL_TOO_MANY_ROWS", "Excel exceeded maximum number of rows", HttpStatus.BAD_REQUEST),
+    INVALID_EXCEL_FILE("INVALID_EXCEL_FILE", "Excel file is invalid", HttpStatus.BAD_REQUEST),
+    INVALID_EXCEL_HEADER("INVALID_EXCEL_HEADER", "Excel header is invalid", HttpStatus.BAD_REQUEST),
+    EMPTY_EXCEL_FILE("EMPTY_EXCEL_FILE", "Empty excel file is invalid", HttpStatus.BAD_REQUEST),;
 
     private String code;
     private String defaultMessage;

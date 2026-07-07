@@ -1,11 +1,13 @@
 package com.lamdayne.humify.employee.controller;
 
+import com.lamdayne.humify.common.excel.dto.ImportResult;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 import com.lamdayne.humify.employee.service.EmployeeService;
+import com.lamdayne.humify.employee.service.impl.EmployeeExcelImportService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -98,6 +101,13 @@ public class EmployeeController {
                 .body(ApiResponse.success(
                         SuccessCode.EMPLOYEE_POSITION_UPDATE_SUCCESS
                 ));
+    }
+    private final EmployeeExcelImportService employeeExcelImportService;
+
+    @PostMapping("/import")
+    public ResponseEntity<ApiResponse<ImportResult>> importExcel(@RequestParam MultipartFile file) {
+        ImportResult result = employeeExcelImportService.importExcel(file);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.EMPLOYEE_IMPORT_SUCCESS, result));
     }
 
 }

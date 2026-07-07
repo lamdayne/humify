@@ -4,6 +4,7 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 
+
 public interface EmployeeService {
 
     EmployeeResponse createEmployee(CreateEmployeeRequest request);
