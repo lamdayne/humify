@@ -10,6 +10,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    // Attendance
+    LEAVE_BALANCE_NOT_FOUND("LEAVE_BALANCE_NOT_FOUND", "Leave balance not found", HttpStatus.NOT_FOUND),
+    LEAVE_TYPE_ID_REQUIRED("LEAVE_TYPE_ID_REQUIRED", "Leave type ID cannot be blank", HttpStatus.BAD_REQUEST),
+    YEAR_REQUIRED("YEAR_REQUIRED", "Year cannot be null", HttpStatus.BAD_REQUEST),
+    ALLOCATED_DAYS_REQUIRED("ALLOCATED_DAYS_REQUIRED", "Allocated days cannot be null", HttpStatus.BAD_REQUEST),
+    ALLOCATED_DAYS_INVALID("ALLOCATED_DAYS_INVALID", "Allocated days must be positive or zero", HttpStatus.BAD_REQUEST),
+
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),

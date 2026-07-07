@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum SuccessCode {
 
+    // Attendance
+    LEAVE_BALANCE_READ_SUCCESS("LEAVE_BALANCE_READ_SUCCESS", "Get leave balances successfully"),
+    LEAVE_BALANCE_UPDATE_SUCCESS("LEAVE_BALANCE_UPDATE_SUCCESS", "Leave balance updated successfully"),
+
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
