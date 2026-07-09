@@ -8,16 +8,11 @@ import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.employee.dto.request.*;
-import com.lamdayne.humify.employee.dto.response.EmployeeCertificationResponse;
-import com.lamdayne.humify.employee.dto.response.EmployeeEducationResponse;
-import com.lamdayne.humify.employee.dto.response.EmployeeIdDocumentResponse;
-import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
-import com.lamdayne.humify.employee.service.EmployeeCertificationService;
-import com.lamdayne.humify.employee.service.EmployeeEducationService;
-import com.lamdayne.humify.employee.service.EmployeeIdDocumentService;
-import com.lamdayne.humify.employee.service.EmployeeService;
+import com.lamdayne.humify.employee.dto.response.*;
+import com.lamdayne.humify.employee.service.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +32,7 @@ public class EmployeeController {
     private final EmployeeIdDocumentService idDocumentService;
     private final EmployeeEducationService employeeEducationService;
     private final LeaveBalanceService leaveBalanceService;
+    private final EmployeeWorkExperienceService employeeWorkExperienceService;
 
     @GetMapping("/{employeeId}/leave-balances")
     public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
@@ -323,6 +319,56 @@ public class EmployeeController {
         employeeEducationService.deleteEducation(employeeId, id);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(SuccessCode.EMPLOYEE_EDUCATION_DELETE_SUCCESS));
+    }
+
+    @PostMapping("/{employeeId}/work-experiences")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> createWorkExperience(
+            @PathVariable(name = "employeeId") Long employeeId, @Valid @RequestBody CreateEmployeeWorkExperienceRequest request) {
+        EmployeeWorkExperienceResponse response = employeeWorkExperienceService.create(employeeId, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS, response));
+
+    }
+
+    @GetMapping("/{employeeId}/work-experiences")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<List<EmployeeWorkExperienceResponse>>> getAll(
+            @PathVariable(name = "employeeId") Long employeeId
+    ) {
+        List<EmployeeWorkExperienceResponse> response = employeeWorkExperienceService.getAll(employeeId);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS, response));
+    }
+
+    @GetMapping("/{employeeId}/work-experiences/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> getById(
+            @PathVariable(name = "employeeId") Long employeeId,
+            @PathVariable(name = "id") Long id
+    ) {
+        EmployeeWorkExperienceResponse response = employeeWorkExperienceService.getById(employeeId, id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS, response));
+    }
+
+    @PutMapping("/{employeeId}/work-experiences/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> updateWorkExperience(
+            @PathVariable(name = "employeeId") Long employeeId,
+            @PathVariable(name = "id") Long id, @Valid @RequestBody UpdateEmployeeWorkExperienceRequest request
+    ) {
+        EmployeeWorkExperienceResponse response = employeeWorkExperienceService.update(employeeId, id, request);
+        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS, response));
+    }
+
+    @DeleteMapping("/{employeeId}/work-experiences/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteWorkExperience(
+            @PathVariable(name = "employeeId") Long employeeId, @PathVariable(name = "id") Long id
+    ) {
+        employeeWorkExperienceService.delete(employeeId, id);
+        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS,null));
     }
 
 }

@@ -219,9 +219,9 @@ public enum ErrorCode {
     DEGREE_LEVEL_REQUIRED("DEGREE_LEVEL_REQUIRED", "Degree level cannot be blank", HttpStatus.BAD_REQUEST),
     SCHOOL_NAME_REQUIRED("SCHOOL_NAME_REQUIRED", "School name cannot be blank", HttpStatus.BAD_REQUEST),
     START_YEAR_REQUIRED("START_YEAR_REQUIRED", "Start year cannot be null", HttpStatus.BAD_REQUEST),
-    START_YEAR_AFTER_END_YEAR("START_YEAR_AFTER_END_YEAR", "Start year cannot be after end year", HttpStatus.BAD_REQUEST)
-
-    ;
+    START_YEAR_AFTER_END_YEAR("START_YEAR_AFTER_END_YEAR", "Start year cannot be after end year", HttpStatus.BAD_REQUEST),
+    // Employrr experience
+    EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND("EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", "EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", HttpStatus.NOT_FOUND),;
 
     private String code;
     private String defaultMessage;
