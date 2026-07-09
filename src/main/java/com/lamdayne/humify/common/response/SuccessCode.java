@@ -169,7 +169,17 @@ public enum SuccessCode {
     EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS", "Employee work experience created successfully"),
     EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS", "Get employee work experience successfully"),
     EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS", "Employee work experience updated successfully"),
-    EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS", "Employee work experience deleted successfully"),;
+    EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS", "Employee work experience deleted successfully"),
+
+    // Leave request
+    LEAVE_REQUEST_CREATE_SUCCESS("LEAVE_REQUEST_CREATE_SUCCESS", "Create leave request successfully"),
+    LEAVE_REQUEST_READ_SUCCESS("LEAVE_REQUEST_READ_SUCCESS", "Create leave request read successfully"),
+    LEAVE_REQUEST_UPDATE_SUCCESS("LEAVE_REQUEST_UPDATE_SUCCESS", "Leave request updated successfully"),
+    LEAVE_REQUEST_CANCELLED_SUCCESS("LEAVE_REQUEST_CANCELLED_SUCCESS", "Leave request cancelled successfully"),
+    LEAVE_REQUEST_APPROVE_SUCCESS("LEAVE_REQUEST_APPROVE_SUCCESS", "Leave request approved successfully"),
+    LEAVE_REQUEST_REJECT_SUCCESS("LEAVE_REQUEST_REJECT_SUCCESS", "Leave request rejected successfully"),
+
+    ;
 
     private String code;
     private String defaultMessage;

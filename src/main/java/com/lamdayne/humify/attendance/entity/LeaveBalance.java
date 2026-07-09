@@ -6,6 +6,8 @@ import com.lamdayne.humify.employee.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -31,15 +33,15 @@ public class LeaveBalance extends BaseEntity {
     private Integer year;
 
     @Builder.Default
-    @Column(nullable = false)
-    private Integer allocatedDays = 12;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal allocatedDays = new BigDecimal("12.00");
 
     @Builder.Default
-    @Column(nullable = false)
-    private Integer usedDays = 0;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal usedDays = BigDecimal.ZERO;
 
     @Builder.Default
-    @Column(nullable = false)
-    private Integer pendingDays = 0;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal pendingDays = BigDecimal.ZERO;
 
 }
