@@ -220,8 +220,26 @@ public enum ErrorCode {
     SCHOOL_NAME_REQUIRED("SCHOOL_NAME_REQUIRED", "School name cannot be blank", HttpStatus.BAD_REQUEST),
     START_YEAR_REQUIRED("START_YEAR_REQUIRED", "Start year cannot be null", HttpStatus.BAD_REQUEST),
     START_YEAR_AFTER_END_YEAR("START_YEAR_AFTER_END_YEAR", "Start year cannot be after end year", HttpStatus.BAD_REQUEST),
-    // Employrr experience
-    EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND("EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", "EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", HttpStatus.NOT_FOUND),;
+
+    // Employee experience
+    EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND("EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", "EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND", HttpStatus.NOT_FOUND),
+
+    // Leave Request
+    LEAVE_SESSION_TYPE_INVALID("LEAVE_SESSION_TYPE_INVALID", "Leave session type does not exist", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_REASON_REQUIRED("LEAVE_REQUEST_REASON_REQUIRED", "Leave request reason cannot be blank", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_START_DATE_REQUIRED("LEAVE_REQUEST_START_DATE_REQUIRED", "Leave request start date cannot be null", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_END_DATE_REQUIRED("LEAVE_REQUEST_END_DATE_REQUIRED", "Leave request end date cannot be null", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_DATE_INVALID("LEAVE_REQUEST_DATE_INVALID", "Leave request date is invalid", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_ATTACHMENT_REQUIRED("LEAVE_REQUEST_ATTACHMENT_REQUIRED", "Leave request attachment cannot be null", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_DATE_OVERLAP("LEAVE_REQUEST_DATE_OVERLAP", "Leave request date overlap", HttpStatus.BAD_REQUEST),
+    LEAVE_BALANCE_INSUFFICIENT("LEAVE_BALANCE_INSUFFICIENT", "Leave balance insufficient", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_NOT_FOUND("LEAVE_REQUEST_NOT_FOUND", "Leave request not found", HttpStatus.NOT_FOUND),
+    LEAVE_REQUEST_CANNOT_UPDATE("LEAVE_REQUEST_CANNOT_UPDATE", "Leave request cannot be updated", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_STATUS_INVALID("LEAVE_REQUEST_STATUS_INVALID", "Leave request status invalid", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_CANNOT_CANCELLED("LEAVE_REQUEST_CANNOT_CANCELLED", "Leave request can not cancelled", HttpStatus.BAD_REQUEST),
+    LEAVE_REQUEST_APPROVER_NOTE_REQUIRED("LEAVE_REQUEST_APPROVER_NOTE_REQUIRED", "Leave request approver note is required", HttpStatus.BAD_REQUEST),
+
+    ;
 
     private String code;
     private String defaultMessage;

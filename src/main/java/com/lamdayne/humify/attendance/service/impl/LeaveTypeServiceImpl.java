@@ -5,7 +5,6 @@ import com.lamdayne.humify.attendance.dto.request.UpdateLeaveTypeRequest;
 import com.lamdayne.humify.attendance.dto.response.LeaveTypeResponse;
 import com.lamdayne.humify.attendance.entity.LeaveType;
 import com.lamdayne.humify.attendance.mapper.LeaveTypeMapper;
-//import com.lamdayne.humify.attendance.repository.LeaveRequestRepository;
 import com.lamdayne.humify.attendance.repository.LeaveTypeRepository;
 import com.lamdayne.humify.attendance.service.LeaveTypeService;
 import com.lamdayne.humify.common.exception.AppException;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,14 +25,13 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
     private final LeaveTypeRepository leaveTypeRepository;
     private final CompanyRepository companyRepository;
     private final LeaveTypeMapper leaveTypeMapper;
-//    private final LeaveRequestRepository leaveRequestRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<LeaveTypeResponse> getLeaveTypes(Long companyId) {
         return leaveTypeRepository.findByCompanyIdAndDeletedAtIsNull(companyId).stream()
                 .map(leaveTypeMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -52,8 +49,8 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
                 .name(request.getName())
                 .code(request.getCode())
                 .maxDays(request.getMaxDays())
-                .paid(request.getIsPaid() != null ? request.getIsPaid() : true)
-                .requiresAttachment(request.getRequiresAttachment() != null ? request.getRequiresAttachment() : false)
+                .paid(request.getIsPaid() != null ? request.getIsPaid() : Boolean.TRUE)
+                .requiresAttachment(request.getRequiresAttachment() != null ? request.getRequiresAttachment() : Boolean.FALSE)
                 .description(request.getDescription())
                 .build();
 

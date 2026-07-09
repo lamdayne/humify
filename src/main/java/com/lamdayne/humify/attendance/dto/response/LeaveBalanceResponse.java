@@ -3,6 +3,8 @@ package com.lamdayne.humify.attendance.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Builder
 public class LeaveBalanceResponse {
@@ -11,10 +13,10 @@ public class LeaveBalanceResponse {
     private Long employeeId;
     private LeaveTypeShortResponse leaveType;
     private Integer year;
-    private Integer allocatedDays;
-    private Integer usedDays;
-    private Integer pendingDays;
-    private Integer remainingDays;
+    private BigDecimal allocatedDays;
+    private BigDecimal usedDays;
+    private BigDecimal pendingDays;
+    private BigDecimal remainingDays;
 
     @Getter
     @Builder

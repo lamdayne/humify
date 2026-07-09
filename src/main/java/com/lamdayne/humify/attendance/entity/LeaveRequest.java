@@ -11,6 +11,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "leave_balances")
+@Table(name = "leave_requests")
 public class LeaveRequest extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,8 +46,8 @@ public class LeaveRequest extends BaseEntity {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private Integer durationDays;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal durationDays;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

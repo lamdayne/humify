@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class UpdateLeaveTypeRequest {
@@ -16,7 +18,7 @@ public class UpdateLeaveTypeRequest {
     @Pattern(regexp = "^[A-Z_]+$", message = "LEAVE_TYPE_CODE_INVALID")
     private String code;
 
-    private Integer maxDays;
+    private BigDecimal maxDays;
     private Boolean isPaid;
     private Boolean requiresAttachment;
     private String description;

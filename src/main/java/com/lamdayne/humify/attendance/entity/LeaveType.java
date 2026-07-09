@@ -5,6 +5,8 @@ import com.lamdayne.humify.company.entity.Company;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -24,8 +26,8 @@ public class LeaveType extends BaseEntity {
     @Column(nullable = false)
     private String code;
 
-    @Column(name = "max_days")
-    private Integer maxDays;
+    @Column(name = "max_days", precision = 5, scale = 2)
+    private BigDecimal maxDays;
 
     @Builder.Default
     @Column(nullable = false, name = "is_paid")
