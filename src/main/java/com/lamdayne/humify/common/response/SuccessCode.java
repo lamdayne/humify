@@ -161,8 +161,11 @@ public enum SuccessCode {
     EMPLOYEE_EDUCATION_CREATE_SUCCESS("EMPLOYEE_EDUCATION_CREATE_SUCCESS", "Employee education created successfully"),
     EMPLOYEE_EDUCATION_READ_SUCCESS("EMPLOYEE_EDUCATION_READ_SUCCESS", "Get employee education successfully"),
     EMPLOYEE_EDUCATION_UPDATE_SUCCESS("EMPLOYEE_EDUCATION_UPDATE_SUCCESS", "Employee education updated successfully"),
-    EMPLOYEE_EDUCATION_DELETE_SUCCESS("EMPLOYEE_EDUCATION_DELETE_SUCCESS", "Employee education deleted successfully")
-    ;
+    EMPLOYEE_EDUCATION_DELETE_SUCCESS("EMPLOYEE_EDUCATION_DELETE_SUCCESS", "Employee education deleted successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS", "Employee work experience created successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS", "Get employee work experience successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS", "Employee work experience updated successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS", "Employee work experience deleted successfully"),;
 
     private String code;
     private String defaultMessage;
