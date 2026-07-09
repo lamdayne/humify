@@ -840,6 +840,103 @@ CREATE INDEX idx_leave_requests_employee ON leave_requests (employee_id);
 CREATE INDEX idx_leave_requests_status ON leave_requests (status);
 CREATE INDEX idx_leave_requests_dates ON leave_requests (start_date, end_date);
 
+-- Table: employee_contracts
+
+CREATE TABLE employee_contracts
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT          NOT NULL,
+    employee_id         BIGINT          NOT NULL,
+    contract_number     VARCHAR(50)     NOT NULL,
+    contract_type       VARCHAR(50)     NOT NULL,
+    start_date          DATE            NOT NULL,
+    end_date            DATE NULL,
+    base_salary         NUMERIC(15, 2)  NOT NULL,
+    allowance_lunch     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_phone     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_transport NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_other     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    insurance_salary    NUMERIC(15, 2)  NOT NULL,
+    taxable_dependents  INTEGER         NOT NULL DEFAULT 0,
+    status              contract_status NOT NULL DEFAULT 'ACTIVE',
+    file_url            TEXT NULL,
+    created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ NULL,
+    CONSTRAINT fk_contracts_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_contracts_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_contracts_company_number ON employee_contracts (company_id, contract_number) WHERE deleted_at IS NULL;
+CREATE INDEX idx_contracts_company ON employee_contracts (company_id);
+CREATE INDEX idx_contracts_employee ON employee_contracts (employee_id);
+CREATE INDEX idx_contracts_status ON employee_contracts (status);
+
+-- Table: payroll_periods
+
+CREATE TABLE payroll_periods
+(
+    id                 BIGSERIAL PRIMARY KEY,
+    company_id         BIGINT                NOT NULL,
+    name               VARCHAR(100)          NOT NULL,
+    month              INTEGER               NOT NULL,
+    year               INTEGER               NOT NULL,
+    start_date         DATE                  NOT NULL,
+    end_date           DATE                  NOT NULL,
+    standard_work_days NUMERIC(4, 2)         NOT NULL DEFAULT 22.00,
+    status             payroll_period_status NOT NULL DEFAULT 'DRAFT',
+    created_at         TIMESTAMPTZ           NOT NULL DEFAULT NOW(),
+    updated_at         TIMESTAMPTZ           NOT NULL DEFAULT NOW(),
+    deleted_at         TIMESTAMPTZ NULL,
+    CONSTRAINT fk_payroll_periods_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_payroll_periods_company_month_year ON payroll_periods (company_id, month, year) WHERE deleted_at IS NULL;
+CREATE INDEX idx_payroll_periods_company ON payroll_periods (company_id);
+CREATE INDEX idx_payroll_periods_status ON payroll_periods (status);
+
+-- Table: payslips
+
+CREATE TABLE payslips
+(
+    id                               BIGSERIAL PRIMARY KEY,
+    company_id                       BIGINT         NOT NULL,
+    payroll_period_id                BIGINT         NOT NULL,
+    employee_id                      BIGINT         NOT NULL,
+    base_salary                      NUMERIC(15, 2) NOT NULL,
+    standard_work_days               NUMERIC(4, 2)  NOT NULL,
+    actual_work_days                 NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    paid_leave_days                  NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    unpaid_leave_days                NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    salary_by_work_days              NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    total_allowances                 NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    bonus_kpi                        NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    bonus_project                    NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    other_bonuses                    NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    ot_hours                         NUMERIC(5, 2)  NOT NULL DEFAULT 0.00,
+    ot_salary                        NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    gross_salary                     NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_social_insurance       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_health_insurance       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_unemployment_insurance NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    personal_income_tax              NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    other_deductions                 NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    net_salary                       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    status                           payslip_status NOT NULL DEFAULT 'DRAFT',
+    payment_date                     DATE NULL,
+    note                             TEXT NULL,
+    created_at                       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+    updated_at                       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+    deleted_at                       TIMESTAMPTZ NULL,
+    CONSTRAINT fk_payslips_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_payslips_periods FOREIGN KEY (payroll_period_id) REFERENCES payroll_periods (id) ON DELETE CASCADE,
+    CONSTRAINT fk_payslips_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_payslips_period_employee ON payslips (payroll_period_id, employee_id);
+CREATE INDEX idx_payslips_company ON payslips (company_id);
+CREATE INDEX idx_payslips_employee ON payslips (employee_id);
+CREATE INDEX idx_payslips_status ON payslips (status);
 
 -- Enable RLS
 -- Bật RLS
