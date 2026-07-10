@@ -8,9 +8,11 @@ import com.lamdayne.humify.attendance.dto.response.LeaveRequestResponse;
 import com.lamdayne.humify.attendance.service.LeaveRequestService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
+import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -93,6 +95,18 @@ public class LeaveRequestController {
                 .body(ApiResponse.success(
                         SuccessCode.LEAVE_REQUEST_REJECT_SUCCESS,
                         leaveRequestService.rejectLeaveRequest(userPrincipal, id, request)
+                ));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<LeaveRequestResponse>>> getLeaveRequests(
+            Pageable pageable,
+            @RequestParam(required = false) String[] leaveRequest
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.LEAVE_REQUEST_READ_SUCCESS,
+                        leaveRequestService.getLeaveRequests(pageable, leaveRequest)
                 ));
     }
 
