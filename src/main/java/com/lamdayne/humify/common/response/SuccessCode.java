@@ -73,6 +73,11 @@ public enum SuccessCode {
     EMPLOYEE_ID_DOCUMENT_UPDATE_SUCCESS("EMPLOYEE_ID_DOCUMENT_UPDATE_SUCCESS", "Employee ID document updated successfully"),
     EMPLOYEE_ID_DOCUMENT_DELETE_SUCCESS("EMPLOYEE_ID_DOCUMENT_DELETE_SUCCESS", "Employee ID document deleted successfully"),
 
+    // Contract
+    CONTRACT_CREATE_SUCCESS("CONTRACT_CREATE_SUCCESS", "Employee contract created successfully"),
+    CONTRACT_READ_SUCCESS("CONTRACT_READ_SUCCESS", "Get contract data successfully"),
+    CONTRACT_UPDATE_SUCCESS("CONTRACT_UPDATE_SUCCESS", "Contract updated successfully"),
+    CONTRACT_DELETE_SUCCESS("CONTRACT_DELETE_SUCCESS", "Contract deleted successfully"),
 
     // User
     USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
