@@ -11,6 +11,7 @@ import com.lamdayne.humify.attendance.enums.LeaveRequestStatus;
 import com.lamdayne.humify.attendance.enums.LeaveSessionType;
 import com.lamdayne.humify.attendance.mapper.LeaveRequestMapper;
 import com.lamdayne.humify.attendance.repository.LeaveRequestRepository;
+import com.lamdayne.humify.attendance.repository.LeaveRequestSpecification;
 import com.lamdayne.humify.attendance.repository.LeaveTypeRepository;
 import com.lamdayne.humify.attendance.service.LeaveBalanceService;
 import com.lamdayne.humify.attendance.service.LeaveRequestService;
@@ -18,10 +19,16 @@ import com.lamdayne.humify.attendance.service.LeaveValidationService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.search.SearchCriteriaParser;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +36,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @Transactional
@@ -43,6 +51,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     private final LeaveTypeRepository leaveTypeRepository;
     private final LeaveValidationService leaveValidationService;
     private final LeaveRequestRepository leaveRequestRepository;
+    private final LeaveRequestSpecification leaveRequestSpecification;
 
     @Override
     public LeaveRequestResponse createLeaveRequest(UserPrincipal userPrincipal, CreateLeaveRequest request) {
@@ -217,6 +226,25 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         // send email
 
         return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
+    }
+
+    @Override
+    public PageResponse<LeaveRequestResponse> getLeaveRequests(Pageable pageable, String[] leaveRequest) {
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(leaveRequest);
+
+        Specification<LeaveRequest> spec = leaveRequestSpecification.build(criteriaList);
+
+        Page<LeaveRequest> page = leaveRequestRepository.findAll(spec, pageable);
+
+        List<LeaveRequestResponse> responses = page.stream().map(leaveRequestMapper::toLeaveRequestResponse).toList();
+
+        return PageResponse.<LeaveRequestResponse>builder()
+                .pageNo(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .items(responses)
+                .build();
     }
 
     private LeaveRequest getLeaveRequest(long id) {
