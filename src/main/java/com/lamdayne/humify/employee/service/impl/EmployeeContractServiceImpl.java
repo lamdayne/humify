@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -64,10 +65,10 @@ public class EmployeeContractServiceImpl implements EmployeeContractService {
         contract.setEmployee(employee);
         contract.setStatus(ContractStatus.ACTIVE);
 
-        if(contract.getAllowanceLunch() == null) contract.setAllowanceLunch(java.math.BigDecimal.ZERO);
-        if(contract.getAllowancePhone() == null) contract.setAllowancePhone(java.math.BigDecimal.ZERO);
-        if(contract.getAllowanceTransport() == null) contract.setAllowanceTransport(java.math.BigDecimal.ZERO);
-        if(contract.getAllowanceOther() == null) contract.setAllowanceOther(java.math.BigDecimal.ZERO);
+        if(contract.getAllowanceLunch() == null) contract.setAllowanceLunch(BigDecimal.ZERO);
+        if(contract.getAllowancePhone() == null) contract.setAllowancePhone(BigDecimal.ZERO);
+        if(contract.getAllowanceTransport() == null) contract.setAllowanceTransport(BigDecimal.ZERO);
+        if(contract.getAllowanceOther() == null) contract.setAllowanceOther(BigDecimal.ZERO);
         if(contract.getTaxableDependents() == null) contract.setTaxableDependents(0);
 
         return contractMapper.toResponse(contractRepository.save(contract));
