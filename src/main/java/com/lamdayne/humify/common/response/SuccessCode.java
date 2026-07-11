@@ -184,6 +184,11 @@ public enum SuccessCode {
     LEAVE_REQUEST_APPROVE_SUCCESS("LEAVE_REQUEST_APPROVE_SUCCESS", "Leave request approved successfully"),
     LEAVE_REQUEST_REJECT_SUCCESS("LEAVE_REQUEST_REJECT_SUCCESS", "Leave request rejected successfully"),
 
+    // Payroll Period
+    PAYROLL_PERIOD_CREATE_SUCCESS("PAYROLL_PERIOD_CREATE_SUCCESS", "Payroll period created successfully"),
+    PAYROLL_PERIOD_READ_SUCCESS("PAYROLL_PERIOD_READ_SUCCESS", "Get payroll periods successfully"),
+    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed")
+    ;
     ;
 
     private String code;
