@@ -142,6 +142,24 @@ CREATE TYPE payslip_status AS ENUM (
     'PAID'
     );
 
+CREATE TYPE attendance_log_type AS ENUM (
+    'CHECK_IN',
+    'CHECK_OUT'
+    );
+
+CREATE TYPE attendance_correction_status AS ENUM (
+    'PENDING',
+    'APPROVED',
+    'REJECTED'
+    );
+
+CREATE TYPE attendance_verify_method AS ENUM (
+    'GPS',
+    'FACE',
+    'FINGERPRINT',
+    'NFC'
+    );
+
 -- Table: companies
 
 CREATE TABLE companies
@@ -937,6 +955,100 @@ CREATE UNIQUE INDEX uq_payslips_period_employee ON payslips (payroll_period_id, 
 CREATE INDEX idx_payslips_company ON payslips (company_id);
 CREATE INDEX idx_payslips_employee ON payslips (employee_id);
 CREATE INDEX idx_payslips_status ON payslips (status);
+
+-- Table: work_shifts
+
+CREATE TABLE work_shifts
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    company_id           BIGINT       NOT NULL,
+    shift_code           VARCHAR(50)  NOT NULL,
+    name                 VARCHAR(255) NOT NULL,
+    start_time           TIMESTAMPTZ  NOT NULL,
+    end_time             TIMESTAMPTZ  NOT NULL,
+    break_start_time     TIMESTAMPTZ NULL,
+    break_end_time       TIMESTAMPTZ NULL,
+    grace_period_minutes INTEGER      NOT NULL DEFAULT 5,
+    status               BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at           TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at           TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at           TIMESTAMPTZ NULL,
+    CONSTRAINT fk_work_shifts_company_id FOREIGN KEY (company_id) REFERENCES companies (id)
+);
+
+CREATE UNIQUE INDEX uq_work_shifts_company_code ON work_shifts (company_id, shift_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_work_shifts_company ON work_shifts (company_id);
+
+-- Table: employee_shifts
+
+CREATE TABLE employee_shifts
+(
+    id            BIGSERIAL PRIMARY KEY,
+    employee_id   BIGINT      NOT NULL,
+    work_shift_id BIGINT      NOT NULL,
+    start_date    DATE        NOT NULL,
+    end_date      DATE NULL,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ NULL,
+    CONSTRAINT fk_employee_shifts_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_employee_shifts_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id)
+);
+CREATE INDEX idx_employee_shifts_employee ON employee_shifts (employee_id);
+CREATE INDEX idx_employee_shifts_shift ON employee_shifts (work_shift_id);
+CREATE INDEX idx_employee_shifts_dates ON employee_shifts (start_date, end_date);
+
+-- Table: attendance_logs
+
+CREATE TABLE attendance_logs
+(
+    id            BIGSERIAL PRIMARY KEY,
+    attendance_id BIGINT NULL,
+    employee_id   BIGINT                   NOT NULL,
+    timestamp     TIMESTAMPTZ              NOT NULL,
+    log_type      attendance_log_type      NOT NULL,
+    verify_method attendance_verify_method NOT NULL,
+    ip_address    VARCHAR(255) NULL,
+    device_info   VARCHAR(255) NULL,
+    created_at    TIMESTAMPTZ              NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ              NOT NULL DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ NULL,
+    CONSTRAINT fk_attendance_logs_attendance FOREIGN KEY (attendance_id) REFERENCES attendances (id),
+    CONSTRAINT fk_attendance_logs_employee FOREIGN KEY (employee_id) REFERENCES employees (id)
+);
+
+CREATE INDEX idx_attendance_logs_attendance ON attendance_logs (attendance_id);
+CREATE INDEX idx_attendance_logs_employee ON attendance_logs (employee_id);
+CREATE INDEX idx_attendance_logs_timestamp ON attendance_logs (timestamp);
+
+-- Table: attendance_
+
+CREATE TABLE attendance_corrections
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    attendance_id       BIGINT NULL,
+    employee_id         BIGINT                       NOT NULL,
+    correction_date     DATE                         NOT NULL,
+    requested_check_in  TIMESTAMPTZ NULL,
+    requested_check_out TIMESTAMPTZ NULL,
+    reason              VARCHAR(255)                 NOT NULL,
+    status              attendance_correction_status NOT NULL,
+    approver_id         BIGINT NULL,
+    approved_at         TIMESTAMPTZ NULL,
+    approver_note       VARCHAR(255) NULL,
+    created_at          TIMESTAMPTZ                  NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ                  NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ NULL,
+    CONSTRAINT fk_corrections_attendance FOREIGN KEY (attendance_id) REFERENCES attendances (id),
+    CONSTRAINT fk_corrections_employee FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_corrections_approver FOREIGN KEY (approver_id) REFERENCES users (id)
+);
+
+CREATE INDEX idx_corrections_attendance ON attendance_corrections (attendance_id);
+CREATE INDEX idx_corrections_employee ON attendance_corrections (employee_id);
+CREATE INDEX idx_corrections_date ON attendance_corrections (correction_date);
+CREATE INDEX idx_corrections_status ON attendance_corrections (status);
+
 
 -- Enable RLS
 -- Bật RLS
