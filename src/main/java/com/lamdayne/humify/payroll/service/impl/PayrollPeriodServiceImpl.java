@@ -4,7 +4,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.company.entity.Company;
-import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.company.service.CompanyService;
 import com.lamdayne.humify.payroll.dto.request.CreatePayrollPeriodRequest;
 import com.lamdayne.humify.payroll.dto.response.PayrollPeriodResponse;
 import com.lamdayne.humify.payroll.entity.PayrollPeriod;
@@ -28,14 +28,13 @@ import java.util.stream.Collectors;
 public class PayrollPeriodServiceImpl implements PayrollPeriodService {
 
     private final PayrollPeriodRepository payrollPeriodRepository;
-    private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
     private final PayrollPeriodMapper payrollPeriodMapper;
 
     @Override
     @Transactional
     public PayrollPeriodResponse createPayrollPeriod(Long companyId, CreatePayrollPeriodRequest request) {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+        Company company = companyService.getCompanyById(companyId);
 
         if (payrollPeriodRepository.existsByCompanyIdAndMonthAndYear(companyId, request.getMonth(), request.getYear())) {
             throw new AppException(ErrorCode.PAYROLL_PERIOD_EXISTED);
