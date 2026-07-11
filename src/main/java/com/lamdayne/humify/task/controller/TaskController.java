@@ -44,7 +44,6 @@ public class TaskController {
         );
     }
 
-
     @PostMapping(value = "/{taskId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

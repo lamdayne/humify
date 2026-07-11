@@ -17,9 +17,7 @@ import java.util.List;
 public class TaskActivityServiceImpl implements TaskActivityService {
 
     private final TaskRepository taskRepository;
-
     private final TaskActivityRepository taskActivityRepository;
-
     private final TaskActivityMapper taskActivityMapper;
 
     @Override
