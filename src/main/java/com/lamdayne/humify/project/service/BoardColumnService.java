@@ -5,6 +5,7 @@ import com.lamdayne.humify.project.dto.request.ReorderColumnsRequest;
 import com.lamdayne.humify.project.dto.request.UpdateColumnRequest;
 import com.lamdayne.humify.project.dto.response.BoardColumnResponse;
 import com.lamdayne.humify.project.entity.BoardColumn;
+import com.lamdayne.humify.project.entity.Project;
 
 import java.util.List;
 
@@ -22,6 +23,6 @@ public interface BoardColumnService {
 
     BoardColumn findById(Long id);
 
-    void createDefaultColumns(Long projectId);
+    void initDefaultColumns(Project project);
 
 }

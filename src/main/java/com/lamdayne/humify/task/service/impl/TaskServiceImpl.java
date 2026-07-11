@@ -20,9 +20,12 @@ import com.lamdayne.humify.task.dto.response.SubtaskResponse;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 import com.lamdayne.humify.task.entity.Task;
+import com.lamdayne.humify.task.entity.TaskActivity;
+import com.lamdayne.humify.task.enums.TaskActivityAction;
 import com.lamdayne.humify.task.enums.TaskPriority;
 import com.lamdayne.humify.task.enums.TaskType;
 import com.lamdayne.humify.task.mapper.TaskMapper;
+import com.lamdayne.humify.task.repository.TaskActivityRepository;
 import com.lamdayne.humify.task.repository.TaskRepository;
 import com.lamdayne.humify.task.service.TaskService;
 import com.lamdayne.humify.user.entity.User;
@@ -30,6 +33,8 @@ import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +53,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final BoardColumnService boardColumnService;
     private final CompanyAccessService companyAccessService;
+    private final TaskActivityRepository taskActivityRepository;
 
     @Override
     @Transactional
@@ -98,7 +104,16 @@ public class TaskServiceImpl implements TaskService {
                 .dueDate(request.getDueDate())
                 .build();
 
-        return taskMapper.toResponse(taskRepository.save(task));
+        task = taskRepository.save(task);
+
+        taskActivityRepository.save(TaskActivity.builder()
+                .task(task)
+                .user(reporter)
+                .action(TaskActivityAction.CREATE_TASK)
+                .build()
+        );
+
+        return taskMapper.toResponse(task);
     }
 
     @Override
@@ -136,7 +151,32 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
+        User user = getUser();
+
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+
+        if (!task.getPoints().equals(request.getPoints())) {
+            taskActivityRepository.save(TaskActivity.builder()
+                    .task(task)
+                    .user(user)
+                    .action(TaskActivityAction.UPDATE_POINTS)
+                    .oldValue(task.getPoints().toString())
+                    .newValue(request.getPoints().toString())
+                    .build()
+            );
+        }
+
+        if (task.getPriority() != TaskPriority.valueOf(request.getPriority())) {
+            taskActivityRepository.save(TaskActivity.builder()
+                    .task(task)
+                    .user(user)
+                    .action(TaskActivityAction.UPDATE_PRIORITY)
+                    .oldValue(task.getPriority().toString())
+                    .newValue(request.getPriority())
+                    .build()
+            );
+        }
+
         taskMapper.updateTask(task, request);
         return taskMapper.toResponse(taskRepository.save(task));
     }
@@ -147,6 +187,13 @@ public class TaskServiceImpl implements TaskService {
 
         User assignee = userService.getUserById(request.getAssigneeId());
         task.setAssignee(assignee);
+
+        taskActivityRepository.save(TaskActivity.builder()
+                .task(task)
+                .user(getUser())
+                .action(TaskActivityAction.CHANGE_ASSIGNEE)
+                .build()
+        );
 
         return taskMapper.toResponse(taskRepository.save(task));
     }
@@ -216,8 +263,14 @@ public class TaskServiceImpl implements TaskService {
         final double GAP = 1000.0;
         if (beforePos == null && afterPos == null) return GAP;
         if (beforePos == null) return afterPos / 2.0;
-        if (afterPos == null) return beforePos +  GAP;
+        if (afterPos == null) return beforePos + GAP;
         return (afterPos + beforePos) / 2.0;
+    }
+
+    private User getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        return userService.getUserById(userPrincipal.getId());
     }
 
 }

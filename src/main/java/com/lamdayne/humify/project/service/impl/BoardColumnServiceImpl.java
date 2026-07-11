@@ -167,7 +167,30 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
 
     @Override
-    public void createDefaultColumns(Long projectId) {
+    public void initDefaultColumns(Project project) {
+        boardColumnRepository.save(BoardColumn.builder()
+                .project(project)
+                .name("To do")
+                .category(ColumnCategory.TO_DO)
+                .position(0)
+                .build()
+        );
 
+        boardColumnRepository.save(BoardColumn.builder()
+                .project(project)
+                .name("Doing")
+                .category(ColumnCategory.IN_PROGRESS)
+                .position(1)
+                .build()
+        );
+
+        boardColumnRepository.save(BoardColumn.builder()
+                .project(project)
+                .name("Done")
+                .category(ColumnCategory.DONE)
+                .position(2)
+                .build()
+        );
     }
+
 }

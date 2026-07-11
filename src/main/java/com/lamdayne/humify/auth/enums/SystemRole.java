@@ -17,7 +17,7 @@ public enum SystemRole {
             Set.of(
                     PermissionEnum.EMPLOYEE_FULL,
                     PermissionEnum.USER_FULL,
-                    PermissionEnum.ROLE_FULL,
+                    PermissionEnum.ROLE_READ,
                     PermissionEnum.BRANCH_FULL,
                     PermissionEnum.POSITION_FULL,
                     PermissionEnum.DEPARTMENT_FULL,
