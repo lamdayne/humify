@@ -132,6 +132,24 @@ public enum ErrorCode {
     EMPLOYEE_EMAIL_EXISTED("EMPLOYEE_EMAIL_EXISTED", "Employee email already existed", HttpStatus.BAD_REQUEST),
     EMPLOYEE_ID_DOCUMENT_NOT_FOUND("EMPLOYEE_ID_DOCUMENT_NOT_FOUND", "Employee ID document not found", HttpStatus.NOT_FOUND),
 
+    // Contract
+    CONTRACT_NOT_FOUND("CONTRACT_NOT_FOUND", "Employee contract not found", HttpStatus.NOT_FOUND),
+    CONTRACT_NUMBER_EXISTED("CONTRACT_NUMBER_EXISTED", "Contract number already exists", HttpStatus.BAD_REQUEST),
+    CONTRACT_ALREADY_ACTIVE("CONTRACT_ALREADY_ACTIVE", "This employee already has an active contract in this period", HttpStatus.BAD_REQUEST),
+    CONTRACT_TERMINATED_CANNOT_EDIT("CONTRACT_TERMINATED_CANNOT_EDIT", "Cannot update a terminated contract", HttpStatus.BAD_REQUEST),
+    EMPLOYEE_ID_REQUIRED("EMPLOYEE_ID_REQUIRED", "Employee ID cannot be null", HttpStatus.BAD_REQUEST),
+    CONTRACT_NUMBER_REQUIRED("CONTRACT_NUMBER_REQUIRED", "Contract number cannot be blank", HttpStatus.BAD_REQUEST),
+    CONTRACT_TYPE_REQUIRED("CONTRACT_TYPE_REQUIRED", "Contract type cannot be blank", HttpStatus.BAD_REQUEST),
+    START_DATE_REQUIRED("START_DATE_REQUIRED", "Start date cannot be null", HttpStatus.BAD_REQUEST),
+    BASE_SALARY_REQUIRED("BASE_SALARY_REQUIRED", "Base salary cannot be null", HttpStatus.BAD_REQUEST),
+    BASE_SALARY_INVALID("BASE_SALARY_INVALID", "Base salary must be positive or zero", HttpStatus.BAD_REQUEST),
+    ALLOWANCE_LUNCH_INVALID("ALLOWANCE_LUNCH_INVALID", "Allowance lunch must be positive or zero", HttpStatus.BAD_REQUEST),
+    ALLOWANCE_PHONE_INVALID("ALLOWANCE_PHONE_INVALID", "Allowance phone must be positive or zero", HttpStatus.BAD_REQUEST),
+    ALLOWANCE_TRANSPORT_INVALID("ALLOWANCE_TRANSPORT_INVALID", "Allowance transport must be positive or zero", HttpStatus.BAD_REQUEST),
+    ALLOWANCE_OTHER_INVALID("ALLOWANCE_OTHER_INVALID", "Allowance other must be positive or zero", HttpStatus.BAD_REQUEST),
+    INSURANCE_SALARY_REQUIRED("INSURANCE_SALARY_REQUIRED", "Insurance salary cannot be null", HttpStatus.BAD_REQUEST),
+    INSURANCE_SALARY_INVALID("INSURANCE_SALARY_INVALID", "Insurance salary must be positive or zero", HttpStatus.BAD_REQUEST),
+    TAXABLE_DEPENDENTS_INVALID("TAXABLE_DEPENDENTS_INVALID", "Taxable dependents must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST),
@@ -240,7 +258,16 @@ public enum ErrorCode {
     LEAVE_REQUEST_CANNOT_CANCELLED("LEAVE_REQUEST_CANNOT_CANCELLED", "Leave request can not cancelled", HttpStatus.BAD_REQUEST),
     LEAVE_REQUEST_APPROVER_NOTE_REQUIRED("LEAVE_REQUEST_APPROVER_NOTE_REQUIRED", "Leave request approver note is required", HttpStatus.BAD_REQUEST),
 
-    ;
+    // Payroll Period
+    PAYROLL_PERIOD_NOT_FOUND("PAYROLL_PERIOD_NOT_FOUND", "Payroll period not found", HttpStatus.NOT_FOUND),
+    PAYROLL_PERIOD_EXISTED("PAYROLL_PERIOD_EXISTED", "A payroll period for this month and year already exists", HttpStatus.BAD_REQUEST),
+    PAYROLL_PERIOD_LOCKED("PAYROLL_PERIOD_LOCKED", "Payroll calculation is not allowed. Period is already approved or paid", HttpStatus.BAD_REQUEST),
+    PAYROLL_NAME_REQUIRED("PAYROLL_NAME_REQUIRED", "Payroll period name cannot be blank", HttpStatus.BAD_REQUEST),
+    MONTH_REQUIRED("MONTH_REQUIRED", "Month is required", HttpStatus.BAD_REQUEST),
+    MONTH_INVALID("MONTH_INVALID", "Month must be between 1 and 12", HttpStatus.BAD_REQUEST),
+    END_DATE_REQUIRED("END_DATE_REQUIRED", "End date is required", HttpStatus.BAD_REQUEST),
+    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST);
+
 
     private String code;
     private String defaultMessage;
