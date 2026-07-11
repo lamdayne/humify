@@ -258,7 +258,16 @@ public enum ErrorCode {
     LEAVE_REQUEST_CANNOT_CANCELLED("LEAVE_REQUEST_CANNOT_CANCELLED", "Leave request can not cancelled", HttpStatus.BAD_REQUEST),
     LEAVE_REQUEST_APPROVER_NOTE_REQUIRED("LEAVE_REQUEST_APPROVER_NOTE_REQUIRED", "Leave request approver note is required", HttpStatus.BAD_REQUEST),
 
-    ;
+    // Payroll Period
+    PAYROLL_PERIOD_NOT_FOUND("PAYROLL_PERIOD_NOT_FOUND", "Payroll period not found", HttpStatus.NOT_FOUND),
+    PAYROLL_PERIOD_EXISTED("PAYROLL_PERIOD_EXISTED", "A payroll period for this month and year already exists", HttpStatus.BAD_REQUEST),
+    PAYROLL_PERIOD_LOCKED("PAYROLL_PERIOD_LOCKED", "Payroll calculation is not allowed. Period is already approved or paid", HttpStatus.BAD_REQUEST),
+    PAYROLL_NAME_REQUIRED("PAYROLL_NAME_REQUIRED", "Payroll period name cannot be blank", HttpStatus.BAD_REQUEST),
+    MONTH_REQUIRED("MONTH_REQUIRED", "Month is required", HttpStatus.BAD_REQUEST),
+    MONTH_INVALID("MONTH_INVALID", "Month must be between 1 and 12", HttpStatus.BAD_REQUEST),
+    END_DATE_REQUIRED("END_DATE_REQUIRED", "End date is required", HttpStatus.BAD_REQUEST),
+    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST);
+
 
     private String code;
     private String defaultMessage;
