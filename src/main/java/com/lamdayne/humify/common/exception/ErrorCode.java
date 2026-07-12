@@ -24,6 +24,17 @@ public enum ErrorCode {
     LEAVE_TYPE_NAME_MAX_LENGTH("LEAVE_TYPE_NAME_MAX_LENGTH", "Leave type name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
     LEAVE_TYPE_CODE_REQUIRED("LEAVE_TYPE_CODE_REQUIRED", "Leave type code cannot be blank", HttpStatus.BAD_REQUEST),
     LEAVE_TYPE_CODE_INVALID("LEAVE_TYPE_CODE_INVALID", "Leave type code must contain only uppercase letters and underscores", HttpStatus.BAD_REQUEST),
+
+    // Work shift
+    SHIFT_NOT_FOUND("SHIFT_NOT_FOUND", "Work shift not found", HttpStatus.NOT_FOUND),
+    SHIFT_CODE_ALREADY_EXISTS("SHIFT_CODE_ALREADY_EXISTS", "Work shift code already exists in this company", HttpStatus.BAD_REQUEST),
+    SHIFT_TIME_INVALID("SHIFT_TIME_INVALID", "Invalid shift time logic configuration", HttpStatus.BAD_REQUEST),
+    SHIFT_CODE_REQUIRED("SHIFT_CODE_REQUIRED", "Shift code cannot be blank", HttpStatus.BAD_REQUEST),
+    SHIFT_NAME_REQUIRED("SHIFT_NAME_REQUIRED", "Shift name cannot be blank", HttpStatus.BAD_REQUEST),
+    SHIFT_START_TIME_REQUIRED("SHIFT_START_TIME_REQUIRED", "Start time cannot be null", HttpStatus.BAD_REQUEST),
+    SHIFT_END_TIME_REQUIRED("SHIFT_END_TIME_REQUIRED", "End time cannot be null", HttpStatus.BAD_REQUEST),
+    GRACE_PERIOD_INVALID("GRACE_PERIOD_INVALID", "Grace period minutes must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
+
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),

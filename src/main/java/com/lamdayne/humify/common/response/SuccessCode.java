@@ -17,6 +17,13 @@ public enum SuccessCode {
     LEAVE_TYPE_READ_SUCCESS("LEAVE_TYPE_READ_SUCCESS", "Get leave types successfully"),
     LEAVE_TYPE_UPDATE_SUCCESS("LEAVE_TYPE_UPDATE_SUCCESS", "Leave type updated successfully"),
     LEAVE_TYPE_DELETE_SUCCESS("LEAVE_TYPE_DELETE_SUCCESS", "Leave type deleted successfully"),
+
+    // Work shift
+    WORK_SHIFT_CREATE_SUCCESS("WORK_SHIFT_CREATE_SUCCESS", "Work shift created successfully"),
+    WORK_SHIFT_READ_SUCCESS("WORK_SHIFT_READ_SUCCESS", "Get work shifts successfully"),
+    WORK_SHIFT_UPDATE_SUCCESS("WORK_SHIFT_UPDATE_SUCCESS", "Work shift updated successfully"),
+    WORK_SHIFT_DELETE_SUCCESS("WORK_SHIFT_DELETE_SUCCESS", "Work shift deactivated successfully"),
+
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
