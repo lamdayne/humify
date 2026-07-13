@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long>, JpaSpecificationExecutor<Attendance> {
@@ -28,4 +29,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, J
             "GROUP BY a.employee.id, a.employee.fullName")
     List<AttendanceSummaryReportResponse> getSummaryReport(@Param("start") LocalDate start,
                                                            @Param("end") LocalDate end);
+    Optional<Attendance> findByEmployeeIdAndWorkDate(Long employeeId, LocalDate workDate);
 }

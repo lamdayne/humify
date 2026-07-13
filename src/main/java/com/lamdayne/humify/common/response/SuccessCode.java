@@ -197,7 +197,10 @@ public enum SuccessCode {
     PAYROLL_PERIOD_CREATE_SUCCESS("PAYROLL_PERIOD_CREATE_SUCCESS", "Payroll period created successfully"),
     PAYROLL_PERIOD_READ_SUCCESS("PAYROLL_PERIOD_READ_SUCCESS", "Get payroll periods successfully"),
     PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed")
-    ;
+    ,
+    // Attendance Log
+    ATTENDANCE_LOG_CREATE_SUCCESS("ATTENDANCE_LOG_CREATE_SUCCESS", "Web attendance log registered successfully"),
+    ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully")
     ;
 
     private String code;
