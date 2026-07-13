@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WorkShiftRepository extends JpaRepository<WorkShift, Long>, JpaSpecificationExecutor<WorkShift> {
 
-    boolean existsByCompanyIdAndShiftCodeAndDeletedAtIsNull(String shiftCode);
+    boolean existsByShiftCodeAndDeletedAtIsNull(String shiftCode);
 }

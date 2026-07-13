@@ -283,9 +283,13 @@ public enum ErrorCode {
     MONTH_REQUIRED("MONTH_REQUIRED", "Month is required", HttpStatus.BAD_REQUEST),
     MONTH_INVALID("MONTH_INVALID", "Month must be between 1 and 12", HttpStatus.BAD_REQUEST),
     END_DATE_REQUIRED("END_DATE_REQUIRED", "End date is required", HttpStatus.BAD_REQUEST),
-    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST);
+    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST),
 
-
+    // Attendance Log
+    LOG_TYPE_REQUIRED("LOG_TYPE_REQUIRED", "Log type is required", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
+    NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST);
     private String code;
     private String defaultMessage;
     private HttpStatus status;

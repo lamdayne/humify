@@ -35,7 +35,7 @@ public class WorkShiftServiceImpl implements WorkShiftService {
     @Override
     @Transactional
     public WorkShiftResponse createWorkShift(CreateWorkShiftRequest request) {
-        if (workShiftRepository.existsByCompanyIdAndShiftCodeAndDeletedAtIsNull(request.getShiftCode())) {
+        if (workShiftRepository.existsByShiftCodeAndDeletedAtIsNull(request.getShiftCode())) {
             throw new AppException(ErrorCode.SHIFT_CODE_ALREADY_EXISTS);
         }
 
