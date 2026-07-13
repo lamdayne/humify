@@ -18,8 +18,7 @@ public class AttendanceSpecification {
             "workDate",
             "status",
             "checkedStatus",
-            "employee.id",
-            "employee.employeeCode"
+            "employee"
     );
 
     public Specification<Attendance> build(List<SpecSearchCriteria> criteriaList) {

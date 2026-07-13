@@ -50,7 +50,7 @@
             Company company = companyAccessService.getReferenceById(companyId);
             WorkShift shift = workShiftMapper.toEntity(request);
             shift.setCompany(company);
-            shift.setStatus(Boolean.TRUE); // Mặc định là Active
+            shift.setStatus(Boolean.TRUE);
 
             return workShiftMapper.toResponse(workShiftRepository.save(shift));
         }
