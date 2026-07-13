@@ -17,8 +17,7 @@ public class AttendanceSpecification {
     private static final Set<String> ALLOWED_FIELDS = Set.of(
             "workDate",
             "status",
-            "checkedStatus",
-            "employee"
+            "checkedStatus"
     );
 
     public Specification<Attendance> build(List<SpecSearchCriteria> criteriaList) {
