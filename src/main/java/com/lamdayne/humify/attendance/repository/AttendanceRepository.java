@@ -24,9 +24,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, J
             "SUM(a.otHours), " +
             "SUM(CASE WHEN a.status = 'LEAVE' THEN 1.0 ELSE 0.0 END), " +
             "SUM(CASE WHEN a.status = 'ABSENT' THEN 1.0 ELSE 0.0 END)) " +
-            "FROM Attendance a WHERE a.company.id = :companyId AND a.workDate BETWEEN :start AND :end " +
+            "FROM Attendance a WHERE a.workDate BETWEEN :start AND :end " +
             "GROUP BY a.employee.id, a.employee.fullName")
-    List<AttendanceSummaryReportResponse> getSummaryReport(@Param("companyId") Long companyId,
-                                                           @Param("start") LocalDate start,
+    List<AttendanceSummaryReportResponse> getSummaryReport(@Param("start") LocalDate start,
                                                            @Param("end") LocalDate end);
 }
