@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public enum SuccessCode {
 
     // Attendance
+    ATTENDANCE_READ_SUCCESS("ATTENDANCE_READ_SUCCESS", "Get attendance data successfully"),
+    ATTENDANCE_UPDATE_SUCCESS("ATTENDANCE_UPDATE_SUCCESS", "Attendance record updated successfully"),
     LEAVE_BALANCE_READ_SUCCESS("LEAVE_BALANCE_READ_SUCCESS", "Get leave balances successfully"),
     LEAVE_BALANCE_UPDATE_SUCCESS("LEAVE_BALANCE_UPDATE_SUCCESS", "Leave balance updated successfully"),
 
