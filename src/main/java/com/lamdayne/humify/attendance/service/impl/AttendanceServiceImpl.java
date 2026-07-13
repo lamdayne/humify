@@ -11,7 +11,6 @@ import com.lamdayne.humify.attendance.repository.AttendanceRepository;
 import com.lamdayne.humify.attendance.repository.AttendanceSpecification;
 import com.lamdayne.humify.attendance.repository.WorkShiftRepository;
 import com.lamdayne.humify.attendance.service.AttendanceService;
-import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
@@ -46,15 +45,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public PageResponse<AttendanceDetailResponse> getHRView(Pageable pageable, String[] searchParams) {
-        Long companyId = CompanyContext.getCompanyId();
-
         List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(searchParams != null ? searchParams : new String[0]);
         Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
 
-        Specification<Attendance> companySpec = (root, query, cb) -> cb.equal(root.get("company").get("id"), companyId);
-        Specification<Attendance> finalSpec = companySpec.and(searchSpec);
-
-        Page<Attendance> page = attendanceRepository.findAll(finalSpec, pageable);
+        Page<Attendance> page = attendanceRepository.findAll(searchSpec, pageable);
 
         return PageResponse.<AttendanceDetailResponse>builder()
                 .pageNo(page.getNumber())
@@ -67,8 +61,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public List<AttendanceDetailResponse> getPersonalView(Long userId, String[] searchParams) {
-        Long companyId = CompanyContext.getCompanyId();
-
         User user = userService.getUserById(userId);
         Long employeeId = user.getEmployee().getId();
 
@@ -78,15 +70,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(rawParams.toArray(new String[0]));
         Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
 
-        Specification<Attendance> companySpec = (root, query, cb) -> cb.equal(root.get("company").get("id"), companyId);
-        Specification<Attendance> finalSpec = companySpec.and(searchSpec);
-
-        return attendanceRepository.findAll(finalSpec).stream().map(this::mapToResponse).toList();
+        return attendanceRepository.findAll(searchSpec).stream().map(this::mapToResponse).toList();
     }
 
     @Override
     public List<AttendanceSummaryReportResponse> getSummaryReport(LocalDate start, LocalDate end) {
-        Long companyId = CompanyContext.getCompanyId();
         if (start == null) {
             throw new AppException(ErrorCode.ATTENDANCE_START_DATE_REQUIRED);
         }
@@ -96,7 +84,8 @@ public class AttendanceServiceImpl implements AttendanceService {
         if (start.isAfter(end)) {
             throw new AppException(ErrorCode.INVALID_FILTER_VALUE);
         }
-        return attendanceRepository.getSummaryReport(companyId, start, end);
+
+        return attendanceRepository.getSummaryReport(start, end);
     }
 
     @Override
