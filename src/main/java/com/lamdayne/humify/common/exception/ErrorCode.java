@@ -11,6 +11,12 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // Attendance
+    ATTENDANCE_RECORD_NOT_FOUND("ATTENDANCE_RECORD_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),
+    ATTENDANCE_START_DATE_REQUIRED("ATTENDANCE_START_DATE_REQUIRED", "Start date is required for inquiry", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_END_DATE_REQUIRED("ATTENDANCE_END_DATE_REQUIRED", "End date is required for inquiry", HttpStatus.BAD_REQUEST),
+    MODIFICATION_REASON_REQUIRED("MODIFICATION_REASON_REQUIRED", "Modification reason is required", HttpStatus.BAD_REQUEST),
+    WORK_POINTS_INVALID("WORK_POINTS_INVALID", "Work points must be between 0.0 and 2.0", HttpStatus.BAD_REQUEST),
+
     LEAVE_BALANCE_NOT_FOUND("LEAVE_BALANCE_NOT_FOUND", "Leave balance not found", HttpStatus.NOT_FOUND),
     LEAVE_TYPE_ID_REQUIRED("LEAVE_TYPE_ID_REQUIRED", "Leave type ID cannot be blank", HttpStatus.BAD_REQUEST),
     YEAR_REQUIRED("YEAR_REQUIRED", "Year cannot be null", HttpStatus.BAD_REQUEST),
