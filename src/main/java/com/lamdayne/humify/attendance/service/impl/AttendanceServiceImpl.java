@@ -5,8 +5,8 @@ import com.lamdayne.humify.attendance.dto.response.AttendanceDetailResponse;
 import com.lamdayne.humify.attendance.dto.response.AttendanceSummaryReportResponse;
 import com.lamdayne.humify.attendance.entity.Attendance;
 import com.lamdayne.humify.attendance.entity.WorkShift;
-import com.lamdayne.humify.attendance.enums.AttendanceStatus;
 import com.lamdayne.humify.attendance.enums.CheckedStatus;
+import com.lamdayne.humify.attendance.enums.AttendanceStatus;
 import com.lamdayne.humify.attendance.repository.AttendanceRepository;
 import com.lamdayne.humify.attendance.repository.AttendanceSpecification;
 import com.lamdayne.humify.attendance.repository.WorkShiftRepository;
@@ -15,8 +15,10 @@ import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.search.SearchCriteriaParser;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.user.entity.User;
-import com.lamdayne.humify.user.repository.UserRepository;
+import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -36,16 +40,21 @@ import java.util.List;
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceSpecification attendanceSpecification;
     private final WorkShiftRepository workShiftRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
-    public PageResponse<AttendanceDetailResponse> getHRView(LocalDate start, LocalDate end, Long employeeId, AttendanceStatus status, Pageable pageable) {
+    public PageResponse<AttendanceDetailResponse> getHRView(Pageable pageable, String[] searchParams) {
         Long companyId = CompanyContext.getCompanyId();
-        validateDates(start, end);
 
-        Specification<Attendance> spec = AttendanceSpecification.filterHR(companyId, employeeId, start, end, status);
-        Page<Attendance> page = attendanceRepository.findAll(spec, pageable);
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(searchParams != null ? searchParams : new String[0]);
+        Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
+
+        Specification<Attendance> companySpec = (root, query, cb) -> cb.equal(root.get("company").get("id"), companyId);
+        Specification<Attendance> finalSpec = companySpec.and(searchSpec);
+
+        Page<Attendance> page = attendanceRepository.findAll(finalSpec, pageable);
 
         return PageResponse.<AttendanceDetailResponse>builder()
                 .pageNo(page.getNumber())
@@ -57,36 +66,47 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<AttendanceDetailResponse> getPersonalView(Long userId, LocalDate start, LocalDate end) {
+    public List<AttendanceDetailResponse> getPersonalView(Long userId, String[] searchParams) {
         Long companyId = CompanyContext.getCompanyId();
-        validateDates(start, end);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.getUserById(userId);
         Long employeeId = user.getEmployee().getId();
 
-        Specification<Attendance> spec = AttendanceSpecification.filterHR(companyId, employeeId, start, end, null);
-        return attendanceRepository.findAll(spec).stream().map(this::mapToResponse).toList();
+        List<String> rawParams = searchParams != null ? new ArrayList<>(Arrays.asList(searchParams)) : new ArrayList<>();
+        rawParams.add("employee.id:" + employeeId);
+
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(rawParams.toArray(new String[0]));
+        Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
+
+        Specification<Attendance> companySpec = (root, query, cb) -> cb.equal(root.get("company").get("id"), companyId);
+        Specification<Attendance> finalSpec = companySpec.and(searchSpec);
+
+        return attendanceRepository.findAll(finalSpec).stream().map(this::mapToResponse).toList();
     }
 
     @Override
-    public List<AttendanceSummaryReportResponse> getSummaryReport(LocalDate start, LocalDate end, Long employeeId) {
+    public List<AttendanceSummaryReportResponse> getSummaryReport(LocalDate start, LocalDate end) {
         Long companyId = CompanyContext.getCompanyId();
-        validateDates(start, end);
-        return attendanceRepository.getSummaryReport(companyId, employeeId, start, end);
+        if (start == null) {
+            throw new AppException(ErrorCode.ATTENDANCE_START_DATE_REQUIRED);
+        }
+        if (end == null) {
+            throw new AppException(ErrorCode.ATTENDANCE_END_DATE_REQUIRED);
+        }
+        if (start.isAfter(end)) {
+            throw new AppException(ErrorCode.INVALID_FILTER_VALUE);
+        }
+        return attendanceRepository.getSummaryReport(companyId, start, end);
     }
 
     @Override
     @Transactional
     public AttendanceDetailResponse updateManual(Long id, Long currentUserId, UpdateAttendanceManualRequest request) {
-        Long companyId = CompanyContext.getCompanyId();
-
-        Attendance attendance = attendanceRepository.findByIdAndCompanyId(id, companyId)
+        Attendance attendance = attendanceRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ATTENDANCE_RECORD_NOT_FOUND));
 
-        User actor = userRepository.findById(currentUserId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User actor = userService.getUserById(currentUserId);
 
-        // 1. Cập nhật mốc thời gian thủ công
         attendance.setCheckInTime(request.getManualCheckIn());
         attendance.setCheckOutTime(request.getManualCheckOut());
         attendance.setWorkPoints(request.getWorkPoints());
@@ -101,7 +121,6 @@ public class AttendanceServiceImpl implements AttendanceService {
             attendance.setWorkShift(shift);
         }
 
-        // 2. Tính toán lại thông số phụ dựa trên mốc giờ HR cập nhật
         if (attendance.getCheckInTime() != null && attendance.getCheckOutTime() != null) {
             long seconds = Duration.between(attendance.getCheckInTime(), attendance.getCheckOutTime()).toSeconds();
             BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, RoundingMode.HALF_UP);
@@ -123,12 +142,6 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.setEarlyMinutes(0);
 
         return mapToResponse(attendanceRepository.save(attendance));
-    }
-
-    private void validateDates(LocalDate start, LocalDate end) {
-        if (start == null) throw new AppException(ErrorCode.ATTENDANCE_START_DATE_REQUIRED);
-        if (end == null) throw new AppException(ErrorCode.ATTENDANCE_END_DATE_REQUIRED);
-        if (start.isAfter(end)) throw new AppException(ErrorCode.LEAVE_REQUEST_DATE_INVALID);
     }
 
     private AttendanceDetailResponse mapToResponse(Attendance a) {

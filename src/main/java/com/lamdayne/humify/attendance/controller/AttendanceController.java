@@ -3,7 +3,6 @@ package com.lamdayne.humify.attendance.controller;
 import com.lamdayne.humify.attendance.dto.request.UpdateAttendanceManualRequest;
 import com.lamdayne.humify.attendance.dto.response.AttendanceDetailResponse;
 import com.lamdayne.humify.attendance.dto.response.AttendanceSummaryReportResponse;
-import com.lamdayne.humify.attendance.enums.AttendanceStatus;
 import com.lamdayne.humify.attendance.service.AttendanceService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
@@ -29,36 +28,31 @@ public class AttendanceController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<AttendanceDetailResponse>>> getHRView(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
-            @RequestParam(required = false) Long employeeId,
-            @RequestParam(required = false) AttendanceStatus status,
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
-            @RequestParam(required = false) String... sorts
+            @RequestParam(required = false) String[] sorts,
+            @RequestParam(required = false, name = "attendance") String[] searchParams
     ) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
-        PageResponse<AttendanceDetailResponse> response = attendanceService.getHRView(startDate, endDate, employeeId, status, pageable);
+        PageResponse<AttendanceDetailResponse> response = attendanceService.getHRView(pageable, searchParams);
         return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<List<AttendanceDetailResponse>>> getPersonalView(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
+            @RequestParam(required = false, name = "attendance") String[] searchParams
     ) {
-        List<AttendanceDetailResponse> response = attendanceService.getPersonalView(userPrincipal.getId(), startDate, endDate);
+        List<AttendanceDetailResponse> response = attendanceService.getPersonalView(userPrincipal.getId(), searchParams);
         return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
     }
 
     @GetMapping("/summary")
     public ResponseEntity<ApiResponse<List<AttendanceSummaryReportResponse>>> getSummaryReport(
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
-            @RequestParam(required = false) Long employeeId
+            @RequestParam LocalDate endDate
     ) {
-        List<AttendanceSummaryReportResponse> response = attendanceService.getSummaryReport(startDate, endDate, employeeId);
+        List<AttendanceSummaryReportResponse> response = attendanceService.getSummaryReport(startDate, endDate);
         return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
     }
 

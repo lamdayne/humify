@@ -1,27 +1,36 @@
 package com.lamdayne.humify.attendance.repository;
 
 import com.lamdayne.humify.attendance.entity.Attendance;
-import com.lamdayne.humify.attendance.enums.AttendanceStatus;
+import com.lamdayne.humify.common.exception.AppException;
+import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.search.GenericSpecificationBuilder;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
-import java.time.LocalDate;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
+@Component
 public class AttendanceSpecification {
 
-    public static Specification<Attendance> filterHR(Long companyId, Long employeeId, LocalDate start, LocalDate end, AttendanceStatus status) {
-        return (root, query, cb) -> {
-            var predicate = cb.conjunction();
+    private static final Set<String> ALLOWED_FIELDS = Set.of(
+            "workDate",
+            "status",
+            "checkedStatus",
+            "employee.id",
+            "employee.employeeCode"
+    );
 
-            predicate = cb.and(predicate, cb.equal(root.get("company").get("id"), companyId));
-            predicate = cb.and(predicate, cb.greaterThanOrEqualTo(root.get("workDate"), start));
-            predicate = cb.and(predicate, cb.lessThanOrEqualTo(root.get("workDate"), end));
+    public Specification<Attendance> build(List<SpecSearchCriteria> criteriaList) {
+        criteriaList.forEach(criteria -> {
+            if (!ALLOWED_FIELDS.contains(criteria.getKey())) {
+                throw new AppException(ErrorCode.INVALID_FIELD_NAME);
+            }
+        });
 
-            if (employeeId != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("employee").get("id"), employeeId));
-            }
-            if (status != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("status"), status));
-            }
-            return predicate;
-        };
+        GenericSpecificationBuilder<Attendance> builder = new GenericSpecificationBuilder<>();
+        criteriaList.forEach(builder::with);
+        return builder.build();
     }
 }

@@ -10,12 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long>, JpaSpecificationExecutor<Attendance> {
-
-    Optional<Attendance> findByIdAndCompanyId(Long id, Long companyId);
 
     @Query("SELECT new com.lamdayne.humify.attendance.dto.response.AttendanceSummaryReportResponse(" +
             "a.employee.id, a.employee.fullName, " +
@@ -28,10 +25,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, J
             "SUM(CASE WHEN a.status = 'LEAVE' THEN 1.0 ELSE 0.0 END), " +
             "SUM(CASE WHEN a.status = 'ABSENT' THEN 1.0 ELSE 0.0 END)) " +
             "FROM Attendance a WHERE a.company.id = :companyId AND a.workDate BETWEEN :start AND :end " +
-            "AND (:employeeId IS NULL OR a.employee.id = :employeeId) " +
             "GROUP BY a.employee.id, a.employee.fullName")
     List<AttendanceSummaryReportResponse> getSummaryReport(@Param("companyId") Long companyId,
-                                                           @Param("employeeId") Long employeeId,
                                                            @Param("start") LocalDate start,
                                                            @Param("end") LocalDate end);
 }
