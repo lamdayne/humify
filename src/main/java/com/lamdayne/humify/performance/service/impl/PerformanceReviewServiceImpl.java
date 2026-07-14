@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +75,7 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
         }
         return reviewRepository.findByEmployeeIdOrderByCreatedAtDesc(employeeId).stream()
                 .map(reviewMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
