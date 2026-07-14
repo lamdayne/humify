@@ -12,7 +12,6 @@ import com.lamdayne.humify.payroll.service.PayslipService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +26,6 @@ public class PayrollPeriodPayslipController {
         @PostMapping("/{id}/calculates")
 //    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_MANAGE')")
     public ResponseEntity<ApiResponse<Integer>> calculate(@PathVariable("id") Long payrollPeriodId) {
-        System.out.println("dang vao controler");
         Long companyId = CompanyContext.getCompanyId();
         int count = payrollPeriodService.calculate(payrollPeriodId, companyId);
         return ResponseEntity.ok()
