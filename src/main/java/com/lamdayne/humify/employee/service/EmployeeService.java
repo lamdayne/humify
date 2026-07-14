@@ -3,6 +3,7 @@ package com.lamdayne.humify.employee.service;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
+import com.lamdayne.humify.employee.entity.Employee;
 
 public interface EmployeeService {
 
@@ -18,6 +19,7 @@ public interface EmployeeService {
 
     void updateEmployeePosition(Long id, UpdateEmployeePositionRequest request);
 
-    EmployeeResponse getByEmployeeCode(String employeeCode);
+    Employee getEmployeeByEmail(String email);
 
+    EmployeeResponse getByEmployeeCode(String employeeCode);
 }
