@@ -25,11 +25,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -99,7 +99,6 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
     public PageResponse<AttendanceCorrectionResponse> getAllCorrectionsForHr(String status, Long employeeId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
 
-        // TODO: Kết hợp với SearchCriteriaParser / Specification để filter theo status và employeeId mượt mà hơn
         Page<AttendanceCorrection> pageData = correctionRepository.findAll(pageable);
 
         return buildPageResponse(pageData, page);
@@ -133,9 +132,10 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
         }
         attendance.setIsModified(true);
         attendance.setModifiedBy(approver);
-        attendance.setModificationReason("[Correction Approved] - " + correction.getReason());
+        attendance.setModificationReason(correction.getReason());
 
-        recalculateAttendanceData(attendance);
+        BigDecimal workedHours = recalculateAttendanceData(attendance);
+        attendance.setWorkedHours(workedHours);
         attendanceRepository.save(attendance);
 
         return correctionMapper.toResponse(correction);
@@ -171,19 +171,20 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
         }
     }
 
-    private void recalculateAttendanceData(Attendance attendance) {
+    private BigDecimal recalculateAttendanceData(Attendance attendance) {
         if (attendance.getCheckInTime() != null && attendance.getCheckOutTime() != null) {
             long minutes = Duration.between(attendance.getCheckInTime(), attendance.getCheckOutTime()).toMinutes();
             if (minutes > 0) {
-                // attendance.setWorkedHours(BigDecimal.valueOf((double) minutes / 60.0));
+                 return BigDecimal.valueOf(minutes / 60);
             }
         }
+        return attendance.getWorkedHours();
     }
 
     private PageResponse<AttendanceCorrectionResponse> buildPageResponse(Page<AttendanceCorrection> pageData, int page) {
         List<AttendanceCorrectionResponse> content = pageData.getContent().stream()
                 .map(correctionMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         return PageResponse.<AttendanceCorrectionResponse>builder()
                 .pageNo(page)
