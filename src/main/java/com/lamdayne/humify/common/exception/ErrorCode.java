@@ -289,7 +289,19 @@ public enum ErrorCode {
     LOG_TYPE_REQUIRED("LOG_TYPE_REQUIRED", "Log type is required", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
     NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
-    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST);
+    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+
+    // Attendance Correction
+    ATTENDANCE_NOT_FOUND("ATTENDANCE_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),
+    ATTENDANCE_ACCESS_DENIED("ATTENDANCE_ACCESS_DENIED", "You do not have permission to access this attendance record", HttpStatus.FORBIDDEN),
+    PAYROLL_PERIOD_CLOSED("PAYROLL_PERIOD_CLOSED", "Payroll period is closed for this date", HttpStatus.BAD_REQUEST),
+    PENDING_CORRECTION_ALREADY_EXISTS("PENDING_CORRECTION_ALREADY_EXISTS", "A pending correction already exists for this attendance", HttpStatus.BAD_REQUEST),
+    CORRECTION_NOT_FOUND("CORRECTION_NOT_FOUND", "Attendance correction request not found", HttpStatus.NOT_FOUND),
+    CORRECTION_ALREADY_PROCESSED("CORRECTION_ALREADY_PROCESSED", "This correction request has already been processed", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_ID_REQUIRED("ATTENDANCE_ID_REQUIRED", "Attendance ID cannot be null", HttpStatus.BAD_REQUEST),
+    CORRECTION_REASON_REQUIRED("CORRECTION_REASON_REQUIRED", "Correction reason cannot be blank", HttpStatus.BAD_REQUEST),
+    APPROVER_NOTE_REQUIRED("APPROVER_NOTE_REQUIRED", "Approver note cannot be blank", HttpStatus.BAD_REQUEST);
+
     private String code;
     private String defaultMessage;
     private HttpStatus status;

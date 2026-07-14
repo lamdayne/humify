@@ -200,9 +200,13 @@ public enum SuccessCode {
     ,
     // Attendance Log
     ATTENDANCE_LOG_CREATE_SUCCESS("ATTENDANCE_LOG_CREATE_SUCCESS", "Web attendance log registered successfully"),
-    ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully")
-    ;
+    ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully"),
 
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),
+    ATTENDANCE_CORRECTION_APPROVE_SUCCESS("ATTENDANCE_CORRECTION_APPROVE_SUCCESS", "Attendance correction request approved successfully"),
+    ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
+    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully");
     private String code;
     private String defaultMessage;
 }
