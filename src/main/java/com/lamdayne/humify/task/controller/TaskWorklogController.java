@@ -22,18 +22,18 @@ public class TaskWorklogController {
             @PathVariable Long id, @RequestBody @Valid UpdateWorklogRequest request
     ) {
         return ResponseEntity.ok()
-                .body(ApiResponse.success(SuccessCode.WORKLOG_UPDATE_SUCCESS,
-                        taskWorkLogService.update(id, request)));
+                .body(ApiResponse.success(
+                        SuccessCode.WORKLOG_UPDATE_SUCCESS,
+                        taskWorkLogService.update(id, request))
+                );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteWorklog(
             @PathVariable long id
-
     ) {
         taskWorkLogService.delete(id);
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(SuccessCode.WORKLOG_DELETE_SUCCESS));
+        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.WORKLOG_DELETE_SUCCESS));
     }
 
 }

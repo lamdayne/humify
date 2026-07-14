@@ -18,8 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -32,13 +30,18 @@ public class DepartmentController {
     public ResponseEntity<ApiResponse<DepartmentResponse>> createDepartment(@RequestBody @Valid CreateDepartmentRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(SuccessCode.DEPARTMENT_CREATE_SUCCESS, departmentService.createDepartment(request)));
+                .body(ApiResponse.success(
+                        SuccessCode.DEPARTMENT_CREATE_SUCCESS,
+                        departmentService.createDepartment(request))
+                );
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS','DEPARTMENT_UPDATE', 'DEPARTMENT_FULL')")
-    public ResponseEntity<ApiResponse<DepartmentResponse>> updateDepartment(@PathVariable Long id,
-                                                                            @RequestBody @Valid UpdateDepartmentRequest request) {
+    public ResponseEntity<ApiResponse<DepartmentResponse>> updateDepartment(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateDepartmentRequest request
+    ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(SuccessCode.DEPARTMENT_UPDATE_SUCCESS, "Update department info successfully"
@@ -47,11 +50,12 @@ public class DepartmentController {
 
     @GetMapping("/branch/{branchId}")
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'DEPARTMENT_READ', 'DEPARTMENT_FULL')")
-    public ResponseEntity<ApiResponse<PageResponse<DepartmentResponse>>> findByBranchId(@PathVariable Long branchId,
-                                                                                        @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
-                                                                                        @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
-                                                                                        @RequestParam(required = false) String... sorts) {
-
+    public ResponseEntity<ApiResponse<PageResponse<DepartmentResponse>>> findByBranchId(
+            @PathVariable Long branchId,
+            @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
+            @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
+            @RequestParam(required = false) String... sorts
+    ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(

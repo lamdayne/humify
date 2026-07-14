@@ -1,6 +1,5 @@
 package com.lamdayne.humify.attendance.repository;
 
-import com.lamdayne.humify.attendance.entity.Attendance;
 import com.lamdayne.humify.attendance.entity.AttendanceLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

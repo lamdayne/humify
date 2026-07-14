@@ -177,7 +177,7 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        if (role.getName().startsWith("SYSTEM_")) {
+        if (role.getName().startsWith(SYSTEM_ROLE_PREFIX)) {
             throw new AppException(ErrorCode.ROLE_NOT_FOUND);
         }
 

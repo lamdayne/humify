@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeWorkExperienceRepository extends JpaRepository<EmployeeWorkExperience, Long> {
-    List<EmployeeWorkExperience> findByEmployee_Id(Long employeeId);
+    List<EmployeeWorkExperience> findByEmployeeId(Long employeeId);
 
-    Optional<EmployeeWorkExperience> findByIdAndEmployee_Id(Long id, Long employeeId);
+    Optional<EmployeeWorkExperience> findByIdAndEmployeeId(Long id, Long employeeId);
 }

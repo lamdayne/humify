@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,7 +24,6 @@ public class EmployeeWorkExperienceServiceImpl implements EmployeeWorkExperience
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeWorkExperienceRepository employeeWorkExperienceRepository;
-
     private final EmployeeWorkExperienceMapper employeeWorkExperienceMapper;
 
     @Override
@@ -42,7 +42,7 @@ public class EmployeeWorkExperienceServiceImpl implements EmployeeWorkExperience
 
     @Override
     public List<EmployeeWorkExperienceResponse> getAll(Long employeeId) {
-        return employeeWorkExperienceRepository.findByEmployee_Id(employeeId)
+        return employeeWorkExperienceRepository.findByEmployeeId(employeeId)
                 .stream()
                 .map(employeeWorkExperienceMapper::toResponse)
                 .toList();
@@ -51,7 +51,7 @@ public class EmployeeWorkExperienceServiceImpl implements EmployeeWorkExperience
     @Override
     public EmployeeWorkExperienceResponse getById(Long employeeId, Long id) {
         EmployeeWorkExperience experience = employeeWorkExperienceRepository
-                .findByIdAndEmployee_Id(id, employeeId)
+                .findByIdAndEmployeeId(id, employeeId)
                 .orElseThrow(() ->
                         new AppException(ErrorCode.EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND));
 
@@ -62,7 +62,7 @@ public class EmployeeWorkExperienceServiceImpl implements EmployeeWorkExperience
     @Transactional
     public EmployeeWorkExperienceResponse update(Long employeeId, Long id, UpdateEmployeeWorkExperienceRequest request) {
         EmployeeWorkExperience experience = employeeWorkExperienceRepository
-                .findByIdAndEmployee_Id(id, employeeId)
+                .findByIdAndEmployeeId(id, employeeId)
                 .orElseThrow(() ->
                         new AppException(ErrorCode.EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND));
 
@@ -77,9 +77,8 @@ public class EmployeeWorkExperienceServiceImpl implements EmployeeWorkExperience
     @Transactional
     public void delete(Long employeeId, Long id) {
         EmployeeWorkExperience experience = employeeWorkExperienceRepository
-                .findByIdAndEmployee_Id(id, employeeId)
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND));
+                .findByIdAndEmployeeId(id, employeeId)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_WORK_EXPERIENCE_NOT_FOUND));
 
         employeeWorkExperienceRepository.delete(experience);
     }
