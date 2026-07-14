@@ -11,7 +11,7 @@ public interface PayslipService {
 
     /** GET /payroll-periods/{id}/payslips — dành cho HR. */
     PageResponse<PayslipResponse> getPayslipsByPeriod(
-            Long payrollPeriodId, Long companyId, Long employeeId, PayslipStatus status, int page, int size, String... sorts
+            Long payrollPeriodId, Long employeeId, PayslipStatus status, int page, int size, String... sorts
     );
 
     /** PUT /payslips/{id} — HR điều chỉnh thủ công, chỉ khi kỳ lương đang DRAFT. */

@@ -5,6 +5,7 @@ import com.lamdayne.humify.payroll.enums.PayslipStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,53 +17,28 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PayslipRepository extends JpaRepository<Payslip, Long> {
+public interface PayslipRepository extends JpaRepository<Payslip, Long> , JpaSpecificationExecutor<Payslip> {
     boolean existsByEmployeeIdAndStatusIn(Long employeeId, Collection<PayslipStatus> statuses);
 
 
-    Optional<Payslip> findByIdAndCompany_Id(Long id, Long companyId);
+
 
     Optional<Payslip> findByPayrollPeriod_IdAndEmployee_Id(Long payrollPeriodId, Long employeeId);
 
     List<Payslip> findByPayrollPeriod_Id(Long payrollPeriodId);
 
-    Page<Payslip> findByCompany_IdAndPayrollPeriod_Id(
-            Long companyId,
+    Page<Payslip> findByPayrollPeriod_Id(
             Long payrollPeriodId,
-            Pageable pageable
-    );
-
-    Page<Payslip> findByCompany_IdAndPayrollPeriod_IdAndStatus(
-            Long companyId,
-            Long payrollPeriodId,
-            PayslipStatus status,
-            Pageable pageable
-    );
-
-    Page<Payslip> findByCompany_IdAndPayrollPeriod_IdAndEmployee_Id(
-            Long companyId,
-            Long payrollPeriodId,
-            Long employeeId,
-            Pageable pageable
-    );
-
-    Page<Payslip> findByCompany_IdAndPayrollPeriod_IdAndEmployee_IdAndStatus(
-            Long companyId,
-            Long payrollPeriodId,
-            Long employeeId,
-            PayslipStatus status,
             Pageable pageable
     );
 
     @Query("""
-            SELECT p FROM Payslip p
-            WHERE p.company.id = :companyId
-              AND p.employee.id = :employeeId
-              AND p.status IN :visibleStatuses
-              AND (:year IS NULL OR p.payrollPeriod.year = :year)
-            """)
+SELECT p FROM Payslip p
+WHERE p.employee.id = :employeeId
+  AND p.status IN :visibleStatuses
+  AND (:year IS NULL OR p.payrollPeriod.year = :year)
+""")
     Page<Payslip> findMyPayslips(
-            @Param("companyId") Long companyId,
             @Param("employeeId") Long employeeId,
             @Param("visibleStatuses") List<PayslipStatus> visibleStatuses,
             @Param("year") Integer year,

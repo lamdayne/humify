@@ -95,7 +95,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
     @Override
     @Transactional
     public int calculate(Long payrollPeriodId, Long companyId) {
-        PayrollPeriod period = payrollPeriodRepository.findByIdAndCompanyId(payrollPeriodId, companyId)
+        PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
         if (period.getStatus() != PayrollPeriodStatus.DRAFT) {
@@ -118,7 +118,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
         //    TODO: kiểm tra lại đúng tên các giá trị trong AttendanceStatus của bạn — mình đang
         //    giả định PRESENT, LATE, REMOTE (1 công), HALF_DAY (0.5 công), LEAVE (nghỉ có lương),
         //    ABSENT (nghỉ không lương), khớp với mục 4.2 tài liệu thiết kế.
-        List<Attendance> attendances = attendanceRepository.findByCompany_IdAndEmployee_IdAndWorkDateBetween(
+        List<Attendance> attendances = attendanceRepository.findByEmployeeIdAndWorkDateBetween(
                 period.getCompany().getId(), contract.getEmployee().getId(), period.getStartDate(), period.getEndDate()
         );
 
@@ -223,7 +223,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
     @Override
     @Transactional
     public void approve(Long payrollPeriodId, Long companyId) {
-        PayrollPeriod period = payrollPeriodRepository.findByIdAndCompanyId(payrollPeriodId, companyId)
+        PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
         if (period.getStatus() != PayrollPeriodStatus.DRAFT) {
@@ -240,7 +240,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
     @Override
     @Transactional
     public void pay(Long payrollPeriodId, Long companyId) {
-        PayrollPeriod period = payrollPeriodRepository.findByIdAndCompanyId(payrollPeriodId, companyId)
+        PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
         if (period.getStatus() != PayrollPeriodStatus.APPROVED) {

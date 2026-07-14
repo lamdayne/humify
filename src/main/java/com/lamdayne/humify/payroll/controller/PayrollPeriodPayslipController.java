@@ -44,9 +44,9 @@ public class PayrollPeriodPayslipController {
             @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
             @RequestParam(required = false) String... sorts
     ) {
-        Long companyId = CompanyContext.getCompanyId();
+
         PageResponse<PayslipResponse> data = payslipService.getPayslipsByPeriod(
-                payrollPeriodId, companyId, employeeId, status, page, size, sorts
+                payrollPeriodId, employeeId, status, page, size, sorts
         );
         return ResponseEntity.ok(
                 ApiResponse.success(SuccessCode.PAYSLIP_READ_SUCCESS, data)

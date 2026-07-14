@@ -5,6 +5,9 @@ import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.search.GenericSpecificationBuilder;
+import com.lamdayne.humify.common.search.SearchOperation;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.payroll.dto.request.UpdatePayslipRequest;
 import com.lamdayne.humify.payroll.dto.response.MyPayslipResponse;
@@ -53,44 +56,38 @@ public class PayslipServiceImpl implements PayslipService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PayslipResponse> getPayslipsByPeriod(
-            Long payrollPeriodId, Long companyId, Long employeeId, PayslipStatus status, int page, int size, String... sorts
+            Long payrollPeriodId, Long employeeId, PayslipStatus status, int page, int size, String... sorts
     ) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         // Đảm bảo kỳ lương tồn tại và thuộc công ty hiện tại trước khi truy vấn payslip con
-        payrollPeriodRepository.findByIdAndCompanyId(payrollPeriodId, companyId)
+        payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
-        Page<Payslip> result;
 
-        if (employeeId == null && status == null) {
-            result = payslipRepository.findByCompany_IdAndPayrollPeriod_Id(
-                    companyId,
-                    payrollPeriodId,
-                    pageable
-            );
-        } else if (employeeId != null && status == null) {
-            result = payslipRepository.findByCompany_IdAndPayrollPeriod_IdAndEmployee_Id(
-                    companyId,
-                    payrollPeriodId,
-                    employeeId,
-                    pageable
-            );
-        } else if (employeeId == null) {
-            result = payslipRepository.findByCompany_IdAndPayrollPeriod_IdAndStatus(
-                    companyId,
-                    payrollPeriodId,
-                    status,
-                    pageable
-            );
-        } else {
-            result = payslipRepository.findByCompany_IdAndPayrollPeriod_IdAndEmployee_IdAndStatus(
-                    companyId,
-                    payrollPeriodId,
-                    employeeId,
-                    status,
-                    pageable
-            );
+        GenericSpecificationBuilder<Payslip> builder = new GenericSpecificationBuilder<>();
+
+        builder.with(new SpecSearchCriteria(
+                "payrollPeriod.id",
+                SearchOperation.EQUALITY,
+                payrollPeriodId
+        ));
+
+        if (employeeId != null) {
+            builder.with(new SpecSearchCriteria(
+                    "employee.id",
+                    SearchOperation.EQUALITY,
+                    employeeId
+            ));
         }
 
+        if (status != null) {
+            builder.with(new SpecSearchCriteria(
+                    "status",
+                    SearchOperation.EQUALITY,
+                    status
+            ));
+        }
+
+        Page<Payslip> result = payslipRepository.findAll(builder.build(), pageable);
         List<PayslipResponse> items = result.getContent().stream()
                 .map(payslipMapper::toResponse)
                 .toList();
@@ -109,7 +106,7 @@ public class PayslipServiceImpl implements PayslipService {
     @Override
     @Transactional
     public PayslipResponse updatePayslip(Long payslipId, Long companyId, UpdatePayslipRequest request) {
-        Payslip payslip = payslipRepository.findByIdAndCompany_Id(payslipId, companyId)
+        Payslip payslip = payslipRepository.findById(payslipId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYSLIP_NOT_FOUND));
 
         // Chỉ cho phép chỉnh sửa khi kỳ lương tương ứng đang ở trạng thái DRAFT
@@ -178,7 +175,7 @@ public class PayslipServiceImpl implements PayslipService {
 
         Pageable pageable = PageableUtil.buildPageable(page,size,sorts);
         Page<Payslip> result = payslipRepository.findMyPayslips(
-                companyId, employeeId, List.of(PayslipStatus.SENT, PayslipStatus.PAID), year,
+                 employeeId, List.of(PayslipStatus.SENT, PayslipStatus.PAID), year,
                 pageable
         );
 
