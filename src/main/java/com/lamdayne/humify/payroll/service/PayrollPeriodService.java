@@ -8,5 +8,22 @@ public interface PayrollPeriodService {
 
     PayrollPeriodResponse createPayrollPeriod(Long companyId, CreatePayrollPeriodRequest request);
     PageResponse<PayrollPeriodResponse> getPayrollPeriods(Long companyId, int page, int size);
-    int calculatePayroll(Long id, Long companyId); // Trả về số lượng nhân viên được tính lương
+
+
+    /**
+     * Chạy tính toán lương cho toàn bộ nhân viên có hợp đồng ACTIVE trong kỳ lương.
+     * Tạo mới payslip nếu chưa có, tính toán lại (ghi đè) nếu đã tồn tại.
+     *
+     * @return số lượng phiếu lương đã được tạo/tính lại
+     */
+    int calculate(Long payrollPeriodId, Long companyId);
+
+    /** Duyệt bảng lương: DRAFT -> APPROVED, đồng thời chuyển toàn bộ payslip DRAFT -> SENT. */
+    void approve(Long payrollPeriodId, Long companyId);
+
+    /**
+     * Xác nhận đã thanh toán: APPROVED -> PAID, đồng thời chuyển toàn bộ payslip SENT -> PAID
+     * và ghi nhận payment_date.
+     */
+    void pay(Long payrollPeriodId, Long companyId);
 }

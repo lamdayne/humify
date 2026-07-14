@@ -284,12 +284,18 @@ public enum ErrorCode {
     MONTH_INVALID("MONTH_INVALID", "Month must be between 1 and 12", HttpStatus.BAD_REQUEST),
     END_DATE_REQUIRED("END_DATE_REQUIRED", "End date is required", HttpStatus.BAD_REQUEST),
     STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST),
-
+    PAYROLL_PERIOD_NOT_APPROVABLE("PAYROLL_PERIOD_NOT_APPROVABLE", "Payroll period not approvable", HttpStatus.BAD_REQUEST),
+    PAYROLL_PERIOD_NOT_PAYABLE("PAYROLL_PERIOD_NOT_PAYABLE", "Payroll period not payable", HttpStatus.BAD_REQUEST),
     // Attendance Log
     LOG_TYPE_REQUIRED("LOG_TYPE_REQUIRED", "Log type is required", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
     NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
-    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST);
+    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+    //PAYSLIP
+    PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),
+    PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST);
+
+
     private String code;
     private String defaultMessage;
     private HttpStatus status;

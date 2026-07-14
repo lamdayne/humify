@@ -19,4 +19,7 @@ public interface PayrollPeriodRepository extends JpaRepository<PayrollPeriod, Lo
 
     // Lấy chi tiết để tính lương
     Optional<PayrollPeriod> findByIdAndCompanyId(Long id, Long companyId);
+
+//    Optional<PayrollPeriod> findByIdAndCompanyId(Long id, Long companyId);
+
 }

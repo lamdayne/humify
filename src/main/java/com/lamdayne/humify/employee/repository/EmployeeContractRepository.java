@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -33,4 +36,23 @@ public interface EmployeeContractRepository extends JpaRepository<EmployeeContra
                                            @Param("employeeId") Long employeeId,
                                            @Param("status") ContractStatus status,
                                            Pageable pageable);
+
+
+    /**
+     * Lấy tất cả hợp đồng ACTIVE của công ty có khoảng thời gian hiệu lực giao với kỳ lương
+     * [periodStartDate, periodEndDate]. Dùng cho bước tính lương tự động (POST .../calculate).
+     */
+    @Query("""
+            SELECT c FROM EmployeeContract c
+            WHERE c.company.id = :companyId
+              AND c.status = :status
+              AND c.startDate <= :periodEndDate
+              AND (c.endDate IS NULL OR c.endDate >= :periodStartDate)
+            """)
+    List<EmployeeContract> findActiveContractsOverlappingPeriod(
+            @Param("companyId") Long companyId,
+            @Param("status") ContractStatus status,
+            @Param("periodStartDate") LocalDate periodStartDate,
+            @Param("periodEndDate") LocalDate periodEndDate
+    );
 }

@@ -46,20 +46,4 @@ public class PayrollPeriodController {
                         payrollPeriodService.getPayrollPeriods(userPrincipal.getCompanyId(), page, size)
                 ));
     }
-
-    @PostMapping("/{id}/calculate")
-    public ResponseEntity<ApiResponse<String>> calculatePayroll(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        int employeeCount = payrollPeriodService.calculatePayroll(id, userPrincipal.getCompanyId());
-
-        String successMessage = "Payroll calculation completed for " + employeeCount + " employees";
-
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.PAYROLL_PERIOD_CALC_SUCCESS,
-                        successMessage
-                ));
-    }
 }
