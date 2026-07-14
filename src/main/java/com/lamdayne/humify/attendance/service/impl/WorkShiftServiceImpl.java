@@ -109,10 +109,9 @@ public class WorkShiftServiceImpl implements WorkShiftService {
             throw new AppException(ErrorCode.SHIFT_TIME_INVALID);
         }
 
-        if (breakStart != null && breakEnd != null) {
-            if (breakStart.isBefore(start) || breakEnd.isAfter(end) || breakStart.isAfter(breakEnd) || breakStart.equals(breakEnd)) {
-                throw new AppException(ErrorCode.SHIFT_TIME_INVALID);
-            }
+        if (breakStart != null && breakEnd != null && (breakStart.isBefore(start) || breakEnd.isAfter(end) || breakStart.isAfter(breakEnd) || breakStart.equals(breakEnd))) {
+            throw new AppException(ErrorCode.SHIFT_TIME_INVALID);
         }
+
     }
 }

@@ -186,4 +186,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return String.format("%s%04d", prefix, nextNumber);
     }
 
+    @Override
+    public Employee getEmployeeByEmail(String email) {
+        return employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+    }
+
+
 }
