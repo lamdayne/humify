@@ -110,6 +110,56 @@ CREATE TYPE performance_review_status AS ENUM (
     'COMPLETED'
     );
 
+CREATE TYPE leave_request_status AS ENUM (
+    'PENDING',
+    'APPROVED',
+    'REJECTED',
+    'CANCELLED'
+    );
+
+CREATE TYPE leave_session_type AS ENUM (
+    'FULL_DAY',
+    'MORNING',
+    'AFTERNOON'
+    );
+
+CREATE TYPE contract_status AS ENUM (
+    'ACTIVE',
+    'EXPIRED',
+    'TERMINATED'
+    );
+
+CREATE TYPE payroll_period_status AS ENUM (
+    'DRAFT',
+    'PENDING_APPROVAL',
+    'APPROVED',
+    'PAID'
+    );
+
+CREATE TYPE payslip_status AS ENUM (
+    'DRAFT',
+    'SENT',
+    'PAID'
+    );
+
+CREATE TYPE attendance_log_type AS ENUM (
+    'CHECK_IN',
+    'CHECK_OUT'
+    );
+
+CREATE TYPE attendance_correction_status AS ENUM (
+    'PENDING',
+    'APPROVED',
+    'REJECTED'
+    );
+
+CREATE TYPE attendance_verify_method AS ENUM (
+    'GPS',
+    'FACE',
+    'FINGERPRINT',
+    'NFC'
+    );
+
 -- Table: companies
 
 CREATE TABLE companies
@@ -275,27 +325,37 @@ CREATE TABLE user_social_accounts
 
 CREATE TABLE attendances
 (
-    id             BIGSERIAL PRIMARY KEY,
-    company_id     BIGINT            NOT NULL,
-    employee_id    BIGINT            NOT NULL,
-    work_date      DATE              NOT NULL,
-    check_in_time  TIMESTAMPTZ NULL,
-    check_out_time TIMESTAMPTZ NULL,
-    worked_hours   NUMERIC(5, 2) NULL,
-    checked_status checked_status    NOT NULL DEFAULT 'NOT_CHECKED',
-    status         attendance_status NOT NULL DEFAULT 'ABSENT',
-    created_at     TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    deleted_at     TIMESTAMPTZ NULL,
-    CONSTRAINT fk_attendance_companies FOREIGN KEY (company_id) REFERENCES companies (id),
-    CONSTRAINT fk_attendance_employees FOREIGN KEY (employee_id) REFERENCES employees (id)
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT            NOT NULL,
+    employee_id         BIGINT            NOT NULL,
+    work_shift_id       BIGINT            NULL,
+    work_date           DATE              NOT NULL,
+    check_in_time       TIMESTAMPTZ       NULL,
+    check_out_time      TIMESTAMPTZ       NULL,
+    worked_hours        NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
+    late_minutes        INTEGER           NOT NULL DEFAULT 0,
+    early_minutes       INTEGER           NOT NULL DEFAULT 0,
+    ot_hours            NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
+    work_points         NUMERIC(3, 2)     NOT NULL DEFAULT 0.00,
+    checked_status      checked_status    NOT NULL DEFAULT 'NOT_CHECKED',
+    status              attendance_status NOT NULL DEFAULT 'ABSENT',
+    is_modified         BOOLEAN           NOT NULL DEFAULT FALSE,
+    modified_by_id      BIGINT            NULL,
+    modification_reason VARCHAR(255)      NULL,
+    created_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ       NULL,
+    CONSTRAINT fk_attendances_company_id FOREIGN KEY (company_id) REFERENCES companies (id),
+    CONSTRAINT fk_attendances_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_attendances_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id),
+    CONSTRAINT fk_attendances_modified_by FOREIGN KEY (modified_by_id) REFERENCES users (id)
 );
 
-CREATE UNIQUE INDEX uq_attendance_employee_date ON attendances (employee_id, work_date);
-CREATE INDEX idx_attendance_company_id ON attendances (company_id);
-CREATE INDEX idx_attendance_employee_id ON attendances (employee_id);
-CREATE INDEX idx_attendance_work_date ON attendances (work_date);
-CREATE INDEX idx_attendance_status ON attendances (status);
+CREATE UNIQUE INDEX uq_attendances_employee_date ON attendances (employee_id, work_date) WHERE deleted_at IS NULL;
+CREATE INDEX idx_attendances_company_id ON attendances (company_id);
+CREATE INDEX idx_attendances_employee_id ON attendances (employee_id);
+CREATE INDEX idx_attendances_work_date ON attendances (work_date);
+CREATE INDEX idx_attendances_status ON attendances (status);
 
 -- Table: roles
 CREATE TABLE roles
@@ -649,6 +709,355 @@ CREATE TABLE performance_reviews
 );
 
 CREATE INDEX idx_perf_review_employee_id ON performance_reviews (employee_id);
+
+
+-- Table: employee_educations
+
+CREATE TABLE employee_educations
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    employee_id          BIGINT NOT NULL,
+    degree_level         VARCHAR(255) NULL,
+    school_name          VARCHAR(255) NULL,
+    major                VARCHAR(255) NULL,
+    start_year           INTEGER NULL,
+    end_year             INTEGER NULL,
+    gpa                  DOUBLE PRECISION NULL,
+    certificate_file_url TEXT NULL,
+    note                 TEXT NULL,
+    created_at           TIMESTAMPTZ DEFAULT NOW(),
+    updated_at           TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at           TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_edu FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_certifications
+
+CREATE TABLE employee_certifications
+(
+    id                     BIGSERIAL PRIMARY KEY,
+    employee_id            BIGINT       NOT NULL,
+    name                   VARCHAR(255) NOT NULL,
+    certification_code     VARCHAR(255) NULL,
+    issued_by              VARCHAR(255) NULL,
+    issued_date            DATE NULL,
+    expired_date           DATE NULL,
+    score_or_level         VARCHAR(255) NULL,
+    certification_file_url TEXT NULL,
+    created_at             TIMESTAMPTZ DEFAULT NOW(),
+    updated_at             TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at             TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_cert FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_work_experiences
+
+CREATE TABLE employee_work_experiences
+(
+    id                 BIGSERIAL PRIMARY KEY,
+    employee_id        BIGINT NOT NULL,
+    company_name       VARCHAR(255) NULL,
+    position           VARCHAR(255) NULL,
+    start_date         DATE NULL,
+    end_date           DATE NULL,
+    description        TEXT NULL,
+    reason_for_leaving VARCHAR(255) NULL,
+    created_at         TIMESTAMPTZ DEFAULT NOW(),
+    updated_at         TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at         TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_exp FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: employee_id_documents
+
+CREATE TABLE employee_id_documents
+(
+    id              BIGSERIAL PRIMARY KEY,
+    employee_id     BIGINT      NOT NULL,
+    id_type         VARCHAR(20) NOT NULL,
+    id_number       VARCHAR(50) NOT NULL,
+    issued_date     DATE NULL,
+    issued_place    VARCHAR(255) NULL,
+    expired_date    DATE NULL,
+    front_image_url TEXT NULL,
+    back_image_url  TEXT NULL,
+    is_current      BOOLEAN     NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ          DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ          DEFAULT NOW(),
+    deleted_at      TIMESTAMPTZ,
+    CONSTRAINT fk_employee_id_iddoc FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+
+-- Table: leave_types
+
+CREATE TABLE leave_types
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT       NOT NULL,
+    name                VARCHAR(100) NOT NULL,
+    code                VARCHAR(50)  NOT NULL,
+    max_days            NUMERIC(5, 2) NULL,
+    is_paid             BOOLEAN      NOT NULL DEFAULT TRUE,
+    requires_attachment BOOLEAN      NOT NULL DEFAULT FALSE,
+    description         TEXT NULL,
+    created_at          TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ NULL,
+    CONSTRAINT fk_leave_types_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_leave_types_company_code ON leave_types (company_id, code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_leave_types_company ON leave_types (company_id);
+
+
+-- Table: leave_balances
+
+CREATE TABLE leave_balances
+(
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT        NOT NULL,
+    employee_id    BIGINT        NOT NULL,
+    leave_type_id  BIGINT        NOT NULL,
+    year           INTEGER       NOT NULL,
+    allocated_days NUMERIC(5, 2) NOT NULL DEFAULT 12.00,
+    used_days      NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+    pending_days   NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+    created_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ,
+    CONSTRAINT fk_leave_balances_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_balances_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_balances_types FOREIGN KEY (leave_type_id) REFERENCES leave_types (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_leave_balances_emp_type_year ON leave_balances (employee_id, leave_type_id, year);
+CREATE INDEX idx_leave_balances_company ON leave_balances (company_id);
+CREATE INDEX idx_leave_balances_employee ON leave_balances (employee_id);
+
+CREATE TABLE leave_requests
+(
+    id             BIGSERIAL PRIMARY KEY,
+    company_id     BIGINT               NOT NULL,
+    employee_id    BIGINT               NOT NULL,
+    leave_type_id  BIGINT               NOT NULL,
+    start_date     DATE                 NOT NULL,
+    end_date       DATE                 NOT NULL,
+    duration_days  NUMERIC(5, 2)        NOT NULL,
+    session_type   leave_session_type   NOT NULL DEFAULT 'FULL_DAY',
+    reason         TEXT                 NOT NULL,
+    attachment_url TEXT NULL,
+    status         leave_request_status NOT NULL DEFAULT 'PENDING',
+    approver_id    BIGINT NULL,
+    approver_note  TEXT NULL,
+    approved_at    TIMESTAMPTZ NULL,
+    created_at     TIMESTAMPTZ          NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ          NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ NULL,
+    CONSTRAINT fk_leave_requests_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_requests_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_leave_requests_types FOREIGN KEY (leave_type_id) REFERENCES leave_types (id),
+    CONSTRAINT fk_leave_requests_approver FOREIGN KEY (approver_id) REFERENCES users (id)
+);
+
+CREATE INDEX idx_leave_requests_company ON leave_requests (company_id);
+CREATE INDEX idx_leave_requests_employee ON leave_requests (employee_id);
+CREATE INDEX idx_leave_requests_status ON leave_requests (status);
+CREATE INDEX idx_leave_requests_dates ON leave_requests (start_date, end_date);
+
+-- Table: employee_contracts
+
+CREATE TABLE employee_contracts
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT          NOT NULL,
+    employee_id         BIGINT          NOT NULL,
+    contract_number     VARCHAR(50)     NOT NULL,
+    contract_type       VARCHAR(50)     NOT NULL,
+    start_date          DATE            NOT NULL,
+    end_date            DATE NULL,
+    base_salary         NUMERIC(15, 2)  NOT NULL,
+    allowance_lunch     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_phone     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_transport NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    allowance_other     NUMERIC(15, 2)  NOT NULL DEFAULT 0.00,
+    insurance_salary    NUMERIC(15, 2)  NOT NULL,
+    taxable_dependents  INTEGER         NOT NULL DEFAULT 0,
+    status              contract_status NOT NULL DEFAULT 'ACTIVE',
+    file_url            TEXT NULL,
+    created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ NULL,
+    CONSTRAINT fk_contracts_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_contracts_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_contracts_company_number ON employee_contracts (company_id, contract_number) WHERE deleted_at IS NULL;
+CREATE INDEX idx_contracts_company ON employee_contracts (company_id);
+CREATE INDEX idx_contracts_employee ON employee_contracts (employee_id);
+CREATE INDEX idx_contracts_status ON employee_contracts (status);
+
+-- Table: payroll_periods
+
+CREATE TABLE payroll_periods
+(
+    id                 BIGSERIAL PRIMARY KEY,
+    company_id         BIGINT                NOT NULL,
+    name               VARCHAR(100)          NOT NULL,
+    month              INTEGER               NOT NULL,
+    year               INTEGER               NOT NULL,
+    start_date         DATE                  NOT NULL,
+    end_date           DATE                  NOT NULL,
+    standard_work_days NUMERIC(4, 2)         NOT NULL DEFAULT 22.00,
+    status             payroll_period_status NOT NULL DEFAULT 'DRAFT',
+    created_at         TIMESTAMPTZ           NOT NULL DEFAULT NOW(),
+    updated_at         TIMESTAMPTZ           NOT NULL DEFAULT NOW(),
+    deleted_at         TIMESTAMPTZ NULL,
+    CONSTRAINT fk_payroll_periods_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_payroll_periods_company_month_year ON payroll_periods (company_id, month, year) WHERE deleted_at IS NULL;
+CREATE INDEX idx_payroll_periods_company ON payroll_periods (company_id);
+CREATE INDEX idx_payroll_periods_status ON payroll_periods (status);
+
+-- Table: payslips
+
+CREATE TABLE payslips
+(
+    id                               BIGSERIAL PRIMARY KEY,
+    company_id                       BIGINT         NOT NULL,
+    payroll_period_id                BIGINT         NOT NULL,
+    employee_id                      BIGINT         NOT NULL,
+    base_salary                      NUMERIC(15, 2) NOT NULL,
+    standard_work_days               NUMERIC(4, 2)  NOT NULL,
+    actual_work_days                 NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    paid_leave_days                  NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    unpaid_leave_days                NUMERIC(4, 2)  NOT NULL DEFAULT 0.00,
+    salary_by_work_days              NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    total_allowances                 NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    bonus_kpi                        NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    bonus_project                    NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    other_bonuses                    NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    ot_hours                         NUMERIC(5, 2)  NOT NULL DEFAULT 0.00,
+    ot_salary                        NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    gross_salary                     NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_social_insurance       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_health_insurance       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    deduction_unemployment_insurance NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    personal_income_tax              NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    other_deductions                 NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    net_salary                       NUMERIC(15, 2) NOT NULL DEFAULT 0.00,
+    status                           payslip_status NOT NULL DEFAULT 'DRAFT',
+    payment_date                     DATE NULL,
+    note                             TEXT NULL,
+    created_at                       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+    updated_at                       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+    deleted_at                       TIMESTAMPTZ NULL,
+    CONSTRAINT fk_payslips_companies FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_payslips_periods FOREIGN KEY (payroll_period_id) REFERENCES payroll_periods (id) ON DELETE CASCADE,
+    CONSTRAINT fk_payslips_employees FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX uq_payslips_period_employee ON payslips (payroll_period_id, employee_id);
+CREATE INDEX idx_payslips_company ON payslips (company_id);
+CREATE INDEX idx_payslips_employee ON payslips (employee_id);
+CREATE INDEX idx_payslips_status ON payslips (status);
+
+-- Table: work_shifts
+
+CREATE TABLE work_shifts
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    company_id           BIGINT       NOT NULL,
+    shift_code           VARCHAR(50)  NOT NULL,
+    name                 VARCHAR(255) NOT NULL,
+    start_time           TIMESTAMPTZ  NOT NULL,
+    end_time             TIMESTAMPTZ  NOT NULL,
+    break_start_time     TIMESTAMPTZ NULL,
+    break_end_time       TIMESTAMPTZ NULL,
+    grace_period_minutes INTEGER      NOT NULL DEFAULT 5,
+    status               BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at           TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at           TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at           TIMESTAMPTZ NULL,
+    CONSTRAINT fk_work_shifts_company_id FOREIGN KEY (company_id) REFERENCES companies (id)
+);
+
+CREATE UNIQUE INDEX uq_work_shifts_company_code ON work_shifts (company_id, shift_code) WHERE deleted_at IS NULL;
+CREATE INDEX idx_work_shifts_company ON work_shifts (company_id);
+
+-- Table: employee_shifts
+
+CREATE TABLE employee_shifts
+(
+    id            BIGSERIAL PRIMARY KEY,
+    employee_id   BIGINT      NOT NULL,
+    work_shift_id BIGINT      NOT NULL,
+    start_date    DATE        NOT NULL,
+    end_date      DATE NULL,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ NULL,
+    CONSTRAINT fk_employee_shifts_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_employee_shifts_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id)
+);
+CREATE INDEX idx_employee_shifts_employee ON employee_shifts (employee_id);
+CREATE INDEX idx_employee_shifts_shift ON employee_shifts (work_shift_id);
+CREATE INDEX idx_employee_shifts_dates ON employee_shifts (start_date, end_date);
+
+-- Table: attendance_logs
+
+CREATE TABLE attendance_logs
+(
+    id            BIGSERIAL PRIMARY KEY,
+    attendance_id BIGINT NULL,
+    employee_id   BIGINT                   NOT NULL,
+    timestamp     TIMESTAMPTZ              NOT NULL,
+    log_type      attendance_log_type      NOT NULL,
+    verify_method attendance_verify_method NOT NULL,
+    ip_address    VARCHAR(255) NULL,
+    device_info   VARCHAR(255) NULL,
+    created_at    TIMESTAMPTZ              NOT NULL DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ              NOT NULL DEFAULT NOW(),
+    deleted_at    TIMESTAMPTZ NULL,
+    CONSTRAINT fk_attendance_logs_attendance FOREIGN KEY (attendance_id) REFERENCES attendances (id),
+    CONSTRAINT fk_attendance_logs_employee FOREIGN KEY (employee_id) REFERENCES employees (id)
+);
+
+CREATE INDEX idx_attendance_logs_attendance ON attendance_logs (attendance_id);
+CREATE INDEX idx_attendance_logs_employee ON attendance_logs (employee_id);
+CREATE INDEX idx_attendance_logs_timestamp ON attendance_logs (timestamp);
+
+-- Table: attendance_
+
+CREATE TABLE attendance_corrections
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    attendance_id       BIGINT NULL,
+    employee_id         BIGINT                       NOT NULL,
+    correction_date     DATE                         NOT NULL,
+    requested_check_in  TIMESTAMPTZ NULL,
+    requested_check_out TIMESTAMPTZ NULL,
+    reason              VARCHAR(255)                 NOT NULL,
+    status              attendance_correction_status NOT NULL,
+    approver_id         BIGINT NULL,
+    approved_at         TIMESTAMPTZ NULL,
+    approver_note       VARCHAR(255) NULL,
+    created_at          TIMESTAMPTZ                  NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ                  NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ NULL,
+    CONSTRAINT fk_corrections_attendance FOREIGN KEY (attendance_id) REFERENCES attendances (id),
+    CONSTRAINT fk_corrections_employee FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_corrections_approver FOREIGN KEY (approver_id) REFERENCES users (id)
+);
+
+CREATE INDEX idx_corrections_attendance ON attendance_corrections (attendance_id);
+CREATE INDEX idx_corrections_employee ON attendance_corrections (employee_id);
+CREATE INDEX idx_corrections_date ON attendance_corrections (correction_date);
+CREATE INDEX idx_corrections_status ON attendance_corrections (status);
 
 
 -- Enable RLS

@@ -6,8 +6,11 @@ import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.task.dto.request.*;
 import com.lamdayne.humify.task.dto.response.CommentResponse;
 import com.lamdayne.humify.task.entity.Task;
+import com.lamdayne.humify.task.entity.TaskActivity;
 import com.lamdayne.humify.task.entity.TaskComment;
+import com.lamdayne.humify.task.enums.TaskActivityAction;
 import com.lamdayne.humify.task.mapper.TaskCommentMapper;
+import com.lamdayne.humify.task.repository.TaskActivityRepository;
 import com.lamdayne.humify.task.repository.TaskCommentRepository;
 import com.lamdayne.humify.task.repository.TaskRepository;
 import com.lamdayne.humify.task.service.TaskCommentService;
@@ -16,6 +19,7 @@ import com.lamdayne.humify.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 
@@ -27,6 +31,7 @@ public class TaskCommentServiceImpl implements TaskCommentService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskCommentMapper taskCommentMapper;
+    private final TaskActivityRepository taskActivityRepository;
 
     @Override
     @Transactional
@@ -50,7 +55,16 @@ public class TaskCommentServiceImpl implements TaskCommentService {
                 .content(request.getContent())
                 .build();
 
-        return taskCommentMapper.toResponse(taskCommentRepository.save(comment));
+        comment = taskCommentRepository.save(comment);
+
+        taskActivityRepository.save(TaskActivity.builder()
+                .task(task)
+                .user(author)
+                .action(TaskActivityAction.ADD_COMMENT)
+                .build()
+        );
+
+        return taskCommentMapper.toResponse(comment);
     }
 
     @Override

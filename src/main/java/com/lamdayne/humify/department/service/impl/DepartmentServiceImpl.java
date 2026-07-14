@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -34,12 +33,10 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
     private final DepartmentRepository departmentRepository;
     private final BranchService branchService;
 
-
     @Override
     @Transactional
     public DepartmentResponse createDepartment(CreateDepartmentRequest request) {
         Branch branch = branchService.getBranchById(request.getBranchId());
-
 
         Department department = departmentMapper.toDepartment(request);
 
@@ -69,10 +66,11 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
     public DepartmentResponse updateDepartment(long id, UpdateDepartmentRequest request) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+
         departmentMapper.updateDepartment(department, request);
+
         return departmentMapper.toDepartmentResponse(departmentRepository.save(department));
     }
-
 
     @Override
     public Department getReferenceById(Long id) {

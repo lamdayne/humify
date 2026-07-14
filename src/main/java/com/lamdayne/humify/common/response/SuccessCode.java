@@ -9,6 +9,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum SuccessCode {
 
+    // Attendance
+    ATTENDANCE_READ_SUCCESS("ATTENDANCE_READ_SUCCESS", "Get attendance data successfully"),
+    ATTENDANCE_UPDATE_SUCCESS("ATTENDANCE_UPDATE_SUCCESS", "Attendance record updated successfully"),
+    LEAVE_BALANCE_READ_SUCCESS("LEAVE_BALANCE_READ_SUCCESS", "Get leave balances successfully"),
+    LEAVE_BALANCE_UPDATE_SUCCESS("LEAVE_BALANCE_UPDATE_SUCCESS", "Leave balance updated successfully"),
+
+    LEAVE_TYPE_CREATE_SUCCESS("LEAVE_TYPE_CREATE_SUCCESS", "Leave type created successfully"),
+    LEAVE_TYPE_READ_SUCCESS("LEAVE_TYPE_READ_SUCCESS", "Get leave types successfully"),
+    LEAVE_TYPE_UPDATE_SUCCESS("LEAVE_TYPE_UPDATE_SUCCESS", "Leave type updated successfully"),
+    LEAVE_TYPE_DELETE_SUCCESS("LEAVE_TYPE_DELETE_SUCCESS", "Leave type deleted successfully"),
+
+    // Work shift
+    WORK_SHIFT_CREATE_SUCCESS("WORK_SHIFT_CREATE_SUCCESS", "Work shift created successfully"),
+    WORK_SHIFT_READ_SUCCESS("WORK_SHIFT_READ_SUCCESS", "Get work shifts successfully"),
+    WORK_SHIFT_UPDATE_SUCCESS("WORK_SHIFT_UPDATE_SUCCESS", "Work shift updated successfully"),
+    WORK_SHIFT_DELETE_SUCCESS("WORK_SHIFT_DELETE_SUCCESS", "Work shift deactivated successfully"),
+
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
@@ -58,6 +75,18 @@ public enum SuccessCode {
     EMPLOYEE_TRANSFER_SUCCESS("EMPLOYEE_TRANSFER_SUCCESS", "Employee transfer successfully"),
     EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
     EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
+
+    // Employee Id Document
+    EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS("EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS", "Employee ID document created successfully"),
+    EMPLOYEE_ID_DOCUMENT_READ_SUCCESS("EMPLOYEE_ID_DOCUMENT_READ_SUCCESS", "Get employee ID documents successfully"),
+    EMPLOYEE_ID_DOCUMENT_UPDATE_SUCCESS("EMPLOYEE_ID_DOCUMENT_UPDATE_SUCCESS", "Employee ID document updated successfully"),
+    EMPLOYEE_ID_DOCUMENT_DELETE_SUCCESS("EMPLOYEE_ID_DOCUMENT_DELETE_SUCCESS", "Employee ID document deleted successfully"),
+
+    // Contract
+    CONTRACT_CREATE_SUCCESS("CONTRACT_CREATE_SUCCESS", "Employee contract created successfully"),
+    CONTRACT_READ_SUCCESS("CONTRACT_READ_SUCCESS", "Get contract data successfully"),
+    CONTRACT_UPDATE_SUCCESS("CONTRACT_UPDATE_SUCCESS", "Contract updated successfully"),
+    CONTRACT_DELETE_SUCCESS("CONTRACT_DELETE_SUCCESS", "Contract deleted successfully"),
 
     // User
     USER_CREATE_SUCCESS("USER_CREATE_SUCCESS", "User created successfully"),
@@ -138,8 +167,46 @@ public enum SuccessCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Get review data successfully"),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Review updated successfully"),
     REVIEW_SUBMIT_SUCCESS("REVIEW_SUBMIT_SUCCESS", "Review submitted successfully"),
-    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully");
+    REVIEW_COMPLETE_SUCCESS("REVIEW_COMPLETE_SUCCESS", "Review finalized successfully"),
 
+    // Employee Certification
+    EMPLOYEE_CERTIFICATION_CREATE_SUCCESS("EMPLOYEE_CERTIFICATION_CREATE_SUCCESS", "Employee certification added successfully"),
+    EMPLOYEE_CERTIFICATION_UPDATE_SUCCESS("EMPLOYEE_CERTIFICATION_UPDATE_SUCCESS", "Employee certification updated successfully"),
+    EMPLOYEE_CERTIFICATION_DELETE_SUCCESS("EMPLOYEE_CERTIFICATION_DELETE_SUCCESS", "Employee certification deleted successfully"),
+    EMPLOYEE_CERTIFICATION_READ_SUCCESS("EMPLOYEE_CERTIFICATION_READ_SUCCESS", "Employee certification read successfully"),
+
+    // Employee Education
+    EMPLOYEE_EDUCATION_CREATE_SUCCESS("EMPLOYEE_EDUCATION_CREATE_SUCCESS", "Employee education created successfully"),
+    EMPLOYEE_EDUCATION_READ_SUCCESS("EMPLOYEE_EDUCATION_READ_SUCCESS", "Get employee education successfully"),
+    EMPLOYEE_EDUCATION_UPDATE_SUCCESS("EMPLOYEE_EDUCATION_UPDATE_SUCCESS", "Employee education updated successfully"),
+    EMPLOYEE_EDUCATION_DELETE_SUCCESS("EMPLOYEE_EDUCATION_DELETE_SUCCESS", "Employee education deleted successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_CREATE_SUCCESS", "Employee work experience created successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_READ_SUCCESS", "Get employee work experience successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_UPDATE_SUCCESS", "Employee work experience updated successfully"),
+    EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS("EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS", "Employee work experience deleted successfully"),
+
+    // Leave request
+    LEAVE_REQUEST_CREATE_SUCCESS("LEAVE_REQUEST_CREATE_SUCCESS", "Create leave request successfully"),
+    LEAVE_REQUEST_READ_SUCCESS("LEAVE_REQUEST_READ_SUCCESS", "Create leave request read successfully"),
+    LEAVE_REQUEST_UPDATE_SUCCESS("LEAVE_REQUEST_UPDATE_SUCCESS", "Leave request updated successfully"),
+    LEAVE_REQUEST_CANCELLED_SUCCESS("LEAVE_REQUEST_CANCELLED_SUCCESS", "Leave request cancelled successfully"),
+    LEAVE_REQUEST_APPROVE_SUCCESS("LEAVE_REQUEST_APPROVE_SUCCESS", "Leave request approved successfully"),
+    LEAVE_REQUEST_REJECT_SUCCESS("LEAVE_REQUEST_REJECT_SUCCESS", "Leave request rejected successfully"),
+
+    // Payroll Period
+    PAYROLL_PERIOD_CREATE_SUCCESS("PAYROLL_PERIOD_CREATE_SUCCESS", "Payroll period created successfully"),
+    PAYROLL_PERIOD_READ_SUCCESS("PAYROLL_PERIOD_READ_SUCCESS", "Get payroll periods successfully"),
+    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed")
+    ,
+    // Attendance Log
+    ATTENDANCE_LOG_CREATE_SUCCESS("ATTENDANCE_LOG_CREATE_SUCCESS", "Web attendance log registered successfully"),
+    ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully"),
+
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),
+    ATTENDANCE_CORRECTION_APPROVE_SUCCESS("ATTENDANCE_CORRECTION_APPROVE_SUCCESS", "Attendance correction request approved successfully"),
+    ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
+    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully");
     private String code;
     private String defaultMessage;
 }

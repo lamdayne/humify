@@ -20,6 +20,7 @@ import com.lamdayne.humify.project.mapper.ProjectMapper;
 import com.lamdayne.humify.project.repository.ProjectMemberRepository;
 import com.lamdayne.humify.project.repository.ProjectRepository;
 import com.lamdayne.humify.project.repository.ProjectRoleRepository;
+import com.lamdayne.humify.project.service.BoardColumnService;
 import com.lamdayne.humify.project.service.ProjectService;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.repository.UserRepository;
@@ -44,13 +45,14 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
     private final ProjectRepository projectRepository;
+    private final BoardColumnService boardColumnService;
     private final ProjectRoleRepository projectRoleRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectResponse createProject(CreateProjectRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName(); // vì bạn dùng email làm login
+        String email = authentication.getName();
         User creator = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -67,6 +69,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
         project = projectRepository.save(project);
+
+        boardColumnService.initDefaultColumns(project);
 
         ProjectRole projectRole = projectRoleRepository.findByName(ProjectRoleCode.MANAGER.name())
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_ROLE_NOT_FOUND));

@@ -7,8 +7,11 @@ import com.lamdayne.humify.media.dto.response.UploadResponse;
 import com.lamdayne.humify.media.service.MediaService;
 import com.lamdayne.humify.task.dto.response.AttachmentResponse;
 import com.lamdayne.humify.task.entity.Task;
+import com.lamdayne.humify.task.entity.TaskActivity;
 import com.lamdayne.humify.task.entity.TaskAttachment;
+import com.lamdayne.humify.task.enums.TaskActivityAction;
 import com.lamdayne.humify.task.mapper.TaskMapper;
+import com.lamdayne.humify.task.repository.TaskActivityRepository;
 import com.lamdayne.humify.task.repository.TaskAttachmentRepository;
 import com.lamdayne.humify.task.repository.TaskRepository;
 import com.lamdayne.humify.task.service.TaskAttachmentService;
@@ -29,6 +32,7 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
     private final UserService userService;
     private final MediaService mediaService;
     private final TaskMapper taskMapper;
+    private final TaskActivityRepository taskActivityRepository;
 
     @Override
     @Transactional
@@ -48,7 +52,16 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
                 .fileSize(file.getSize())
                 .build();
 
-        return taskMapper.toAttachmentResponse(taskAttachmentRepository.save(attachment));
+        attachment = taskAttachmentRepository.save(attachment);
+
+        taskActivityRepository.save(TaskActivity.builder()
+                .task(task)
+                .user(uploader)
+                .action(TaskActivityAction.ADD_ATTACHMENT)
+                .build()
+        );
+
+        return taskMapper.toAttachmentResponse(attachment);
     }
 
     @Override
