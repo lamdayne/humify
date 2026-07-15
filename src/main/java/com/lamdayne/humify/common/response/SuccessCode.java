@@ -208,6 +208,18 @@ public enum SuccessCode {
     PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
     PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),;
 
+    //PAYSLIP
+    PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
+    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),;
+
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),
+    ATTENDANCE_CORRECTION_APPROVE_SUCCESS("ATTENDANCE_CORRECTION_APPROVE_SUCCESS", "Attendance correction request approved successfully"),
+    ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
+    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully"),
+
+    ;
+
     private String code;
     private String defaultMessage;
 }
