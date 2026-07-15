@@ -20,9 +20,6 @@ import java.util.Optional;
 public interface PayslipRepository extends JpaRepository<Payslip, Long> , JpaSpecificationExecutor<Payslip> {
     boolean existsByEmployeeIdAndStatusIn(Long employeeId, Collection<PayslipStatus> statuses);
 
-
-
-
     Optional<Payslip> findByPayrollPeriod_IdAndEmployee_Id(Long payrollPeriodId, Long employeeId);
 
     List<Payslip> findByPayrollPeriod_Id(Long payrollPeriodId);
