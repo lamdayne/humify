@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -84,6 +85,16 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     @Override
     public boolean existsByIdAndCompanyId(Long id, Long companyId) {
         return positionRepository.existsByIdAndCompanyId(id, companyId);
+    }
+
+    @Override
+    public Optional<Position> findByName(String name) {
+        return positionRepository.findByName(name);
+    }
+
+    @Override
+    public List<Position> findAll() {
+        return positionRepository.findAll();
     }
 
     @Override

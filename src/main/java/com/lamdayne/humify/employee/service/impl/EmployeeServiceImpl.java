@@ -12,6 +12,7 @@ import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.department.service.DepartmentAccessService;
 import com.lamdayne.humify.employee.dto.request.*;
+import com.lamdayne.humify.employee.dto.response.EmployeeImportResponse;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.employee.enums.EmployeeStatus;
@@ -28,8 +29,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -167,6 +172,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toEmployeeResponse(employee);
     }
 
+    @Override
+    public List<EmployeeImportResponse> importEmployeeFromXlsx(MultipartFile xlsxFile) {
+
+        return List.of();
+    }
+
     private String generateNextEmployeeCode(Long companyId) {
         final String prefix = "EMP-";
 
@@ -191,6 +202,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
     }
-
 
 }
