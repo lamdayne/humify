@@ -16,14 +16,14 @@ public interface PayrollPeriodService {
      *
      * @return số lượng phiếu lương đã được tạo/tính lại
      */
-    int calculate(Long payrollPeriodId, Long companyId);
+    int calculate(Long payrollPeriodId);
 
     /** Duyệt bảng lương: DRAFT -> APPROVED, đồng thời chuyển toàn bộ payslip DRAFT -> SENT. */
-    void approve(Long payrollPeriodId, Long companyId);
+    void approve(Long payrollPeriodId);
 
     /**
      * Xác nhận đã thanh toán: APPROVED -> PAID, đồng thời chuyển toàn bộ payslip SENT -> PAID
      * và ghi nhận payment_date.
      */
-    void pay(Long payrollPeriodId, Long companyId);
+    void pay(Long payrollPeriodId);
 }

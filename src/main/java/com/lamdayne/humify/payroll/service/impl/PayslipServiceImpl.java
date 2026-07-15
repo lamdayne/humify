@@ -49,17 +49,15 @@ public class PayslipServiceImpl implements PayslipService {
     private final PayslipRepository payslipRepository;
     private final PayrollPeriodRepository payrollPeriodRepository;
     private final PayslipMapper payslipMapper;
-    private final UserRepository userRepository;
-
-
-
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PayslipResponse> getPayslipsByPeriod(
             Long payrollPeriodId, Long employeeId, PayslipStatus status, int page, int size, String... sorts
     ) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
+
         // Đảm bảo kỳ lương tồn tại và thuộc công ty hiện tại trước khi truy vấn payslip con
+
         payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
@@ -105,7 +103,7 @@ public class PayslipServiceImpl implements PayslipService {
 
     @Override
     @Transactional
-    public PayslipResponse updatePayslip(Long payslipId, Long companyId, UpdatePayslipRequest request) {
+    public PayslipResponse updatePayslip(Long payslipId, UpdatePayslipRequest request) {
         Payslip payslip = payslipRepository.findById(payslipId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYSLIP_NOT_FOUND));
 
@@ -170,7 +168,7 @@ public class PayslipServiceImpl implements PayslipService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<MyPayslipResponse> getMyPayslips(Long employeeId, Long companyId, Integer year, int page, int size , String... sorts) {
+    public PageResponse<MyPayslipResponse> getMyPayslips(Long employeeId, Integer year, int page, int size , String... sorts) {
 
 
         Pageable pageable = PageableUtil.buildPageable(page,size,sorts);

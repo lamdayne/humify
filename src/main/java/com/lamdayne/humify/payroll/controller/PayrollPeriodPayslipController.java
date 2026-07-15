@@ -26,8 +26,7 @@ public class PayrollPeriodPayslipController {
         @PostMapping("/{id}/calculates")
 //    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_MANAGE')")
     public ResponseEntity<ApiResponse<Integer>> calculate(@PathVariable("id") Long payrollPeriodId) {
-        Long companyId = CompanyContext.getCompanyId();
-        int count = payrollPeriodService.calculate(payrollPeriodId, companyId);
+        int count = payrollPeriodService.calculate(payrollPeriodId);
         return ResponseEntity.ok()
                 .body(ApiResponse
                         .success(SuccessCode.PAYROLL_PERIOD_CALC_SUCCESS,count));
@@ -57,8 +56,8 @@ public class PayrollPeriodPayslipController {
     @PutMapping("/{id}/approve")
 //    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_APPROVE')")
     public ResponseEntity<ApiResponse<Void>> approve(@PathVariable("id") Long payrollPeriodId) {
-        Long companyId = CompanyContext.getCompanyId();
-        payrollPeriodService.approve(payrollPeriodId, companyId);
+
+        payrollPeriodService.approve(payrollPeriodId);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.PAYROLL_PERIOD_APPROVE_SUCCESS,
@@ -70,8 +69,7 @@ public class PayrollPeriodPayslipController {
     @PutMapping("/{id}/pay")
 //    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_MANAGE')")
     public ResponseEntity<ApiResponse<Void>> pay(@PathVariable("id") Long payrollPeriodId) {
-        Long companyId = CompanyContext.getCompanyId();
-        payrollPeriodService.pay(payrollPeriodId, companyId);
+        payrollPeriodService.pay(payrollPeriodId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.ROLL_PERIOD_PAY_SUCCESS,null));
     }
 }

@@ -29,8 +29,7 @@ public class PayslipController {
             @Valid @RequestBody UpdatePayslipRequest request
 
     ) {
-        Long companyId = CompanyContext.getCompanyId();
-        PayslipResponse data = payslipService.updatePayslip(payslipId, companyId, request);
+        PayslipResponse data = payslipService.updatePayslip(payslipId, request);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
                 SuccessCode.PAYSLIP_UPDATE_SUCCESS,data));

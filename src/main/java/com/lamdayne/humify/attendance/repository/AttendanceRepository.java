@@ -32,7 +32,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, J
     Optional<Attendance> findByEmployeeIdAndWorkDate(Long employeeId, LocalDate workDate);
 
     List<Attendance> findByEmployeeIdAndWorkDateBetween(
-            Long companyId, Long employeeId, LocalDate startDate, LocalDate endDate
+             Long employeeId, LocalDate startDate, LocalDate endDate
     );
 
 

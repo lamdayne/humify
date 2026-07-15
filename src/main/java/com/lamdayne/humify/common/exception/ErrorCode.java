@@ -293,11 +293,8 @@ public enum ErrorCode {
     ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
     //PAYSLIP
     PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),
-    PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST);
+    PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST),
 
-    //PAYSLIP
-    PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),
-    PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST);
 
     // Attendance Correction
     ATTENDANCE_NOT_FOUND("ATTENDANCE_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),

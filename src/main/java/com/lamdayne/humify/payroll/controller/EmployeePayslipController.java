@@ -36,9 +36,9 @@ public class EmployeePayslipController {
             @RequestParam(required = false) String... sorts
 
     ) {
-        Long companyId = CompanyContext.getCompanyId();
+
         Long employeeId = userService.getCurrentEmployeeId();
-        PageResponse<MyPayslipResponse> data = payslipService.getMyPayslips(employeeId, companyId, year, page, size, sorts );
+        PageResponse<MyPayslipResponse> data = payslipService.getMyPayslips(employeeId, year, page, size, sorts );
         return ResponseEntity.ok()
                 .body(ApiResponse.success(SuccessCode.PAYSLIP_READ_SUCCESS, data));
     }

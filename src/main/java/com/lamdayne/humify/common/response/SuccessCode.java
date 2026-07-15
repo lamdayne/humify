@@ -206,11 +206,9 @@ public enum SuccessCode {
 
     //PAYSLIP
     PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
-    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),;
+    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),
 
-    //PAYSLIP
-    PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
-    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),;
+
 
     // Attendance Correction
     ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),

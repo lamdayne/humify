@@ -94,7 +94,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
 
     @Override
     @Transactional
-    public int calculate(Long payrollPeriodId, Long companyId) {
+    public int calculate(Long payrollPeriodId) {
         PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
@@ -103,7 +103,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
         }
 
         List<EmployeeContract> activeContracts = employeeContractRepository
-                .findActiveContractsOverlappingPeriod(companyId, ContractStatus.ACTIVE, period.getStartDate(), period.getEndDate());
+                .findActiveContractsOverlappingPeriod(ContractStatus.ACTIVE, period.getStartDate(), period.getEndDate());
 
         int processed = 0;
         for (EmployeeContract contract : activeContracts) {
@@ -119,7 +119,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
         //    giả định PRESENT, LATE, REMOTE (1 công), HALF_DAY (0.5 công), LEAVE (nghỉ có lương),
         //    ABSENT (nghỉ không lương), khớp với mục 4.2 tài liệu thiết kế.
         List<Attendance> attendances = attendanceRepository.findByEmployeeIdAndWorkDateBetween(
-                period.getCompany().getId(), contract.getEmployee().getId(), period.getStartDate(), period.getEndDate()
+                 contract.getEmployee().getId(), period.getStartDate(), period.getEndDate()
         );
 
         BigDecimal actualWorkDays = BigDecimal.ZERO;
@@ -222,7 +222,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
 
     @Override
     @Transactional
-    public void approve(Long payrollPeriodId, Long companyId) {
+    public void approve(Long payrollPeriodId) {
         PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
@@ -239,7 +239,7 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
 
     @Override
     @Transactional
-    public void pay(Long payrollPeriodId, Long companyId) {
+    public void pay(Long payrollPeriodId) {
         PayrollPeriod period = payrollPeriodRepository.findById(payrollPeriodId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYROLL_PERIOD_NOT_FOUND));
 
