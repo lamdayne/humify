@@ -30,4 +30,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, J
     List<AttendanceSummaryReportResponse> getSummaryReport(@Param("start") LocalDate start,
                                                            @Param("end") LocalDate end);
     Optional<Attendance> findByEmployeeIdAndWorkDate(Long employeeId, LocalDate workDate);
+
+    List<Attendance> findByEmployeeIdAndWorkDateBetween(
+             Long employeeId, LocalDate startDate, LocalDate endDate
+    );
+
+
 }

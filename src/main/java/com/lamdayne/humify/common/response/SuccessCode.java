@@ -196,17 +196,28 @@ public enum SuccessCode {
     // Payroll Period
     PAYROLL_PERIOD_CREATE_SUCCESS("PAYROLL_PERIOD_CREATE_SUCCESS", "Payroll period created successfully"),
     PAYROLL_PERIOD_READ_SUCCESS("PAYROLL_PERIOD_READ_SUCCESS", "Get payroll periods successfully"),
-    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed")
+    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed"),
+    PAYROLL_PERIOD_APPROVE_SUCCESS("PAYROLL_PERIOD_APPROVE_SUCCESS", "Payroll period approved successfully"),
+    ROLL_PERIOD_PAY_SUCCESS("ROLL_PERIOD_PAY_SUCCESS", "Payroll period pay successfully" )
     ,
     // Attendance Log
     ATTENDANCE_LOG_CREATE_SUCCESS("ATTENDANCE_LOG_CREATE_SUCCESS", "Web attendance log registered successfully"),
     ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully"),
 
+    //PAYSLIP
+    PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
+    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),
+
+
+
     // Attendance Correction
     ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),
     ATTENDANCE_CORRECTION_APPROVE_SUCCESS("ATTENDANCE_CORRECTION_APPROVE_SUCCESS", "Attendance correction request approved successfully"),
     ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
-    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully");
+    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully"),
+
+    ;
+
     private String code;
     private String defaultMessage;
 }
