@@ -321,42 +321,6 @@ CREATE TABLE user_social_accounts
     CONSTRAINT uq_user_social_provider UNIQUE (company_id, provider, provider_id)
 );
 
--- Table: attendances
-
-CREATE TABLE attendances
-(
-    id                  BIGSERIAL PRIMARY KEY,
-    company_id          BIGINT            NOT NULL,
-    employee_id         BIGINT            NOT NULL,
-    work_shift_id       BIGINT            NULL,
-    work_date           DATE              NOT NULL,
-    check_in_time       TIMESTAMPTZ       NULL,
-    check_out_time      TIMESTAMPTZ       NULL,
-    worked_hours        NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
-    late_minutes        INTEGER           NOT NULL DEFAULT 0,
-    early_minutes       INTEGER           NOT NULL DEFAULT 0,
-    ot_hours            NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
-    work_points         NUMERIC(3, 2)     NOT NULL DEFAULT 0.00,
-    checked_status      checked_status    NOT NULL DEFAULT 'NOT_CHECKED',
-    status              attendance_status NOT NULL DEFAULT 'ABSENT',
-    is_modified         BOOLEAN           NOT NULL DEFAULT FALSE,
-    modified_by_id      BIGINT            NULL,
-    modification_reason VARCHAR(255)      NULL,
-    created_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    updated_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    deleted_at          TIMESTAMPTZ       NULL,
-    CONSTRAINT fk_attendances_company_id FOREIGN KEY (company_id) REFERENCES companies (id),
-    CONSTRAINT fk_attendances_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
-    CONSTRAINT fk_attendances_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id),
-    CONSTRAINT fk_attendances_modified_by FOREIGN KEY (modified_by_id) REFERENCES users (id)
-);
-
-CREATE UNIQUE INDEX uq_attendances_employee_date ON attendances (employee_id, work_date) WHERE deleted_at IS NULL;
-CREATE INDEX idx_attendances_company_id ON attendances (company_id);
-CREATE INDEX idx_attendances_employee_id ON attendances (employee_id);
-CREATE INDEX idx_attendances_work_date ON attendances (work_date);
-CREATE INDEX idx_attendances_status ON attendances (status);
-
 -- Table: roles
 CREATE TABLE roles
 (
@@ -1007,6 +971,42 @@ CREATE TABLE employee_shifts
 CREATE INDEX idx_employee_shifts_employee ON employee_shifts (employee_id);
 CREATE INDEX idx_employee_shifts_shift ON employee_shifts (work_shift_id);
 CREATE INDEX idx_employee_shifts_dates ON employee_shifts (start_date, end_date);
+
+-- Table: attendances
+
+CREATE TABLE attendances
+(
+    id                  BIGSERIAL PRIMARY KEY,
+    company_id          BIGINT            NOT NULL,
+    employee_id         BIGINT            NOT NULL,
+    work_shift_id       BIGINT            NULL,
+    work_date           DATE              NOT NULL,
+    check_in_time       TIMESTAMPTZ       NULL,
+    check_out_time      TIMESTAMPTZ       NULL,
+    worked_hours        NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
+    late_minutes        INTEGER           NOT NULL DEFAULT 0,
+    early_minutes       INTEGER           NOT NULL DEFAULT 0,
+    ot_hours            NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
+    work_points         NUMERIC(3, 2)     NOT NULL DEFAULT 0.00,
+    checked_status      checked_status    NOT NULL DEFAULT 'NOT_CHECKED',
+    status              attendance_status NOT NULL DEFAULT 'ABSENT',
+    is_modified         BOOLEAN           NOT NULL DEFAULT FALSE,
+    modified_by_id      BIGINT            NULL,
+    modification_reason VARCHAR(255)      NULL,
+    created_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+    deleted_at          TIMESTAMPTZ       NULL,
+    CONSTRAINT fk_attendances_company_id FOREIGN KEY (company_id) REFERENCES companies (id),
+    CONSTRAINT fk_attendances_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
+    CONSTRAINT fk_attendances_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id),
+    CONSTRAINT fk_attendances_modified_by FOREIGN KEY (modified_by_id) REFERENCES users (id)
+);
+
+CREATE UNIQUE INDEX uq_attendances_employee_date ON attendances (employee_id, work_date) WHERE deleted_at IS NULL;
+CREATE INDEX idx_attendances_company_id ON attendances (company_id);
+CREATE INDEX idx_attendances_employee_id ON attendances (employee_id);
+CREATE INDEX idx_attendances_work_date ON attendances (work_date);
+CREATE INDEX idx_attendances_status ON attendances (status);
 
 -- Table: attendance_logs
 

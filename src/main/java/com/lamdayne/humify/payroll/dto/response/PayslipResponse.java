@@ -1,6 +1,5 @@
 package com.lamdayne.humify.payroll.dto.response;
 
-import com.lamdayne.humify.payroll.entity.Payslip;
 import com.lamdayne.humify.payroll.enums.PayslipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

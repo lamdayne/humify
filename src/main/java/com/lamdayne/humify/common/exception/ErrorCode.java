@@ -53,6 +53,7 @@ public enum ErrorCode {
     REQUEST_BODY_MISSING_OR_INVALID("REQUEST_BODY_MISSING_OR_INVALID", "Body missing or invalid", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED("ACCESS_DENIED", "Access denied", HttpStatus.FORBIDDEN),
     INVALID_FILTER_VALUE("INVALID_FILTER_VALUE", "Invalid filter value", HttpStatus.BAD_REQUEST),
+    INVALID_DATA("INVALID_DATA", "Invalid data", HttpStatus.BAD_REQUEST),
 
     // Branch
     COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
