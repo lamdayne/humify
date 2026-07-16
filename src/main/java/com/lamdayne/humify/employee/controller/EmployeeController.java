@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -390,6 +391,17 @@ public class EmployeeController {
         PageResponse<MyPayslipResponse> data = payslipService.getMyPayslips(employeeId, year, page, size, sorts );
         return ResponseEntity.ok()
                 .body(ApiResponse.success(SuccessCode.PAYSLIP_READ_SUCCESS, data));
+    }
+
+    @PostMapping("/import/xlsx")
+    public ResponseEntity<ApiResponse<List<EmployeeImportResponse>>> importXlsx(
+            MultipartFile file
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_CREATE_SUCCESS,
+                        employeeService.importEmployeeFromXlsx(file)
+                ));
     }
 
 }
