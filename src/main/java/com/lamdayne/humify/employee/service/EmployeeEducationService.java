@@ -9,8 +9,13 @@ import java.util.List;
 public interface EmployeeEducationService {
 
     EmployeeEducationResponse createEducation(Long employeeId, CreateEmployeeEducationRequest request);
+
     List<EmployeeEducationResponse> getEducationsByEmployeeId(Long employeeId);
+
     EmployeeEducationResponse getEducationDetail(Long employeeId, Long id);
+
     EmployeeEducationResponse updateEducation(Long employeeId, Long id, UpdateEmployeeEducationRequest request);
+
     void deleteEducation(Long employeeId, Long id);
+
 }

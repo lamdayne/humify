@@ -73,6 +73,42 @@ public enum PermissionEnum {
     // Full Access
     FULL_ACCESS("Just for SYSTEM_ADMIN", PermissionModule.SYSTEM),
 
+    // Project
+    PROJECT_READ("View project data", PermissionModule.PROJECT),
+    PROJECT_CREATE("Create new project", PermissionModule.PROJECT),
+    PROJECT_UPDATE("Update project information", PermissionModule.PROJECT),
+    PROJECT_DELETE("Delete project", PermissionModule.PROJECT),
+    PROJECT_FULL("Full access project", PermissionModule.PROJECT),
+
+    // Leave
+    LEAVE_REQUEST_READ("View leave request data", PermissionModule.LEAVE),
+    LEAVE_REQUEST_CREATE("Create new leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_APPROVE("Approve leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_REJECT("Reject leave request", PermissionModule.LEAVE),
+    LEAVE_BALANCE_READ("View leave balance data", PermissionModule.LEAVE),
+    LEAVE_BALANCE_UPDATE("Update leave balance information", PermissionModule.LEAVE),
+    LEAVE_TYPE_READ("View leave type data", PermissionModule.LEAVE),
+    LEAVE_TYPE_CREATE("Create new leave type information", PermissionModule.LEAVE),
+    LEAVE_TYPE_UPDATE("Update leave type information", PermissionModule.LEAVE),
+
+    // Contract
+    CONTRACT_READ("View contract data", PermissionModule.CONTRACT),
+    CONTRACT_CREATE("Create new contract information", PermissionModule.CONTRACT),
+    CONTRACT_UPDATE("Update contract information", PermissionModule.CONTRACT),
+    CONTRACT_DELETE("Delete contract", PermissionModule.CONTRACT),
+    CONTRACT_FULL("Full contract information", PermissionModule.CONTRACT),
+
+    // Payroll
+    PAYROLL_PERIOD_CREATE("Create payroll periods", PermissionModule.PAYROLL),
+    PAYROLL_READ("View payroll data", PermissionModule.PAYROLL),
+    PAYROLL_CALCULATE("Calculate payroll", PermissionModule.PAYROLL),
+    PAYROLL_APPROVE("Approve payroll", PermissionModule.PAYROLL),
+
+    // Kpi
+    KPI_CREATE("Create KPI targets", PermissionModule.PERFORMANCE),
+    KPI_UPDATE("Update KPI information", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_MANAGE("Manage review cycles", PermissionModule.PERFORMANCE),
+
     ;
 
     private final String description;

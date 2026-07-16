@@ -134,7 +134,15 @@ public class GoogleOAuthService {
 
         User user;
 
-        user = userOpt.orElseGet(() -> userService.createUser(email, company));
+        if (userOpt.isPresent()) {
+            user = userOpt.get();
+            if (Boolean.FALSE.equals(user.getActive())) {
+                user.setActive(true);
+                userService.save(user);
+            }
+        } else {
+            throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+        }
 
         createSocialAccount(user, providerId, company);
 
@@ -157,7 +165,7 @@ public class GoogleOAuthService {
     private void linkEmployee(User user, String email, Company company) {
         employeeRepository.findByEmailAndCompanyId(email, company.getId())
                 .ifPresent(emp -> {
-                    if (user.getEmployee() != null) {
+                    if (user.getEmployee() == null) {
                         user.setEmployee(emp);
                         userService.save(user);
                     }

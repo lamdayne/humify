@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -133,5 +134,16 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
     @Override
     public boolean existsByIdAndCompanyId(Long id, Long companyId) {
         return branchRepository.existsByIdAndCompanyId(id, companyId);
+    }
+
+    @Override
+    public Optional<Branch> findByName(String name) {
+        return branchRepository.findByName(name);
+    }
+
+    @Override
+    @Transactional
+    public Branch save(Branch branch) {
+        return branchRepository.save(branch);
     }
 }

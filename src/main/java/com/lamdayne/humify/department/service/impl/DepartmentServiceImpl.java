@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -92,4 +93,19 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
         return departmentRepository.existsByIdAndBranchId(id, branchId);
     }
 
+    @Override
+    public Optional<Department> findByNameAndBranchId(String name, Long branchId) {
+        return departmentRepository.findByNameAndBranchId(name, branchId);
+    }
+
+    @Override
+    public List<Department> findByBranchId(Long branchId) {
+        return departmentRepository.findByBranchId(branchId);
+    }
+
+    @Override
+    @Transactional
+    public Department save(Department department) {
+        return departmentRepository.save(department);
+    }
 }

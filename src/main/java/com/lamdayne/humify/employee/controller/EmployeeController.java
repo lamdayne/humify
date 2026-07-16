@@ -10,6 +10,9 @@ import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.*;
 import com.lamdayne.humify.employee.service.*;
+import com.lamdayne.humify.payroll.dto.response.MyPayslipResponse;
+import com.lamdayne.humify.payroll.service.PayslipService;
+import com.lamdayne.humify.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +36,8 @@ public class EmployeeController {
     private final EmployeeEducationService employeeEducationService;
     private final LeaveBalanceService leaveBalanceService;
     private final EmployeeWorkExperienceService employeeWorkExperienceService;
+    private final PayslipService payslipService;
+    private final UserService userService;
 
     @GetMapping("/{employeeId}/leave-balances")
     public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
@@ -368,6 +374,34 @@ public class EmployeeController {
     ) {
         employeeWorkExperienceService.delete(employeeId, id);
         return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.EMPLOYEE_WORK_EXPERIENCE_DELETE_SUCCESS,null));
+    }
+
+
+    /** GET /employees/my-payslips */
+    @GetMapping("/my-payslips")
+    public ResponseEntity<ApiResponse<PageResponse<MyPayslipResponse>>> getMyPayslips(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
+            @RequestParam(defaultValue = "10", required = false) @Min(value = 10, message = "PAGE_SIZE_INVALID") int size,
+            @RequestParam(required = false) String... sorts
+
+    ) {
+
+        Long employeeId = userService.getCurrentEmployeeId();
+        PageResponse<MyPayslipResponse> data = payslipService.getMyPayslips(employeeId, year, page, size, sorts );
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.PAYSLIP_READ_SUCCESS, data));
+    }
+
+    @PostMapping("/import/xlsx")
+    public ResponseEntity<ApiResponse<List<EmployeeImportResponse>>> importXlsx(
+            MultipartFile file
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_CREATE_SUCCESS,
+                        employeeService.importEmployeeFromXlsx(file)
+                ));
     }
 
 }

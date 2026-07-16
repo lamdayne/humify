@@ -1,15 +1,18 @@
 package com.lamdayne.humify.payroll.repository;
 
+import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.payroll.entity.PayrollPeriod;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PayrollPeriodRepository extends JpaRepository<PayrollPeriod, Long> {
+public interface PayrollPeriodRepository extends JpaRepository<PayrollPeriod, Long>, JpaSpecificationExecutor<PayrollPeriod> {
 
     // Kiểm tra trùng lặp kỳ lương theo tháng và năm của công ty
     boolean existsByCompanyIdAndMonthAndYear(Long companyId, Integer month, Integer year);
@@ -19,4 +22,7 @@ public interface PayrollPeriodRepository extends JpaRepository<PayrollPeriod, Lo
 
     // Lấy chi tiết để tính lương
     Optional<PayrollPeriod> findByIdAndCompanyId(Long id, Long companyId);
+
+//    Optional<PayrollPeriod> findByIdAndCompanyId(Long id, Long companyId);
+
 }

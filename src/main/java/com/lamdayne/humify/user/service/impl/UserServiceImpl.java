@@ -204,4 +204,21 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
+
+    @Override
+    public Long getCurrentEmployeeId() {
+        Long userId = ((UserPrincipal) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal())
+                .getId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getEmployee() == null) {
+            throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+        }
+
+        return user.getEmployee().getId();
+    }
 }
