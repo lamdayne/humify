@@ -103,4 +103,9 @@ public class DepartmentServiceImpl implements DepartmentService, DepartmentAcces
         return departmentRepository.findByBranchId(branchId);
     }
 
+    @Override
+    @Transactional
+    public Department save(Department department) {
+        return departmentRepository.save(department);
+    }
 }

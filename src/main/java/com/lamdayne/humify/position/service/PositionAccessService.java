@@ -14,4 +14,5 @@ public interface PositionAccessService extends BaseAccessService<Position, Long>
 
     List<Position> findAll();
 
+    Position save(Position position);
 }

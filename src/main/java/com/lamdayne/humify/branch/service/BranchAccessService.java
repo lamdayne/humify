@@ -11,4 +11,5 @@ public interface BranchAccessService extends BaseAccessService<Branch, Long> {
 
     Optional<Branch> findByName(String name);
 
+    Branch save(Branch branch);
 }

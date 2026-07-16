@@ -133,4 +133,10 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     public List<Position> getPositionsByDepartmentId(Long departmentId) {
         return positionRepository.findAll();
     }
+
+    @Override
+    @Transactional
+    public Position save(Position position) {
+        return positionRepository.save(position);
+    }
 }

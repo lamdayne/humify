@@ -140,4 +140,10 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
     public Optional<Branch> findByName(String name) {
         return branchRepository.findByName(name);
     }
+
+    @Override
+    @Transactional
+    public Branch save(Branch branch) {
+        return branchRepository.save(branch);
+    }
 }

@@ -14,4 +14,5 @@ public interface DepartmentAccessService extends BaseAccessService<Department, L
 
     List<Department> findByBranchId(Long branchId);
 
+    Department save(Department department);
 }
