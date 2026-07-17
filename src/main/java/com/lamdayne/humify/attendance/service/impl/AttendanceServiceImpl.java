@@ -69,7 +69,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Long currentEmployeeId = user.getEmployee().getId();
 
-        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(searchParams != null ? searchParams : new String[0]);
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(searchParams);
         Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
         Specification<Attendance> employeeSpec = (root, query, cb) ->
                 cb.equal(root.get("employee").get("id"), currentEmployeeId);

@@ -231,9 +231,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public PageResponse<LeaveRequestResponse> getLeaveRequests(Pageable pageable, String[] leaveRequest) {
-        List<SpecSearchCriteria> criteriaList = (leaveRequest != null)
-                ? SearchCriteriaParser.parse(leaveRequest)
-                : Collections.emptyList();
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(leaveRequest);
 
         Specification<LeaveRequest> spec = leaveRequestSpecification.build(criteriaList);
 
