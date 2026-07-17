@@ -36,6 +36,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -230,7 +231,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public PageResponse<LeaveRequestResponse> getLeaveRequests(Pageable pageable, String[] leaveRequest) {
-        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(leaveRequest);
+        List<SpecSearchCriteria> criteriaList = (leaveRequest != null)
+                ? SearchCriteriaParser.parse(leaveRequest)
+                : Collections.emptyList();
 
         Specification<LeaveRequest> spec = leaveRequestSpecification.build(criteriaList);
 
