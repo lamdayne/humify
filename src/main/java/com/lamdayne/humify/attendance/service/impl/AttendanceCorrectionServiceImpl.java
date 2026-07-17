@@ -13,6 +13,7 @@ import com.lamdayne.humify.attendance.service.AttendanceCorrectionService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import com.lamdayne.humify.user.entity.User;
@@ -82,7 +83,7 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
         // Tìm trực tiếp từ EmployeeRepository
         Employee employee = employeeService.getEmployeeByEmail(email);
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageableUtil.buildPageable(page, size, "createdAt:desc");
         Page<AttendanceCorrection> pageData;
 
         if (status != null && !status.isBlank()) {
@@ -97,7 +98,7 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
     @Override
     @Transactional(readOnly = true)
     public PageResponse<AttendanceCorrectionResponse> getAllCorrectionsForHr(String status, Long employeeId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageableUtil.buildPageable(page, size, "createdAt:desc");
 
         Page<AttendanceCorrection> pageData = correctionRepository.findAll(pageable);
 

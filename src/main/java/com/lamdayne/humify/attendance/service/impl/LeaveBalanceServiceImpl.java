@@ -262,7 +262,27 @@ public class LeaveBalanceServiceImpl implements LeaveBalanceService {
 
     private LeaveBalance getBalance(Long employeeId, Long leaveTypeId, int year) {
         return leaveBalanceRepository.findByEmployeeIdAndLeaveTypeIdAndYear(employeeId, leaveTypeId, year)
-                .orElseThrow(() -> new AppException(ErrorCode.LEAVE_BALANCE_NOT_FOUND));
+                .orElseGet(() -> {
+                    Employee employee = employeeRepository.findById(employeeId)
+                            .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+                    LeaveType leaveType = leaveTypeRepository.findById(leaveTypeId)
+                            .orElseThrow(() -> new AppException(ErrorCode.LEAVE_TYPE_NOT_FOUND));
+
+                    BigDecimal defaultDays = (leaveType.getMaxDays() != null) ? leaveType.getMaxDays() : new BigDecimal("12.00");
+
+                    LeaveBalance newBalance = LeaveBalance.builder()
+                            .company(employee.getCompany())
+                            .employee(employee)
+                            .leaveType(leaveType)
+                            .year(year)
+                            .allocatedDays(defaultDays)
+                            .usedDays(new BigDecimal("0.00"))
+                            .pendingDays(new BigDecimal("0.00"))
+                            .build();
+
+                    return leaveBalanceRepository.save(newBalance);
+                });
     }
 
 }

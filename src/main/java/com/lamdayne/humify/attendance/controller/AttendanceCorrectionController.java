@@ -40,7 +40,7 @@ public class AttendanceCorrectionController {
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getAllCorrections(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long employeeId,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
@@ -53,7 +53,7 @@ public class AttendanceCorrectionController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getMyCorrections(
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return ResponseEntity.ok()
