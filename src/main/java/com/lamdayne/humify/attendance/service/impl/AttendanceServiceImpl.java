@@ -62,15 +62,22 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public List<AttendanceDetailResponse> getPersonalView(Long userId, String[] searchParams) {
         User user = userService.getUserById(userId);
-        Long employeeId = user.getEmployee().getId();
 
-        List<String> rawParams = searchParams != null ? new ArrayList<>(Arrays.asList(searchParams)) : new ArrayList<>();
-        rawParams.add("employee:" + employeeId);
+        if (user.getEmployee() == null) {
+            throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+        }
 
-        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(rawParams.toArray(new String[0]));
+        Long currentEmployeeId = user.getEmployee().getId();
+
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(searchParams);
         Specification<Attendance> searchSpec = attendanceSpecification.build(criteriaList);
+        Specification<Attendance> employeeSpec = (root, query, cb) ->
+                cb.equal(root.get("employee").get("id"), currentEmployeeId);
+        Specification<Attendance> finalSpec = employeeSpec.and(searchSpec);
 
-        return attendanceRepository.findAll(searchSpec).stream().map(this::mapToResponse).toList();
+        return attendanceRepository.findAll(finalSpec).stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
