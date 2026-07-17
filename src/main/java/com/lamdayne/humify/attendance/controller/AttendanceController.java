@@ -26,6 +26,15 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<List<AttendanceDetailResponse>>> getPersonalView(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(required = false, name = "attendance") String[] searchParams
+    ) {
+        List<AttendanceDetailResponse> response = attendanceService.getPersonalView(userPrincipal.getId(), searchParams);
+        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<AttendanceDetailResponse>>> getHRView(
             @RequestParam(defaultValue = "0", required = false) int page,
@@ -35,15 +44,6 @@ public class AttendanceController {
     ) {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         PageResponse<AttendanceDetailResponse> response = attendanceService.getHRView(pageable, searchParams);
-        return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<List<AttendanceDetailResponse>>> getPersonalView(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam(required = false, name = "attendance") String[] searchParams
-    ) {
-        List<AttendanceDetailResponse> response = attendanceService.getPersonalView(userPrincipal.getId(), searchParams);
         return ResponseEntity.ok().body(ApiResponse.success(SuccessCode.ATTENDANCE_READ_SUCCESS, response));
     }
 

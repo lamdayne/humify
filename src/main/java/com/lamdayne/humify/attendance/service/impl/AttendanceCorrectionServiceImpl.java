@@ -82,7 +82,9 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
         // Tìm trực tiếp từ EmployeeRepository
         Employee employee = employeeService.getEmployeeByEmail(email);
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        int pageIndex = page > 0 ? page - 1 : 0;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by("createdAt").descending());
         Page<AttendanceCorrection> pageData;
 
         if (status != null && !status.isBlank()) {
@@ -97,7 +99,8 @@ public class AttendanceCorrectionServiceImpl implements AttendanceCorrectionServ
     @Override
     @Transactional(readOnly = true)
     public PageResponse<AttendanceCorrectionResponse> getAllCorrectionsForHr(String status, Long employeeId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        int pageIndex = page > 0 ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by("createdAt").descending());
 
         Page<AttendanceCorrection> pageData = correctionRepository.findAll(pageable);
 
