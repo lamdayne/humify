@@ -150,6 +150,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
         User user = getUser();
 
@@ -182,6 +183,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse assignTask(Long taskId, AssignTaskRequest request) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 
@@ -225,12 +227,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
         taskRepository.delete(task);
     }
 
     @Override
+    @Transactional
     public TaskResponse reorderTask(Long taskId, ReorderTaskRequest request) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 

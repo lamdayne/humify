@@ -171,6 +171,9 @@ public enum ErrorCode {
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST),
+    FILE_NAME_NOT_BLANK("FILE_NAME_NOT_BLANK", "File name cannot be blank", HttpStatus.BAD_REQUEST),
+    FILE_URL_NOT_BLANK("FILE_URL_NOT_BLANK", "File URL cannot be blank", HttpStatus.BAD_REQUEST),
+    FILE_SIZE_NOT_NULL("FILE_SIZE_NOT_NULL", "File size cannot be null", HttpStatus.BAD_REQUEST),
 
     // Project
     PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found", HttpStatus.NOT_FOUND),

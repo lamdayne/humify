@@ -5,6 +5,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.media.dto.response.UploadResponse;
 import com.lamdayne.humify.media.service.MediaService;
+import com.lamdayne.humify.task.dto.request.AddAttachmentRequest;
 import com.lamdayne.humify.task.dto.response.AttachmentResponse;
 import com.lamdayne.humify.task.entity.Task;
 import com.lamdayne.humify.task.entity.TaskActivity;
@@ -71,5 +72,23 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
 
         taskAttachmentRepository.delete(attachment);
+    }
+
+    @Override
+    @Transactional
+    public AttachmentResponse addAttachment(UserPrincipal userPrincipal, Long taskId, AddAttachmentRequest request) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+
+        User uploader = userService.getUserById(userPrincipal.getId());
+
+        TaskAttachment taskAttachment = TaskAttachment.builder()
+                .task(task)
+                .uploadedBy(uploader)
+                .fileName(request.getFileName())
+                .fileUrl(request.getFileUrl())
+                .fileSize(request.getFileSize())
+                .build();
+
+        return taskMapper.toAttachmentResponse(taskAttachmentRepository.save(taskAttachment));
     }
 }

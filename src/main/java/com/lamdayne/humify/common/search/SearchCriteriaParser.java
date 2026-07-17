@@ -15,6 +15,11 @@ public class SearchCriteriaParser {
 
     public static List<SpecSearchCriteria> parse(String[] rawArray) {
         List<SpecSearchCriteria> params = new ArrayList<>();
+
+        if (rawArray == null) {
+            return params;
+        }
+
         for (String raw : rawArray) {
             Matcher matcher = PATTERN.matcher(raw);
             if (matcher.find()) {

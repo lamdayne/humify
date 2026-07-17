@@ -221,4 +221,11 @@ public class UserServiceImpl implements UserService {
 
         return user.getEmployee().getId();
     }
+
+    @Override
+    public User createEmployeeUser(User user) {
+        User userEntity = userRepository.save(user);
+        roleAccessService.assignEmployeeRole(userEntity);
+        return userEntity;
+    }
 }

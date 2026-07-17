@@ -54,6 +54,19 @@ public class TaskController {
                 .body(ApiResponse.success(SuccessCode.ATTACHMENT_UPLOAD_SUCCESS, response));
     }
 
+    @PostMapping("/{taskId}/attachment")
+    public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long taskId,
+            @RequestBody @Valid AddAttachmentRequest request
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.FILE_UPLOAD_SUCCESS,
+                        taskAttachmentService.addAttachment(userPrincipal, taskId, request)
+                ));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDetailResponse>> getTaskById(
             @PathVariable(name = "id") Long id
