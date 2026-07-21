@@ -15,6 +15,7 @@ public enum PermissionModule {
     PERMISSION,
     SYSTEM,
     PROJECT,
+    TASK,
     LEAVE,
     CONTRACT,
     PAYROLL,

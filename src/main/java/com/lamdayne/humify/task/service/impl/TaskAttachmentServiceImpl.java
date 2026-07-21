@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -90,5 +92,20 @@ public class TaskAttachmentServiceImpl implements TaskAttachmentService {
                 .build();
 
         return taskMapper.toAttachmentResponse(taskAttachmentRepository.save(taskAttachment));
+    }
+
+    @Override
+    public List<AttachmentResponse> getAttachments(Long taskId) {
+        List<TaskAttachment> taskAttachment = taskAttachmentRepository.findByTaskId(taskId);
+
+        return taskAttachment.stream()
+                .map(ta -> AttachmentResponse.builder()
+                        .id(ta.getId())
+                        .taskId(ta.getTask().getId())
+                        .fileName(ta.getFileName())
+                        .fileUrl(ta.getFileUrl())
+                        .fileSize(ta.getFileSize())
+                        .build()
+                ).toList();
     }
 }

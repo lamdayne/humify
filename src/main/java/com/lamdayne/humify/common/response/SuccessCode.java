@@ -148,6 +148,7 @@ public enum SuccessCode {
     // Attachment
     ATTACHMENT_UPLOAD_SUCCESS("ATTACHMENT_UPLOAD_SUCCESS", "Attachment uploaded successfully"),
     ATTACHMENT_DELETE_SUCCESS("ATTACHMENT_DELETE_SUCCESS", "Attachment deleted successfully"),
+    ATTACHMENT_READ_SUCCESS("ATTACHMENT_READ_SUCCESS", "Attachment read successfully"),
     
     // Worklog
     WORKLOG_CREATE_SUCCESS("WORKLOG_CREATE_SUCCESS", "Worklog added successfully"),

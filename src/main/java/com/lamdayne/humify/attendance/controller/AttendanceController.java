@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class AttendanceController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceDetailResponse>>> getHRView(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
@@ -57,6 +59,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_FULL', 'ATTENDANCE_UPDATE')")
     public ResponseEntity<ApiResponse<AttendanceDetailResponse>> updateManual(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal userPrincipal,

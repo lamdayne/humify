@@ -67,6 +67,17 @@ public class TaskController {
                 ));
     }
 
+    @GetMapping("/{taskId}/attachments")
+    public ResponseEntity<ApiResponse<List<AttachmentResponse>>> getTaskAttachments(
+            @PathVariable Long taskId
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.ATTACHMENT_READ_SUCCESS,
+                        taskAttachmentService.getAttachments(taskId)
+                ));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TaskDetailResponse>> getTaskById(
             @PathVariable(name = "id") Long id

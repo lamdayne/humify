@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,7 @@ public class AttendanceLogController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_LOG_READ')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceLogResponse>>> getAllLogs(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page,

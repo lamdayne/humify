@@ -83,8 +83,11 @@ public enum PermissionEnum {
     // Leave
     LEAVE_REQUEST_READ("View leave request data", PermissionModule.LEAVE),
     LEAVE_REQUEST_CREATE("Create new leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_UPDATE("Update leave request information", PermissionModule.LEAVE),
+    LEAVE_REQUEST_CANCEL("Cancel leave request", PermissionModule.LEAVE),
     LEAVE_REQUEST_APPROVE("Approve leave request", PermissionModule.LEAVE),
     LEAVE_REQUEST_REJECT("Reject leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_READ_ALL("Read all leave requests", PermissionModule.LEAVE),
     LEAVE_BALANCE_READ("View leave balance data", PermissionModule.LEAVE),
     LEAVE_BALANCE_UPDATE("Update leave balance information", PermissionModule.LEAVE),
     LEAVE_TYPE_READ("View leave type data", PermissionModule.LEAVE),
@@ -108,6 +111,25 @@ public enum PermissionEnum {
     KPI_CREATE("Create KPI targets", PermissionModule.PERFORMANCE),
     KPI_UPDATE("Update KPI information", PermissionModule.PERFORMANCE),
     PERFORMANCE_REVIEW_MANAGE("Manage review cycles", PermissionModule.PERFORMANCE),
+
+    // Task
+    TASK_CREATE("Create task information", PermissionModule.TASK),
+    TASK_UPDATE("Update task information", PermissionModule.TASK),
+    TASK_DELETE("Delete task", PermissionModule.TASK),
+    TASK_READ("View task information", PermissionModule.TASK),
+    TASK_ATTACHMENT("Attachment file", PermissionModule.TASK),
+    TASK_COMMENT("Comment on task", PermissionModule.TASK),
+    TASK_FULL("Full task information", PermissionModule.TASK),
+
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_APPROVE("Correction approve", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_REJECT("Correction reject", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_READ("Correction read", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_FULL("Correction full", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_CREATE("Correction create", PermissionModule.ATTENDANCE),
+
+    // Attendance Log
+    ATTENDANCE_LOG_READ("Attendance log information", PermissionModule.ATTENDANCE),
 
     ;
 

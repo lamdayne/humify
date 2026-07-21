@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,8 @@ public class AttendanceCorrectionController {
 
     private final AttendanceCorrectionService correctionService;
 
-    // 4.1. Tạo đơn giải trình
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_CREATE')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> createCorrection(
             @Valid @RequestBody AttendanceCorrectionRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -35,8 +36,8 @@ public class AttendanceCorrectionController {
                 ));
     }
 
-    // 4.2. HR/Manager lấy danh sách toàn bộ đơn
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getAllCorrections(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long employeeId,
@@ -49,7 +50,6 @@ public class AttendanceCorrectionController {
                 ));
     }
 
-    // 4.3. Cá nhân lấy danh sách đơn của mình
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getMyCorrections(
             @RequestParam(required = false) String status,
@@ -64,8 +64,8 @@ public class AttendanceCorrectionController {
                 ));
     }
 
-    // 4.4. Duyệt đơn
     @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_APPROVE')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> approveCorrection(
             @PathVariable Long id,
             @Valid @RequestBody CorrectionActionRequest request,
@@ -77,8 +77,8 @@ public class AttendanceCorrectionController {
                 ));
     }
 
-    // 4.5. Từ chối đơn
     @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_REJECT')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> rejectCorrection(
             @PathVariable Long id,
             @Valid @RequestBody CorrectionActionRequest request,
