@@ -107,6 +107,9 @@ public enum PermissionEnum {
     PAYROLL_CALCULATE("Calculate payroll", PermissionModule.PAYROLL),
     PAYROLL_APPROVE("Approve payroll", PermissionModule.PAYROLL),
 
+    // Payslip
+    PAYSLIP_UPDATE("Update info payslip", PermissionModule.PAYSLIP),
+
     // Kpi
     KPI_CREATE("Create KPI targets", PermissionModule.PERFORMANCE),
     KPI_UPDATE("Update KPI information", PermissionModule.PERFORMANCE),

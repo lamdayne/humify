@@ -1,7 +1,5 @@
 package com.lamdayne.humify.payroll.controller;
 
-import com.lamdayne.humify.auth.security.principal.UserPrincipal;
-import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.payroll.dto.request.UpdatePayslipRequest;
@@ -11,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,9 +18,8 @@ public class PayslipController {
 
     private final PayslipService payslipService;
 
-    /** PUT /payslips/{id} */
     @PutMapping("/{id}")
-//    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_MANAGE')")
+    @PreAuthorize("hasAnyAuthority('PAYSLIP_UPDATE')")
     public ResponseEntity<ApiResponse<PayslipResponse>> updatePayslip(
             @PathVariable("id") Long payslipId,
             @Valid @RequestBody UpdatePayslipRequest request

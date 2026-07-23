@@ -19,5 +19,6 @@ public enum PermissionModule {
     LEAVE,
     CONTRACT,
     PAYROLL,
+    PAYSLIP,
     PERFORMANCE
 }
