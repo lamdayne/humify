@@ -26,6 +26,7 @@ public class MyPayslipResponse {
     private BigDecimal unpaidLeaveDays;
 
     // --- Thu nhập ---
+    private BigDecimal baseSalary;
     private BigDecimal grossSalary;       // Tổng thu nhập trước khấu trừ
 
     // --- Khấu trừ: tách riêng vì đây là nghĩa vụ đóng góp của chính nhân viên ---
@@ -42,6 +43,13 @@ public class MyPayslipResponse {
     // --- Trạng thái & thanh toán ---
     private PayslipStatus status;
     private LocalDate paymentDate;
+
+    //thưởng
+    private BigDecimal salaryByWorkDays;
+    private BigDecimal totalAllowances;
+    private BigDecimal bonusKpi;
+    private BigDecimal bonusProject;
+    private BigDecimal otherBonuses;
 
 
 }
