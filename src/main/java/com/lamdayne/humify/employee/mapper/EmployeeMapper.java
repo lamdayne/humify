@@ -10,7 +10,8 @@ import org.mapstruct.*;
 public interface EmployeeMapper {
 
     Employee toEmployee(CreateEmployeeRequest request);
-
+  
+    @Mapping(source = "employee.id", target = "id")
     @Mapping(source = "employee.branch.name", target = "branchName")
     @Mapping(source = "employee.department.name", target = "departmentName")
     @Mapping(source = "employee.position.name", target = "positionName")

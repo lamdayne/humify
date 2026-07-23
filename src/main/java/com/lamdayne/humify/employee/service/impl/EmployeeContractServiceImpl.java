@@ -95,6 +95,16 @@ public class EmployeeContractServiceImpl implements EmployeeContractService {
     }
 
     @Override
+    public EmployeeContractResponse getContractById(Long id) {
+        Long companyId = CompanyContext.getCompanyId();
+
+        EmployeeContract contract = contractRepository.findByIdAndCompanyId(id, companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        return contractMapper.toResponse(contract);
+    }
+
+    @Override
     @Transactional
     public EmployeeContractResponse updateContract(Long id, UpdateContractRequest request) {
         Long companyId = CompanyContext.getCompanyId();

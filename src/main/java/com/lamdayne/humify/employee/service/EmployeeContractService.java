@@ -9,6 +9,7 @@ import com.lamdayne.humify.employee.enums.ContractStatus;
 public interface EmployeeContractService {
     EmployeeContractResponse createContract(CreateContractRequest request);
     PageResponse<EmployeeContractResponse> getContracts(Long employeeId, ContractStatus status, int page, int size, String... sorts);
+    EmployeeContractResponse getContractById(Long id);
     EmployeeContractResponse updateContract(Long id, UpdateContractRequest request);
     void deleteContract(Long id);
 }
