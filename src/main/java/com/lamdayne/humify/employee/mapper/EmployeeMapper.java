@@ -13,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface EmployeeMapper {
 
     Employee toEmployee(CreateEmployeeRequest request);
-
+    @Mapping(source = "employee.id", target = "id")
     EmployeeResponse toEmployeeResponse(Employee employee);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
