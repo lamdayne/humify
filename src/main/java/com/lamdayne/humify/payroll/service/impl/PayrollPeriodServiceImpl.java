@@ -186,7 +186,6 @@ public class PayrollPeriodServiceImpl implements PayrollPeriodService {
                 .subtract(personalIncomeTax)
                 .subtract(otherDeductions)
                 .setScale(SCALE, ROUNDING);
-
         // 9. Upsert payslip: tạo mới nếu chưa có, ghi đè nếu đã tồn tại (theo đúng nghiệp vụ trong tài liệu)
         Payslip payslip = payslipRepository
                 .findByPayrollPeriod_IdAndEmployee_Id(period.getId(), contract.getEmployee().getId())
