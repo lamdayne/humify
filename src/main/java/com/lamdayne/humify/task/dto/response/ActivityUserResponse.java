@@ -15,6 +15,8 @@ public class ActivityUserResponse {
 
     private Long id;
 
+    private String email;
+
     private String fullName;
 
 }

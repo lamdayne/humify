@@ -19,6 +19,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyAccessService;
+import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.employee.repository.EmployeeRepository;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.service.UserService;
@@ -134,11 +135,29 @@ public class GoogleOAuthService {
 
         User user;
 
-        user = userOpt.orElseGet(() -> userService.createUser(email, company));
+        if (userOpt.isPresent()) {
+            user = userOpt.get();
+            if (Boolean.FALSE.equals(user.getActive())) {
+                user.setActive(true);
+                userService.save(user);
+            }
+
+            linkEmployee(user, email, company);
+        } else {
+            Employee employee = employeeRepository.findByEmailAndCompanyId(email, company.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+            user = User.builder()
+                    .email(email)
+                    .active(true)
+                    .company(company)
+                    .employee(employee)
+                    .build();
+
+            user = userService.createEmployeeUser(user);
+        }
 
         createSocialAccount(user, providerId, company);
-
-        linkEmployee(user, email, company);
 
         return user;
     }
@@ -155,9 +174,11 @@ public class GoogleOAuthService {
     }
 
     private void linkEmployee(User user, String email, Company company) {
+        if (user.getEmployee() != null) return;
+
         employeeRepository.findByEmailAndCompanyId(email, company.getId())
                 .ifPresent(emp -> {
-                    if (user.getEmployee() != null) {
+                    if (user.getEmployee() == null) {
                         user.setEmployee(emp);
                         userService.save(user);
                     }

@@ -4,6 +4,9 @@ import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.position.dto.request.CreatePositionRequest;
 import com.lamdayne.humify.position.dto.response.PositionResponse;
+import com.lamdayne.humify.position.entity.Position;
+
+import java.util.List;
 
 public interface PositionService {
 
@@ -19,5 +22,5 @@ public interface PositionService {
 
     PositionResponse getPositionResponseById(Long id);
 
-    java.util.List<com.lamdayne.humify.position.entity.Position> getPositionsByDepartmentId(Long departmentId);
+    List<Position> getPositionsByDepartmentId(Long departmentId);
 }

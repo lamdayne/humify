@@ -37,8 +37,16 @@ public class AuthenticationController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<TokenResponse>> refresh(HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success(SuccessCode.REFRESH_TOKEN_SUCCESS, authenticationService.refresh(request)));
+        try {
+            CompanyContext.setAdmin(true);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success(
+                            SuccessCode.REFRESH_TOKEN_SUCCESS,
+                            authenticationService.refresh(request))
+                    );
+        } finally {
+            CompanyContext.clear();
+        }
     }
 
     @PostMapping("/logout")

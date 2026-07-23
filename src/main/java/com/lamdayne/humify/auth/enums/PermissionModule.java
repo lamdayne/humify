@@ -13,5 +13,12 @@ public enum PermissionModule {
     ATTENDANCE,
     ROLE,
     PERMISSION,
-    SYSTEM
+    SYSTEM,
+    PROJECT,
+    TASK,
+    LEAVE,
+    CONTRACT,
+    PAYROLL,
+    PAYSLIP,
+    PERFORMANCE
 }

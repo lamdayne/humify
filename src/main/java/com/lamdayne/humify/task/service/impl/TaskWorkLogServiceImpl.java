@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,8 +30,6 @@ public class TaskWorkLogServiceImpl implements TaskWorkLogService {
     private final TaskWorkLogRepository taskWorkLogRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-
-
 
     @Override
     public WorklogResponse create(Long taskId, CreateWorklogRequest request) {
@@ -75,7 +74,8 @@ public class TaskWorkLogServiceImpl implements TaskWorkLogService {
 
     @Override
     public WorklogResponse update(Long id, UpdateWorklogRequest request) {
-        TaskWorkLog workLog =taskWorkLogRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.WORKLOG_NOT_FOUND));
+        TaskWorkLog workLog = taskWorkLogRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.WORKLOG_NOT_FOUND));
         double diff = request.getTimeSpentHours() - workLog.getTimeSpentHours();
         Task task = workLog.getTask();
         task.setLoggedHours(task.getLoggedHours() + diff);

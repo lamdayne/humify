@@ -1,6 +1,5 @@
 package com.lamdayne.humify.payroll.controller;
 
-
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
@@ -12,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +23,11 @@ public class PayrollPeriodController {
     private final PayrollPeriodService payrollPeriodService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('PAYROLL_PERIOD_CREATE')")
     public ResponseEntity<ApiResponse<PayrollPeriodResponse>> createPayrollPeriod(
             @Valid @RequestBody CreatePayrollPeriodRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         SuccessCode.PAYROLL_PERIOD_CREATE_SUCCESS,
@@ -35,31 +36,16 @@ public class PayrollPeriodController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PageResponse<PayrollPeriodResponse>>> getPayrollPeriods(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
                         SuccessCode.PAYROLL_PERIOD_READ_SUCCESS,
                         payrollPeriodService.getPayrollPeriods(userPrincipal.getCompanyId(), page, size)
-                ));
-    }
-
-    @PostMapping("/{id}/calculate")
-    public ResponseEntity<ApiResponse<String>> calculatePayroll(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        int employeeCount = payrollPeriodService.calculatePayroll(id, userPrincipal.getCompanyId());
-
-        String successMessage = "Payroll calculation completed for " + employeeCount + " employees";
-
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.PAYROLL_PERIOD_CALC_SUCCESS,
-                        successMessage
                 ));
     }
 }

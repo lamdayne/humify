@@ -73,6 +73,67 @@ public enum PermissionEnum {
     // Full Access
     FULL_ACCESS("Just for SYSTEM_ADMIN", PermissionModule.SYSTEM),
 
+    // Project
+    PROJECT_READ("View project data", PermissionModule.PROJECT),
+    PROJECT_CREATE("Create new project", PermissionModule.PROJECT),
+    PROJECT_UPDATE("Update project information", PermissionModule.PROJECT),
+    PROJECT_DELETE("Delete project", PermissionModule.PROJECT),
+    PROJECT_FULL("Full access project", PermissionModule.PROJECT),
+
+    // Leave
+    LEAVE_REQUEST_READ("View leave request data", PermissionModule.LEAVE),
+    LEAVE_REQUEST_CREATE("Create new leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_UPDATE("Update leave request information", PermissionModule.LEAVE),
+    LEAVE_REQUEST_CANCEL("Cancel leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_APPROVE("Approve leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_REJECT("Reject leave request", PermissionModule.LEAVE),
+    LEAVE_REQUEST_READ_ALL("Read all leave requests", PermissionModule.LEAVE),
+    LEAVE_BALANCE_READ("View leave balance data", PermissionModule.LEAVE),
+    LEAVE_BALANCE_UPDATE("Update leave balance information", PermissionModule.LEAVE),
+    LEAVE_TYPE_READ("View leave type data", PermissionModule.LEAVE),
+    LEAVE_TYPE_CREATE("Create new leave type information", PermissionModule.LEAVE),
+    LEAVE_TYPE_UPDATE("Update leave type information", PermissionModule.LEAVE),
+
+    // Contract
+    CONTRACT_READ("View contract data", PermissionModule.CONTRACT),
+    CONTRACT_CREATE("Create new contract information", PermissionModule.CONTRACT),
+    CONTRACT_UPDATE("Update contract information", PermissionModule.CONTRACT),
+    CONTRACT_DELETE("Delete contract", PermissionModule.CONTRACT),
+    CONTRACT_FULL("Full contract information", PermissionModule.CONTRACT),
+
+    // Payroll
+    PAYROLL_PERIOD_CREATE("Create payroll periods", PermissionModule.PAYROLL),
+    PAYROLL_READ("View payroll data", PermissionModule.PAYROLL),
+    PAYROLL_CALCULATE("Calculate payroll", PermissionModule.PAYROLL),
+    PAYROLL_APPROVE("Approve payroll", PermissionModule.PAYROLL),
+
+    // Payslip
+    PAYSLIP_UPDATE("Update info payslip", PermissionModule.PAYSLIP),
+
+    // Kpi
+    KPI_CREATE("Create KPI targets", PermissionModule.PERFORMANCE),
+    KPI_UPDATE("Update KPI information", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_MANAGE("Manage review cycles", PermissionModule.PERFORMANCE),
+
+    // Task
+    TASK_CREATE("Create task information", PermissionModule.TASK),
+    TASK_UPDATE("Update task information", PermissionModule.TASK),
+    TASK_DELETE("Delete task", PermissionModule.TASK),
+    TASK_READ("View task information", PermissionModule.TASK),
+    TASK_ATTACHMENT("Attachment file", PermissionModule.TASK),
+    TASK_COMMENT("Comment on task", PermissionModule.TASK),
+    TASK_FULL("Full task information", PermissionModule.TASK),
+
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_APPROVE("Correction approve", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_REJECT("Correction reject", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_READ("Correction read", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_FULL("Correction full", PermissionModule.ATTENDANCE),
+    ATTENDANCE_CORRECTION_CREATE("Correction create", PermissionModule.ATTENDANCE),
+
+    // Attendance Log
+    ATTENDANCE_LOG_READ("Attendance log information", PermissionModule.ATTENDANCE),
+
     ;
 
     private final String description;

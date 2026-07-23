@@ -37,4 +37,8 @@ public interface UserService {
 
     User getUserById(Long id);
 
+    Long getCurrentEmployeeId();
+
+    User createEmployeeUser(User user);
+
 }

@@ -11,6 +11,12 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // Attendance
+    ATTENDANCE_RECORD_NOT_FOUND("ATTENDANCE_RECORD_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),
+    ATTENDANCE_START_DATE_REQUIRED("ATTENDANCE_START_DATE_REQUIRED", "Start date is required for inquiry", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_END_DATE_REQUIRED("ATTENDANCE_END_DATE_REQUIRED", "End date is required for inquiry", HttpStatus.BAD_REQUEST),
+    MODIFICATION_REASON_REQUIRED("MODIFICATION_REASON_REQUIRED", "Modification reason is required", HttpStatus.BAD_REQUEST),
+    WORK_POINTS_INVALID("WORK_POINTS_INVALID", "Work points must be between 0.0 and 2.0", HttpStatus.BAD_REQUEST),
+
     LEAVE_BALANCE_NOT_FOUND("LEAVE_BALANCE_NOT_FOUND", "Leave balance not found", HttpStatus.NOT_FOUND),
     LEAVE_TYPE_ID_REQUIRED("LEAVE_TYPE_ID_REQUIRED", "Leave type ID cannot be blank", HttpStatus.BAD_REQUEST),
     YEAR_REQUIRED("YEAR_REQUIRED", "Year cannot be null", HttpStatus.BAD_REQUEST),
@@ -24,6 +30,17 @@ public enum ErrorCode {
     LEAVE_TYPE_NAME_MAX_LENGTH("LEAVE_TYPE_NAME_MAX_LENGTH", "Leave type name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
     LEAVE_TYPE_CODE_REQUIRED("LEAVE_TYPE_CODE_REQUIRED", "Leave type code cannot be blank", HttpStatus.BAD_REQUEST),
     LEAVE_TYPE_CODE_INVALID("LEAVE_TYPE_CODE_INVALID", "Leave type code must contain only uppercase letters and underscores", HttpStatus.BAD_REQUEST),
+
+    // Work shift
+    SHIFT_NOT_FOUND("SHIFT_NOT_FOUND", "Work shift not found", HttpStatus.NOT_FOUND),
+    SHIFT_CODE_ALREADY_EXISTS("SHIFT_CODE_ALREADY_EXISTS", "Work shift code already exists in this company", HttpStatus.BAD_REQUEST),
+    SHIFT_TIME_INVALID("SHIFT_TIME_INVALID", "Invalid shift time logic configuration", HttpStatus.BAD_REQUEST),
+    SHIFT_CODE_REQUIRED("SHIFT_CODE_REQUIRED", "Shift code cannot be blank", HttpStatus.BAD_REQUEST),
+    SHIFT_NAME_REQUIRED("SHIFT_NAME_REQUIRED", "Shift name cannot be blank", HttpStatus.BAD_REQUEST),
+    SHIFT_START_TIME_REQUIRED("SHIFT_START_TIME_REQUIRED", "Start time cannot be null", HttpStatus.BAD_REQUEST),
+    SHIFT_END_TIME_REQUIRED("SHIFT_END_TIME_REQUIRED", "End time cannot be null", HttpStatus.BAD_REQUEST),
+    GRACE_PERIOD_INVALID("GRACE_PERIOD_INVALID", "Grace period minutes must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
+
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),
@@ -36,6 +53,7 @@ public enum ErrorCode {
     REQUEST_BODY_MISSING_OR_INVALID("REQUEST_BODY_MISSING_OR_INVALID", "Body missing or invalid", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED("ACCESS_DENIED", "Access denied", HttpStatus.FORBIDDEN),
     INVALID_FILTER_VALUE("INVALID_FILTER_VALUE", "Invalid filter value", HttpStatus.BAD_REQUEST),
+    INVALID_DATA("INVALID_DATA", "Invalid data", HttpStatus.BAD_REQUEST),
 
     // Branch
     COMPANY_ID_REQUIRED("COMPANY_ID_REQUIRED", "Company ID cannot be blank", HttpStatus.BAD_REQUEST),
@@ -153,6 +171,9 @@ public enum ErrorCode {
     // Media
     FILE_UPLOAD_FAILED("FILE_UPLOAD_FAILED", "Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_EMPTY("FILE_EMPTY", "File cannot be empty", HttpStatus.BAD_REQUEST),
+    FILE_NAME_NOT_BLANK("FILE_NAME_NOT_BLANK", "File name cannot be blank", HttpStatus.BAD_REQUEST),
+    FILE_URL_NOT_BLANK("FILE_URL_NOT_BLANK", "File URL cannot be blank", HttpStatus.BAD_REQUEST),
+    FILE_SIZE_NOT_NULL("FILE_SIZE_NOT_NULL", "File size cannot be null", HttpStatus.BAD_REQUEST),
 
     // Project
     PROJECT_NOT_FOUND("PROJECT_NOT_FOUND", "Project not found", HttpStatus.NOT_FOUND),
@@ -266,8 +287,31 @@ public enum ErrorCode {
     MONTH_REQUIRED("MONTH_REQUIRED", "Month is required", HttpStatus.BAD_REQUEST),
     MONTH_INVALID("MONTH_INVALID", "Month must be between 1 and 12", HttpStatus.BAD_REQUEST),
     END_DATE_REQUIRED("END_DATE_REQUIRED", "End date is required", HttpStatus.BAD_REQUEST),
-    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST);
+    STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST),
+    PAYROLL_PERIOD_NOT_APPROVABLE("PAYROLL_PERIOD_NOT_APPROVABLE", "Payroll period not approvable", HttpStatus.BAD_REQUEST),
+    PAYROLL_PERIOD_NOT_PAYABLE("PAYROLL_PERIOD_NOT_PAYABLE", "Payroll period not payable", HttpStatus.BAD_REQUEST),
+    // Attendance Log
+    LOG_TYPE_REQUIRED("LOG_TYPE_REQUIRED", "Log type is required", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
+    NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
+    ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+    //PAYSLIP
+    PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),
+    PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST),
 
+
+    // Attendance Correction
+    ATTENDANCE_NOT_FOUND("ATTENDANCE_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),
+    ATTENDANCE_ACCESS_DENIED("ATTENDANCE_ACCESS_DENIED", "You do not have permission to access this attendance record", HttpStatus.FORBIDDEN),
+    PAYROLL_PERIOD_CLOSED("PAYROLL_PERIOD_CLOSED", "Payroll period is closed for this date", HttpStatus.BAD_REQUEST),
+    PENDING_CORRECTION_ALREADY_EXISTS("PENDING_CORRECTION_ALREADY_EXISTS", "A pending correction already exists for this attendance", HttpStatus.BAD_REQUEST),
+    CORRECTION_NOT_FOUND("CORRECTION_NOT_FOUND", "Attendance correction request not found", HttpStatus.NOT_FOUND),
+    CORRECTION_ALREADY_PROCESSED("CORRECTION_ALREADY_PROCESSED", "This correction request has already been processed", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_ID_REQUIRED("ATTENDANCE_ID_REQUIRED", "Attendance ID cannot be null", HttpStatus.BAD_REQUEST),
+    CORRECTION_REASON_REQUIRED("CORRECTION_REASON_REQUIRED", "Correction reason cannot be blank", HttpStatus.BAD_REQUEST),
+    APPROVER_NOTE_REQUIRED("APPROVER_NOTE_REQUIRED", "Approver note cannot be blank", HttpStatus.BAD_REQUEST),
+
+    ;
 
     private String code;
     private String defaultMessage;

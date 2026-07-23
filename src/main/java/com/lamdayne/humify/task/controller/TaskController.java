@@ -35,7 +35,6 @@ public class TaskController {
     public ResponseEntity<ApiResponse<List<ActivityResponse>>> getTaskActivities(
             @PathVariable Long taskId
     ) {
-
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.TASK_READ_SUCCESS,
@@ -53,6 +52,30 @@ public class TaskController {
         AttachmentResponse response = taskAttachmentService.addAttachment(userPrincipal, taskId, file);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(SuccessCode.ATTACHMENT_UPLOAD_SUCCESS, response));
+    }
+
+    @PostMapping("/{taskId}/attachment")
+    public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long taskId,
+            @RequestBody @Valid AddAttachmentRequest request
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.FILE_UPLOAD_SUCCESS,
+                        taskAttachmentService.addAttachment(userPrincipal, taskId, request)
+                ));
+    }
+
+    @GetMapping("/{taskId}/attachments")
+    public ResponseEntity<ApiResponse<List<AttachmentResponse>>> getTaskAttachments(
+            @PathVariable Long taskId
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.ATTACHMENT_READ_SUCCESS,
+                        taskAttachmentService.getAttachments(taskId)
+                ));
     }
 
     @GetMapping("/{id}")
@@ -124,8 +147,10 @@ public class TaskController {
     }
 
     @PostMapping("{taskId}/worklogs")
-    public ResponseEntity<ApiResponse<WorklogResponse>> create(@PathVariable Long taskId,
-                                                               @RequestBody @Valid CreateWorklogRequest request) {
+    public ResponseEntity<ApiResponse<WorklogResponse>> create(
+            @PathVariable Long taskId,
+            @RequestBody @Valid CreateWorklogRequest request
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ApiResponse.success(SuccessCode.WORKLOG_CREATE_SUCCESS,
                         taskWorkLogService.create(taskId, request)));
@@ -136,8 +161,10 @@ public class TaskController {
     public ResponseEntity<ApiResponse<List<WorklogResponse>>> getAll(
             @PathVariable Long taskId) {
         return ResponseEntity.ok()
-                .body(ApiResponse.success(SuccessCode.WORKLOG_READ_SUCCESS,
-                        taskWorkLogService.getByTask(taskId)));
+                .body(ApiResponse.success(
+                        SuccessCode.WORKLOG_READ_SUCCESS,
+                        taskWorkLogService.getByTask(taskId))
+                );
     }
 
     @PostMapping("/{taskId}/comments")
@@ -145,7 +172,6 @@ public class TaskController {
             @PathVariable Long taskId,
             @Valid @RequestBody CreateCommentRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
                         SuccessCode.COMMENT_CREATE_SUCCESS,
@@ -155,7 +181,6 @@ public class TaskController {
 
     @GetMapping("/{taskId}/comments")
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getComments(@PathVariable Long taskId) {
-
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
                         SuccessCode.COMMENT_READ_SUCCESS,

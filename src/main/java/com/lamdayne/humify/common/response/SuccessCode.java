@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public enum SuccessCode {
 
     // Attendance
+    ATTENDANCE_READ_SUCCESS("ATTENDANCE_READ_SUCCESS", "Get attendance data successfully"),
+    ATTENDANCE_UPDATE_SUCCESS("ATTENDANCE_UPDATE_SUCCESS", "Attendance record updated successfully"),
     LEAVE_BALANCE_READ_SUCCESS("LEAVE_BALANCE_READ_SUCCESS", "Get leave balances successfully"),
     LEAVE_BALANCE_UPDATE_SUCCESS("LEAVE_BALANCE_UPDATE_SUCCESS", "Leave balance updated successfully"),
 
@@ -17,6 +19,13 @@ public enum SuccessCode {
     LEAVE_TYPE_READ_SUCCESS("LEAVE_TYPE_READ_SUCCESS", "Get leave types successfully"),
     LEAVE_TYPE_UPDATE_SUCCESS("LEAVE_TYPE_UPDATE_SUCCESS", "Leave type updated successfully"),
     LEAVE_TYPE_DELETE_SUCCESS("LEAVE_TYPE_DELETE_SUCCESS", "Leave type deleted successfully"),
+
+    // Work shift
+    WORK_SHIFT_CREATE_SUCCESS("WORK_SHIFT_CREATE_SUCCESS", "Work shift created successfully"),
+    WORK_SHIFT_READ_SUCCESS("WORK_SHIFT_READ_SUCCESS", "Get work shifts successfully"),
+    WORK_SHIFT_UPDATE_SUCCESS("WORK_SHIFT_UPDATE_SUCCESS", "Work shift updated successfully"),
+    WORK_SHIFT_DELETE_SUCCESS("WORK_SHIFT_DELETE_SUCCESS", "Work shift deactivated successfully"),
+
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
@@ -139,6 +148,7 @@ public enum SuccessCode {
     // Attachment
     ATTACHMENT_UPLOAD_SUCCESS("ATTACHMENT_UPLOAD_SUCCESS", "Attachment uploaded successfully"),
     ATTACHMENT_DELETE_SUCCESS("ATTACHMENT_DELETE_SUCCESS", "Attachment deleted successfully"),
+    ATTACHMENT_READ_SUCCESS("ATTACHMENT_READ_SUCCESS", "Attachment read successfully"),
     
     // Worklog
     WORKLOG_CREATE_SUCCESS("WORKLOG_CREATE_SUCCESS", "Worklog added successfully"),
@@ -187,8 +197,26 @@ public enum SuccessCode {
     // Payroll Period
     PAYROLL_PERIOD_CREATE_SUCCESS("PAYROLL_PERIOD_CREATE_SUCCESS", "Payroll period created successfully"),
     PAYROLL_PERIOD_READ_SUCCESS("PAYROLL_PERIOD_READ_SUCCESS", "Get payroll periods successfully"),
-    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed")
-    ;
+    PAYROLL_PERIOD_CALC_SUCCESS("PAYROLL_PERIOD_CALC_SUCCESS", "Payroll calculation completed"),
+    PAYROLL_PERIOD_APPROVE_SUCCESS("PAYROLL_PERIOD_APPROVE_SUCCESS", "Payroll period approved successfully"),
+    ROLL_PERIOD_PAY_SUCCESS("ROLL_PERIOD_PAY_SUCCESS", "Payroll period pay successfully" )
+    ,
+    // Attendance Log
+    ATTENDANCE_LOG_CREATE_SUCCESS("ATTENDANCE_LOG_CREATE_SUCCESS", "Web attendance log registered successfully"),
+    ATTENDANCE_LOG_READ_SUCCESS("ATTENDANCE_LOG_READ_SUCCESS", "Get attendance logs successfully"),
+
+    //PAYSLIP
+    PAYSLIP_READ_SUCCESS("PAYSLIP_READ_SUCCESS", "Get payslips successfully"),
+    PAYSLIP_UPDATE_SUCCESS("PAYSLIP_UPDATE_SUCCESS", "Payslip updated successfully"),
+
+
+
+    // Attendance Correction
+    ATTENDANCE_CORRECTION_CREATE_SUCCESS("ATTENDANCE_CORRECTION_CREATE_SUCCESS", "Attendance correction request created successfully"),
+    ATTENDANCE_CORRECTION_APPROVE_SUCCESS("ATTENDANCE_CORRECTION_APPROVE_SUCCESS", "Attendance correction request approved successfully"),
+    ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
+    ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully"),
+
     ;
 
     private String code;

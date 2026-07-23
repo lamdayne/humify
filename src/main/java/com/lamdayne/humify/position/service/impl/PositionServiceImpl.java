@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -87,6 +88,16 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     }
 
     @Override
+    public Optional<Position> findByName(String name) {
+        return positionRepository.findByName(name);
+    }
+
+    @Override
+    public List<Position> findAll() {
+        return positionRepository.findAll();
+    }
+
+    @Override
     @Transactional
     public PositionResponse updatePosition(Long id, CreatePositionRequest request) {
         Position position = positionRepository.findById(id)
@@ -121,5 +132,11 @@ public class PositionServiceImpl implements PositionService, PositionAccessServi
     @Override
     public List<Position> getPositionsByDepartmentId(Long departmentId) {
         return positionRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public Position save(Position position) {
+        return positionRepository.save(position);
     }
 }

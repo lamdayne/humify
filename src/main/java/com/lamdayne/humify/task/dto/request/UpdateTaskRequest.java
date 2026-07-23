@@ -28,6 +28,7 @@ public class UpdateTaskRequest {
     @Positive(message = "TASK_ESTIMATED_HOURS_INVALID")
     private Double estimatedHours;
 
-    @Future(message = "TASK_DUE_DATE_MUST_BE_FUTURE")
     private Instant dueDate;
+
+    private Instant completedAt;
 }
