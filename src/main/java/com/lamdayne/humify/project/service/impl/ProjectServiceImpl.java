@@ -13,13 +13,16 @@ import com.lamdayne.humify.project.dto.response.ProjectResponse;
 import com.lamdayne.humify.project.entity.Project;
 import com.lamdayne.humify.project.entity.ProjectMember;
 import com.lamdayne.humify.project.entity.ProjectRole;
+import com.lamdayne.humify.project.entity.Sprint;
 import com.lamdayne.humify.project.enums.ProjectMemberStatus;
 import com.lamdayne.humify.project.enums.ProjectRoleCode;
 import com.lamdayne.humify.project.enums.ProjectStatus;
+import com.lamdayne.humify.project.enums.SprintStatus;
 import com.lamdayne.humify.project.mapper.ProjectMapper;
 import com.lamdayne.humify.project.repository.ProjectMemberRepository;
 import com.lamdayne.humify.project.repository.ProjectRepository;
 import com.lamdayne.humify.project.repository.ProjectRoleRepository;
+import com.lamdayne.humify.project.repository.SprintRepository;
 import com.lamdayne.humify.project.service.BoardColumnService;
 import com.lamdayne.humify.project.service.ProjectService;
 import com.lamdayne.humify.user.entity.User;
@@ -48,6 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final BoardColumnService boardColumnService;
     private final ProjectRoleRepository projectRoleRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final SprintRepository sprintRepository;
 
     @Override
     public ProjectResponse createProject(CreateProjectRequest request) {
@@ -71,6 +75,15 @@ public class ProjectServiceImpl implements ProjectService {
         project = projectRepository.save(project);
 
         boardColumnService.initDefaultColumns(project);
+
+        if (Boolean.TRUE.equals(request.getCreateSprint())) {
+            Sprint initialSprint = Sprint.builder()
+                    .project(project)
+                    .name("Sprint 1")
+                    .status(SprintStatus.PLANNED)
+                    .build();
+            sprintRepository.save(initialSprint);
+        }
 
         ProjectRole projectRole = projectRoleRepository.findByName(ProjectRoleCode.MANAGER.name())
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_ROLE_NOT_FOUND));

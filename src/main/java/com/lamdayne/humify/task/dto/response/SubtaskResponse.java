@@ -5,6 +5,8 @@ import com.lamdayne.humify.task.enums.TaskType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.Instant;
+
 @Getter
 @Builder
 public class SubtaskResponse {
@@ -15,4 +17,5 @@ public class SubtaskResponse {
     private TaskType type;
     private UserShortResponse assignee;
     private Long columnId;
+    private Instant completedAt;
 }

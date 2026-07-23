@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -156,29 +157,30 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 
-        if (!task.getPoints().equals(request.getPoints())) {
+        if (request.getPoints() != null && !Objects.equals(task.getPoints(), request.getPoints())) {
             taskActivityRepository.save(TaskActivity.builder()
                     .task(task)
                     .user(user)
                     .action(TaskActivityAction.UPDATE_POINTS)
-                    .oldValue(task.getPoints().toString())
+                    .oldValue(task.getPoints() != null ? task.getPoints().toString() : null)
                     .newValue(request.getPoints().toString())
                     .build()
             );
         }
 
-        if (task.getPriority() != TaskPriority.valueOf(request.getPriority())) {
+        if (request.getPriority() != null && (task.getPriority() == null || !task.getPriority().name().equals(request.getPriority()))) {
             taskActivityRepository.save(TaskActivity.builder()
                     .task(task)
                     .user(user)
                     .action(TaskActivityAction.UPDATE_PRIORITY)
-                    .oldValue(task.getPriority().toString())
+                    .oldValue(task.getPriority() != null ? task.getPriority().name() : null)
                     .newValue(request.getPriority())
                     .build()
             );
         }
 
         taskMapper.updateTask(task, request);
+        task.setCompletedAt(request.getCompletedAt());
         return taskMapper.toResponse(taskRepository.save(task));
     }
 
@@ -187,8 +189,12 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponse assignTask(Long taskId, AssignTaskRequest request) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 
-        User assignee = userService.getUserById(request.getAssigneeId());
-        task.setAssignee(assignee);
+        if (request.getAssigneeId() != null) {
+            User assignee = userService.getUserById(request.getAssigneeId());
+            task.setAssignee(assignee);
+        } else {
+            task.setAssignee(null);
+        }
 
         taskActivityRepository.save(TaskActivity.builder()
                 .task(task)

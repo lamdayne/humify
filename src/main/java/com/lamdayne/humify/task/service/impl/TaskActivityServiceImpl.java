@@ -9,6 +9,7 @@ import com.lamdayne.humify.task.repository.TaskRepository;
 import com.lamdayne.humify.task.service.TaskActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     private final TaskActivityMapper taskActivityMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ActivityResponse> getActivities(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() ->

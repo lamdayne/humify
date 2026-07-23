@@ -29,4 +29,6 @@ public class UpdateTaskRequest {
     private Double estimatedHours;
 
     private Instant dueDate;
+
+    private Instant completedAt;
 }

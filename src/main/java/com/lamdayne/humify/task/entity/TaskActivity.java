@@ -4,6 +4,7 @@ import com.lamdayne.humify.task.enums.TaskActivityAction;
 import com.lamdayne.humify.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -39,6 +40,8 @@ public class TaskActivity {
 
     private String newValue;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
 }
