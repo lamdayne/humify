@@ -1,5 +1,7 @@
 package com.lamdayne.humify.project.dto.request;
 
+import com.lamdayne.humify.common.validator.EnumValue;
+import com.lamdayne.humify.project.enums.ProjectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -18,5 +20,6 @@ public class CreateProjectRequest {
 
     private String description;
 
-    private Boolean createSprint = false;
+    @EnumValue(name = "project_type", message = "PROJECT_TYPE_INVALID", enumClass = ProjectType.class)
+    private ProjectType type = ProjectType.KANBAN;
 }

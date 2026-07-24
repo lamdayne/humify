@@ -17,6 +17,7 @@ import com.lamdayne.humify.project.entity.Sprint;
 import com.lamdayne.humify.project.enums.ProjectMemberStatus;
 import com.lamdayne.humify.project.enums.ProjectRoleCode;
 import com.lamdayne.humify.project.enums.ProjectStatus;
+import com.lamdayne.humify.project.enums.ProjectType;
 import com.lamdayne.humify.project.enums.SprintStatus;
 import com.lamdayne.humify.project.mapper.ProjectMapper;
 import com.lamdayne.humify.project.repository.ProjectMemberRepository;
@@ -72,11 +73,12 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCompany(company);
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
+        project.setType(request.getType() != null ? request.getType() : ProjectType.KANBAN);
         project = projectRepository.save(project);
 
         boardColumnService.initDefaultColumns(project);
 
-        if (Boolean.TRUE.equals(request.getCreateSprint())) {
+        if (ProjectType.SCRUM.equals(project.getType())) {
             Sprint initialSprint = Sprint.builder()
                     .project(project)
                     .name("Sprint 1")
@@ -102,10 +104,15 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public PageResponse<ProjectResponse> getAllProject(int page, int size, String... sorts) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Long companyId = CompanyContext.getCompanyId();
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
 
-
-        Page<Project> projects = projectRepository.findAll(pageable);
+        Page<Project> projects = projectRepository.findByCompanyIdAndMemberUserId(companyId, currentUser.getId(), ProjectMemberStatus.ACTIVE, pageable);
         List<ProjectResponse> projectResponses = projects.stream()
                 .map(projectMapper::toResponse)
                 .toList();
@@ -121,6 +128,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse getById(Long id) {
         Project project = projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        boolean isMember = projectMemberRepository.findByProjectIdAndUserId(id, currentUser.getId())
+                .filter(m -> m.getStatus() == ProjectMemberStatus.ACTIVE)
+                .isPresent();
+        if (!isMember) {
+            throw new AppException(ErrorCode.PROJECT_NOT_FOUND);
+        }
+
         return projectMapper.toResponse(project);
     }
 

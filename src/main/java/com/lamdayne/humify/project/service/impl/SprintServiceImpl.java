@@ -47,6 +47,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
     public List<SprintResponse> getSprints(Long projectId, SprintStatus status) {
         List<Sprint> sprints;
         if (status != null) {
