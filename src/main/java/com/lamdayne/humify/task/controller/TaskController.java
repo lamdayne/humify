@@ -152,9 +152,10 @@ public class TaskController {
             @RequestBody @Valid CreateWorklogRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                ApiResponse.success(SuccessCode.WORKLOG_CREATE_SUCCESS,
-                        taskWorkLogService.create(taskId, request)));
-
+                ApiResponse.success(
+                        SuccessCode.WORKLOG_CREATE_SUCCESS,
+                        taskWorkLogService.create(taskId, request))
+        );
     }
 
     @GetMapping("/{taskId}/worklogs")
