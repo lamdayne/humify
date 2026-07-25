@@ -10,6 +10,7 @@ public interface TaskWorkLogMapper {
 
     @Mapping(target = "taskId", source = "task.id")
     @Mapping(target = "user.id", source = "user.id")
+    @Mapping(target = "user.email", source = "user.email")
     @Mapping(target = "user.fullName", source = "user.employee.fullName")
     WorklogResponse toResponse(TaskWorkLog workLog);
 }
