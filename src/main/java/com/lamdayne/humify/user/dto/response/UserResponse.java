@@ -9,6 +9,7 @@ import java.time.Instant;
 @Data
 @Builder
 public class UserResponse implements Serializable {
+    private Long id;
     private String email;
     private Boolean active;
     private Instant createdAt;
