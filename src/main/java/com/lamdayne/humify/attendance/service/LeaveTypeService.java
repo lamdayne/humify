@@ -3,7 +3,6 @@ package com.lamdayne.humify.attendance.service;
 import com.lamdayne.humify.attendance.dto.request.CreateLeaveTypeRequest;
 import com.lamdayne.humify.attendance.dto.request.UpdateLeaveTypeRequest;
 import com.lamdayne.humify.attendance.dto.response.LeaveTypeResponse;
-import com.lamdayne.humify.attendance.entity.LeaveType;
 
 import java.util.List;
 

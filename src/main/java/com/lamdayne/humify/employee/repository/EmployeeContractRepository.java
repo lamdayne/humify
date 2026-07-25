@@ -4,6 +4,7 @@ import com.lamdayne.humify.employee.entity.EmployeeContract;
 import com.lamdayne.humify.employee.enums.ContractStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -21,28 +22,56 @@ public interface EmployeeContractRepository extends JpaRepository<EmployeeContra
 
     boolean existsByCompanyIdAndContractNumberAndDeletedAtIsNull(Long companyId, String contractNumber);
 
-    @Query("SELECT COUNT(c) > 0 FROM EmployeeContract c WHERE c.employee.id = :employeeId " +
-            "AND c.status = 'ACTIVE' AND c.company.id = :companyId AND c.deletedAt IS NULL " +
-            "AND (:endDate IS NULL OR c.startDate <= :endDate) " +
-            "AND (c.endDate IS NULL OR :startDate <= c.endDate)")
+    /**
+     * SỬA: Thêm cast(... as date) cho cả :endDate và :startDate
+     */
+    @Query("""
+            SELECT COUNT(c) > 0 FROM EmployeeContract c 
+            WHERE c.employee.id = :employeeId 
+              AND c.status = :activeStatus 
+              AND c.company.id = :companyId 
+              AND c.deletedAt IS NULL 
+              AND (cast(:endDate as date) IS NULL OR c.startDate <= cast(:endDate as date)) 
+              AND (c.endDate IS NULL OR cast(:startDate as date) <= c.endDate)
+            """)
     boolean hasOverlapContract(@Param("employeeId") Long employeeId,
                                @Param("companyId") Long companyId,
-                               @Param("startDate") java.time.LocalDate startDate,
-                               @Param("endDate") java.time.LocalDate endDate);
+                               @Param("startDate") LocalDate startDate,
+                               @Param("endDate") LocalDate endDate,
+                               @Param("activeStatus") ContractStatus activeStatus);
 
-    @Query("SELECT c FROM EmployeeContract c WHERE c.company.id = :companyId AND c.deletedAt IS NULL " +
-            "AND (CAST(:employeeId AS Long) IS NULL OR c.employee.id = :employeeId) " +
-            "AND (CAST(:status AS String) IS NULL OR c.status = :status)")
-    Page<EmployeeContract> findWithFilters(@Param("companyId") Long companyId,
-                                           @Param("employeeId") Long employeeId,
-                                           @Param("status") ContractStatus status,
-                                           Pageable pageable);
-
+    default boolean hasOverlapContract(Long employeeId, Long companyId, LocalDate startDate, LocalDate endDate) {
+        return hasOverlapContract(employeeId, companyId, startDate, endDate, ContractStatus.ACTIVE);
+    }
 
     /**
-     * Lấy tất cả hợp đồng ACTIVE của công ty có khoảng thời gian hiệu lực giao với kỳ lương
-     * [periodStartDate, periodEndDate]. Dùng cho bước tính lương tự động (POST .../calculate).
+     * Dùng Specification lọc động để tránh lỗi Type Inference của PostgreSQL
      */
+    default Page<EmployeeContract> findWithFilters(Long companyId, Long employeeId, ContractStatus status, Pageable pageable) {
+        Specification<EmployeeContract> spec = (root, query, cb) -> {
+            var predicates = cb.conjunction();
+
+            if (companyId != null) {
+                predicates = cb.and(predicates, cb.equal(root.get("company").get("id"), companyId));
+            }
+
+            predicates = cb.and(predicates, cb.isNull(root.get("deletedAt")));
+
+            if (employeeId != null) {
+                predicates = cb.and(predicates, cb.equal(root.get("employee").get("id"), employeeId));
+            }
+
+            if (status != null) {
+                predicates = cb.and(predicates, cb.equal(root.get("status"), status));
+            }
+
+            return predicates;
+        };
+
+        return findAll(spec, pageable);
+    }
+
+
     @Query("""
             SELECT c FROM EmployeeContract c
             WHERE c.status = :status

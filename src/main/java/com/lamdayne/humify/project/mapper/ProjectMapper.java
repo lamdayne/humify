@@ -24,7 +24,7 @@ public interface ProjectMapper {
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "key", ignore = true)
-
+    @Mapping(target = "type", ignore = true)
     void updateEntity(
             UpdateProjectRequest request,
             @MappingTarget Project project

@@ -1,6 +1,7 @@
 package com.lamdayne.humify.attendance.repository;
 
 import com.lamdayne.humify.attendance.entity.LeaveRequest;
+import com.lamdayne.humify.attendance.enums.LeaveRequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long>, JpaSpecificationExecutor<LeaveRequest> {
@@ -42,4 +44,5 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             @Param("requestId") Long requestId
     );
 
+    boolean existsByLeaveTypeIdAndStatusIn(Long leaveTypeId, Collection<LeaveRequestStatus> statuses);
 }

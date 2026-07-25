@@ -17,6 +17,7 @@ public interface PayslipMapper {
     @Mapping(target = "employeeName", source = "employee.fullName")
     PayslipResponse toResponse(Payslip payslip);
 
+
     @Mapping(target = "payrollPeriodName", source = "payrollPeriod.name")
     @Mapping(target = "month", source = "payrollPeriod.month")
     @Mapping(target = "year", source = "payrollPeriod.year")

@@ -184,6 +184,7 @@ public enum ErrorCode {
     PROJECT_NAME_REQUIRED("PROJECT_NAME_REQUIRED", "Project name can not blank", HttpStatus.BAD_REQUEST),
     PROJECT_KEY_REQUIRED("PROJECT_KEY_REQUIRED", "Project key must be alphanumeric and 2-10 chars", HttpStatus.BAD_REQUEST),
     PROJECT_STATUS_INVALID("PROJECT_STATUS_INVALID", "Project status is invalid", HttpStatus.BAD_REQUEST),
+    PROJECT_TYPE_INVALID("PROJECT_TYPE_INVALID", "Project type is invalid", HttpStatus.BAD_REQUEST),
 
     // Member
     MEMBER_ALREADY_EXISTS("MEMBER_ALREADY_EXISTS", "User is already a member of this project", HttpStatus.BAD_REQUEST),
@@ -290,15 +291,16 @@ public enum ErrorCode {
     STANDARD_WORK_DAYS_REQUIRED("STANDARD_WORK_DAYS_REQUIRED", "Standard work days is required", HttpStatus.BAD_REQUEST),
     PAYROLL_PERIOD_NOT_APPROVABLE("PAYROLL_PERIOD_NOT_APPROVABLE", "Payroll period not approvable", HttpStatus.BAD_REQUEST),
     PAYROLL_PERIOD_NOT_PAYABLE("PAYROLL_PERIOD_NOT_PAYABLE", "Payroll period not payable", HttpStatus.BAD_REQUEST),
+
     // Attendance Log
     LOG_TYPE_REQUIRED("LOG_TYPE_REQUIRED", "Log type is required", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
     NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+
     //PAYSLIP
     PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),
     PAYSLIP_LOCKED_FOR_EDIT("PAYSLIP_LOCKED_FOR_EDIT", "Payslip locked for edit", HttpStatus.BAD_REQUEST),
-
 
     // Attendance Correction
     ATTENDANCE_NOT_FOUND("ATTENDANCE_NOT_FOUND", "Attendance record not found", HttpStatus.NOT_FOUND),

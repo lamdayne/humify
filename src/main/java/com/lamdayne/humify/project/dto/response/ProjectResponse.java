@@ -1,6 +1,7 @@
 package com.lamdayne.humify.project.dto.response;
 
 import com.lamdayne.humify.project.enums.ProjectStatus;
+import com.lamdayne.humify.project.enums.ProjectType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,8 @@ public class ProjectResponse {
     private String description;
 
     private ProjectStatus status;
+
+    private ProjectType type;
 
     private Instant createdAt;
 

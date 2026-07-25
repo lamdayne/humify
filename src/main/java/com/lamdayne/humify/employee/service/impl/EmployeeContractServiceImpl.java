@@ -53,8 +53,9 @@ public class EmployeeContractServiceImpl implements EmployeeContractService {
         Employee employee = employeeRepository.findById(request.getEmployeeId())
                 .filter(emp -> emp.getCompany().getId().equals(companyId))
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        LocalDate checkEndDate = request.getEndDate() != null ? request.getEndDate() : LocalDate.of(2099, 12, 31);
 
-        if (contractRepository.hasOverlapContract(request.getEmployeeId(), companyId, request.getStartDate(), request.getEndDate())) {
+        if (contractRepository.hasOverlapContract(request.getEmployeeId(), companyId, request.getStartDate(), checkEndDate)) {
             throw new AppException(ErrorCode.CONTRACT_ALREADY_ACTIVE);
         }
 
@@ -92,6 +93,16 @@ public class EmployeeContractServiceImpl implements EmployeeContractService {
                 .totalPages(contractPage.getTotalPages())
                 .items(items)
                 .build();
+    }
+
+    @Override
+    public EmployeeContractResponse getContractById(Long id) {
+        Long companyId = CompanyContext.getCompanyId();
+
+        EmployeeContract contract = contractRepository.findByIdAndCompanyId(id, companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        return contractMapper.toResponse(contract);
     }
 
     @Override

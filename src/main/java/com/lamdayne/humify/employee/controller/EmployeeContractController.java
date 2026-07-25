@@ -35,6 +35,15 @@ public class EmployeeContractController {
                 .body(ApiResponse.success(SuccessCode.CONTRACT_READ_SUCCESS, response));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<EmployeeContractResponse>> getContractById(
+            @PathVariable Long id
+    ) {
+        EmployeeContractResponse response = contractService.getContractById(id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(SuccessCode.CONTRACT_READ_SUCCESS, response));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<EmployeeContractResponse>> createContract(
             @Valid @RequestBody CreateContractRequest request
