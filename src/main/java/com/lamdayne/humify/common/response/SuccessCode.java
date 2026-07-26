@@ -75,6 +75,7 @@ public enum SuccessCode {
     EMPLOYEE_TRANSFER_SUCCESS("EMPLOYEE_TRANSFER_SUCCESS", "Employee transfer successfully"),
     EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
     EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
+    EMPLOYEE_DELETE_SUCCESS("EMPLOYEE_DELETE_SUCCESS", "Employee deleted successfully"),
 
     // Employee Id Document
     EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS("EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS", "Employee ID document created successfully"),

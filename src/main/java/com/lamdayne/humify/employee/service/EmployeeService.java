@@ -29,4 +29,6 @@ public interface EmployeeService {
 
     List<EmployeeImportResponse> importEmployeeFromXlsx(MultipartFile xlsxFile);
 
+    void deleteEmployee(Long id);
+
 }

@@ -404,4 +404,16 @@ public class EmployeeController {
                 ));
     }
 
+    @DeleteMapping("/{employeeId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_DELETE', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployee(
+            @PathVariable("employeeId") Long employeeId
+    ) {
+        employeeService.deleteEmployee(employeeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_DELETE_SUCCESS
+                ));
+    }
+
 }
