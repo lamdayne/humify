@@ -21,5 +21,5 @@ public class CreateProjectRequest {
     private String description;
 
     @EnumValue(name = "project_type", message = "PROJECT_TYPE_INVALID", enumClass = ProjectType.class)
-    private ProjectType type = ProjectType.KANBAN;
+    private String type;
 }

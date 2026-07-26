@@ -73,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCompany(company);
         project.setCreator(creator);
         project.setStatus(ProjectStatus.ACTIVE);
-        project.setType(request.getType() != null ? request.getType() : ProjectType.KANBAN);
+        project.setType(ProjectType.valueOf(request.getType()));
         project = projectRepository.save(project);
 
         boardColumnService.initDefaultColumns(project);
