@@ -135,6 +135,29 @@ public class EmployeeController {
                 ));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<EmployeeResponse>> getMyProfile() {
+        Long employeeId = userService.getCurrentEmployeeId();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_READ_SUCCESS,
+                        employeeService.getEmployeeById(employeeId)
+                ));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<ApiResponse<EmployeeResponse>> updateMyProfile(
+            @RequestBody @Valid UpdateEmployeeRequest request
+    ) {
+        Long employeeId = userService.getCurrentEmployeeId();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_UPDATE_SUCCESS,
+                        "Update profile successfully",
+                        employeeService.updateEmployee(employeeId, request)
+                ));
+    }
+
     @PutMapping("/{employeeId}")
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(
