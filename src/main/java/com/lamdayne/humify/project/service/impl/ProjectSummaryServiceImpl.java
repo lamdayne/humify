@@ -56,6 +56,7 @@ public class ProjectSummaryServiceImpl implements ProjectSummaryService {
                 .typesOfWork(computeTypesOfWork(tasks))
                 .teamWorkload(computeTeamWorkload(tasks))
                 .recentActivities(fetchRecentActivities(projectId))
+                .memberPerformance(computeMemberPerformance(tasks))
                 .build();
     }
 
@@ -205,6 +206,77 @@ public class ProjectSummaryServiceImpl implements ProjectSummaryService {
                     .createdAt(a.getCreatedAt())
                     .build();
         }).toList();
+    }
+
+    private List<MemberPerformanceResponse> computeMemberPerformance(List<Task> tasks) {
+        // Exclude subtasks (only top-level tasks where parent == null)
+        // Group strictly by Assignee (Assignee != null)
+        Map<User, List<Task>> userTasksMap = tasks.stream()
+                .filter(t -> t.getParent() == null)
+                .filter(t -> t.getAssignee() != null)
+                .collect(Collectors.groupingBy(Task::getAssignee));
+
+        List<MemberPerformanceResponse> memberPerformanceList = new ArrayList<>();
+
+        for (Map.Entry<User, List<Task>> entry : userTasksMap.entrySet()) {
+            User user = entry.getKey();
+            List<Task> userTasks = entry.getValue();
+
+            long totalTasks = userTasks.size();
+            long completedTasks = userTasks.stream()
+                    .filter(t -> (t.getColumn() != null && t.getColumn().getCategory() == ColumnCategory.DONE) || t.getCompletedAt() != null)
+                    .count();
+
+            long onTimeCompletedTasks = userTasks.stream()
+                    .filter(t -> (t.getColumn() != null && t.getColumn().getCategory() == ColumnCategory.DONE) || t.getCompletedAt() != null)
+                    .filter(t -> t.getDueDate() == null ||
+                            (t.getCompletedAt() != null && !t.getCompletedAt().isAfter(t.getDueDate())) ||
+                            (t.getUpdatedAt() != null && !t.getUpdatedAt().isAfter(t.getDueDate())))
+                    .count();
+
+            double estimatedHoursSum = userTasks.stream()
+                    .mapToDouble(t -> t.getEstimatedHours() != null ? t.getEstimatedHours() : 0.0)
+                    .sum();
+
+            double loggedHoursSum = userTasks.stream()
+                    .mapToDouble(t -> t.getLoggedHours() != null ? t.getLoggedHours() : 0.0)
+                    .sum();
+
+            double completionRate = totalTasks > 0 ? Math.round((completedTasks * 100.0 / totalTasks) * 10.0) / 10.0 : 0.0;
+
+            double timeEfficiency;
+            if (loggedHoursSum > 0) {
+                timeEfficiency = Math.round((estimatedHoursSum * 100.0 / loggedHoursSum) * 10.0) / 10.0;
+            } else if (completedTasks > 0) {
+                timeEfficiency = 100.0;
+            } else {
+                timeEfficiency = 0.0;
+            }
+
+            double onTimeRate = completedTasks > 0 ? Math.round((onTimeCompletedTasks * 100.0 / completedTasks) * 10.0) / 10.0 : 100.0;
+
+            double boundedTimeEff = Math.min(100.0, timeEfficiency);
+            double overallScore = Math.round(((0.4 * completionRate) + (0.3 * boundedTimeEff) + (0.3 * onTimeRate)) * 10.0) / 10.0;
+
+            memberPerformanceList.add(MemberPerformanceResponse.builder()
+                    .userId(user.getId())
+                    .userName(getUserDisplayName(user))
+                    .email(user.getEmail())
+                    .avatar(getUserAvatar(user))
+                    .totalTasks(totalTasks)
+                    .completedTasks(completedTasks)
+                    .onTimeCompletedTasks(onTimeCompletedTasks)
+                    .estimatedHoursSum(Math.round(estimatedHoursSum * 10.0) / 10.0)
+                    .loggedHoursSum(Math.round(loggedHoursSum * 10.0) / 10.0)
+                    .completionRate(completionRate)
+                    .timeEfficiency(timeEfficiency)
+                    .onTimeRate(onTimeRate)
+                    .overallScore(overallScore)
+                    .build());
+        }
+
+        memberPerformanceList.sort(Comparator.comparingDouble(MemberPerformanceResponse::getOverallScore).reversed());
+        return memberPerformanceList;
     }
 
     private String getUserDisplayName(User user) {

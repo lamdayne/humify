@@ -16,6 +16,7 @@ import com.lamdayne.humify.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -285,7 +286,6 @@ public class EmployeeController {
                 ));
     }
 
-    // education của khiemlee
     @PostMapping("/{employeeId}/educations")
     @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeEducationResponse>> createEducation(
@@ -400,7 +400,6 @@ public class EmployeeController {
     }
 
 
-    /** GET /employees/my-payslips */
     @GetMapping("/my-payslips")
     public ResponseEntity<ApiResponse<PageResponse<MyPayslipResponse>>> getMyPayslips(
             @RequestParam(required = false) Integer year,
@@ -409,7 +408,6 @@ public class EmployeeController {
             @RequestParam(required = false) String... sorts
 
     ) {
-
         Long employeeId = userService.getCurrentEmployeeId();
         PageResponse<MyPayslipResponse> data = payslipService.getMyPayslips(employeeId, year, page, size, sorts );
         return ResponseEntity.ok()
@@ -424,6 +422,30 @@ public class EmployeeController {
                 .body(ApiResponse.success(
                         SuccessCode.EMPLOYEE_CREATE_SUCCESS,
                         employeeService.importEmployeeFromXlsx(file)
+                ));
+    }
+
+    @DeleteMapping("/{employeeId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_DELETE', 'EMPLOYEE_FULL')")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployee(
+            @PathVariable("employeeId") Long employeeId
+    ) {
+        employeeService.deleteEmployee(employeeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_DELETE_SUCCESS
+                ));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse<PageResponse<EmployeeResponse>>> filterEmployees(
+            Pageable pageable,
+            @RequestParam(required = false) String[] params
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.EMPLOYEE_READ_SUCCESS,
+                        employeeService.filterEmployees(pageable, params)
                 ));
     }
 

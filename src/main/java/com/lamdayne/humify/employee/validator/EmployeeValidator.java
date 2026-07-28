@@ -42,6 +42,12 @@ public class EmployeeValidator {
         if (!departmentAccessService.existsByIdAndBranchId(request.getDepartmentId(), request.getBranchId())) {
             throw new AppException(ErrorCode.DEPARTMENT_NOT_FOUND);
         }
+
+        if (request.getPositionId() != null &&
+                !positionAccessService.existsByIdAndCompanyId(request.getPositionId(), companyId)
+        ) {
+                throw new AppException(ErrorCode.POSITION_NOT_FOUND);
+        }
     }
 
     // position

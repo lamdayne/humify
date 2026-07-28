@@ -5,6 +5,7 @@ import com.lamdayne.humify.employee.dto.request.*;
 import com.lamdayne.humify.employee.dto.response.EmployeeImportResponse;
 import com.lamdayne.humify.employee.dto.response.EmployeeResponse;
 import com.lamdayne.humify.employee.entity.Employee;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -30,5 +31,9 @@ public interface EmployeeService {
     EmployeeResponse getByEmployeeCode(String employeeCode);
 
     List<EmployeeImportResponse> importEmployeeFromXlsx(MultipartFile xlsxFile);
+
+    void deleteEmployee(Long id);
+
+    PageResponse<EmployeeResponse> filterEmployees(Pageable pageable, String[] params);
 
 }
