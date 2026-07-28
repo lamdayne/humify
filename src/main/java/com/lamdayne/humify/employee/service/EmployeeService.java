@@ -15,6 +15,8 @@ public interface EmployeeService {
 
     PageResponse<EmployeeResponse> getAllEmployees(int page, int size, String... sorts);
 
+    EmployeeResponse getEmployeeById(Long id);
+
     EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request);
 
     void transferEmployee(Long id, TransferEmployeeRequest request);
