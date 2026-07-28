@@ -9,6 +9,9 @@ import com.lamdayne.humify.common.search.GenericSpecificationBuilder;
 import com.lamdayne.humify.common.search.SearchOperation;
 import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.common.util.PageableUtil;
+import com.lamdayne.humify.employee.entity.EmployeeContract;
+import com.lamdayne.humify.employee.enums.ContractStatus;
+import com.lamdayne.humify.employee.repository.EmployeeContractRepository;
 import com.lamdayne.humify.payroll.dto.request.UpdatePayslipRequest;
 import com.lamdayne.humify.payroll.dto.response.MyPayslipResponse;
 import com.lamdayne.humify.payroll.dto.response.PayslipResponse;
@@ -49,6 +52,7 @@ public class PayslipServiceImpl implements PayslipService {
     private final PayslipRepository payslipRepository;
     private final PayrollPeriodRepository payrollPeriodRepository;
     private final PayslipMapper payslipMapper;
+    private final EmployeeContractRepository employeeContractRepository;
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PayslipResponse> getPayslipsByPeriod(
@@ -150,7 +154,16 @@ public class PayslipServiceImpl implements PayslipService {
         // Nếu cần tái tính thuế 100% chính xác sau khi sửa tay, khuyến nghị đọc lại
         // payslip.getEmployee() -> hợp đồng ACTIVE hiện tại để lấy taxableDependents, hoặc thêm cột
         // taxable_dependents_snapshot vào bảng payslips khi calculate(). Tạm thời giữ 0 người phụ thuộc bổ sung.
-        int dependentsSnapshot = 0;
+        EmployeeContract employeeContract = employeeContractRepository
+                .findByEmployeeIdAndStatus(
+                        payslip.getEmployee().getId(),
+                        ContractStatus.ACTIVE
+                )
+                .orElse(null);
+
+        int dependentsSnapshot = employeeContract != null
+                ? employeeContract.getTaxableDependents()
+                : 0;
 //         TODO: thay bằng giá trị snapshot thật nếu bổ sung cột
         BigDecimal taxableIncome = PayrollTaxCalculator.calculateTaxableIncome(grossSalary, dependentsSnapshot, totalCompulsoryInsurance);
         BigDecimal personalIncomeTax = PayrollTaxCalculator.calculatePersonalIncomeTax(taxableIncome);
