@@ -75,6 +75,7 @@ public enum SuccessCode {
     EMPLOYEE_TRANSFER_SUCCESS("EMPLOYEE_TRANSFER_SUCCESS", "Employee transfer successfully"),
     EMPLOYEE_POSITION_UPDATE_SUCCESS("EMPLOYEE_POSITION_UPDATE_SUCCESS", "Employee position updated successfully"),
     EMPLOYEE_STATUS_UPDATE_SUCCESS("EMPLOYEE_STATUS_UPDATE_SUCCESS", "Employee status updated successfully"),
+    EMPLOYEE_DELETE_SUCCESS("EMPLOYEE_DELETE_SUCCESS", "Employee deleted successfully"),
 
     // Employee Id Document
     EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS("EMPLOYEE_ID_DOCUMENT_CREATE_SUCCESS", "Employee ID document created successfully"),
@@ -148,6 +149,7 @@ public enum SuccessCode {
     // Attachment
     ATTACHMENT_UPLOAD_SUCCESS("ATTACHMENT_UPLOAD_SUCCESS", "Attachment uploaded successfully"),
     ATTACHMENT_DELETE_SUCCESS("ATTACHMENT_DELETE_SUCCESS", "Attachment deleted successfully"),
+    ATTACHMENT_READ_SUCCESS("ATTACHMENT_READ_SUCCESS", "Attachment read successfully"),
     
     // Worklog
     WORKLOG_CREATE_SUCCESS("WORKLOG_CREATE_SUCCESS", "Worklog added successfully"),

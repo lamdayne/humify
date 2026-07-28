@@ -3,6 +3,7 @@ package com.lamdayne.humify.project.entity;
 import com.lamdayne.humify.common.base.BaseEntity;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.project.enums.ProjectStatus;
+import com.lamdayne.humify.project.enums.ProjectType;
 import com.lamdayne.humify.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,5 +44,11 @@ public class Project extends BaseEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(columnDefinition = "project_status")
     private ProjectStatus status = ProjectStatus.ACTIVE;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(columnDefinition = "project_type")
+    private ProjectType type = ProjectType.KANBAN;
 
 }

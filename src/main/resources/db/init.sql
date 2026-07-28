@@ -66,6 +66,11 @@ CREATE TYPE project_status AS ENUM (
     'ARCHIVED'
     );
 
+CREATE TYPE project_type AS ENUM (
+    'KANBAN',
+    'SCRUM'
+    );
+
 CREATE TYPE sprint_status AS ENUM (
     'PLANNED',
     'ACTIVE',
@@ -429,6 +434,7 @@ CREATE TABLE projects
     issue_counter BIGINT         NOT NULL DEFAULT 0,
     description   TEXT,
     status        project_status NOT NULL DEFAULT 'ACTIVE',
+    type          project_type   NOT NULL DEFAULT 'KANBAN',
     created_at    TIMESTAMPTZ             DEFAULT NOW(),
     updated_at    TIMESTAMPTZ             DEFAULT NOW(),
     deleted_at    TIMESTAMPTZ,

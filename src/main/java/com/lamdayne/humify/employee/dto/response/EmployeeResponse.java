@@ -11,8 +11,12 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class EmployeeResponse implements Serializable {
+    private Long id;
+    private Long branchId;
     private String branchName;
+    private Long departmentId;
     private String departmentName;
+    private Long positionId;
     private String positionName;
     private String employeeCode;
     private String fullName;

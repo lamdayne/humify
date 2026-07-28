@@ -10,6 +10,8 @@ import org.mapstruct.*;
 public interface EmployeeContractMapper {
 
     @Mapping(source = "company.id", target = "companyId")
+    @Mapping(source = "employee.fullName", target = "employeeName")
+    @Mapping(source = "employee.employeeCode", target = "employeeCode")
     @Mapping(source = "employee.id", target = "employeeId")
     EmployeeContractResponse toResponse(EmployeeContract entity);
 

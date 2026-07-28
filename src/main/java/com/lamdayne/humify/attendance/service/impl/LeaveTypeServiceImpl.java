@@ -4,7 +4,9 @@ import com.lamdayne.humify.attendance.dto.request.CreateLeaveTypeRequest;
 import com.lamdayne.humify.attendance.dto.request.UpdateLeaveTypeRequest;
 import com.lamdayne.humify.attendance.dto.response.LeaveTypeResponse;
 import com.lamdayne.humify.attendance.entity.LeaveType;
+import com.lamdayne.humify.attendance.enums.LeaveRequestStatus;
 import com.lamdayne.humify.attendance.mapper.LeaveTypeMapper;
+import com.lamdayne.humify.attendance.repository.LeaveRequestRepository;
 import com.lamdayne.humify.attendance.repository.LeaveTypeRepository;
 import com.lamdayne.humify.attendance.service.LeaveTypeService;
 import com.lamdayne.humify.common.exception.AppException;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 
+    private final LeaveRequestRepository leaveRequestRepository;
     private final LeaveTypeRepository leaveTypeRepository;
     private final CompanyRepository companyRepository;
     private final LeaveTypeMapper leaveTypeMapper;
@@ -86,14 +89,11 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
         LeaveType leaveType = leaveTypeRepository.findByIdAndCompanyIdAndDeletedAtIsNull(id, companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.LEAVE_TYPE_NOT_FOUND));
 
-        // TODO: Mở comment đoạn này khi bạn đã có LeaveRequestRepository
-        /*
         boolean isUsedInActiveRequests = leaveRequestRepository
                 .existsByLeaveTypeIdAndStatusIn(id, List.of(LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED));
         if (isUsedInActiveRequests) {
             throw new AppException(ErrorCode.LEAVE_TYPE_IN_USE);
         }
-        */
 
         // Thực hiện Soft Delete
         leaveType.setDeletedAt(Instant.now());

@@ -33,6 +33,7 @@ public class ProjectController {
     private final ProjectRoleService projectRoleService;
     private final ProjectMemberService projectMemberService;
     private final ProjectInvitationService projectInvitationService;
+    private final ProjectSummaryService projectSummaryService;
 
     @PostMapping("/{projectId}/invitations")
     public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
@@ -245,6 +246,17 @@ public class ProjectController {
                 .body(ApiResponse.success(
                         SuccessCode.PROJECT_READ_SUCCESS,
                         projectRoleService.getAllProjectRole()
+                ));
+    }
+
+    @GetMapping("/{projectId}/summary")
+    public ResponseEntity<ApiResponse<ProjectSummaryResponse>> getProjectSummary(
+            @PathVariable Long projectId
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.PROJECT_READ_SUCCESS,
+                        projectSummaryService.getProjectSummary(projectId)
                 ));
     }
 

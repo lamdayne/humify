@@ -14,6 +14,8 @@ public class EmployeeContractResponse {
     private Long id;
     private Long companyId;
     private Long employeeId;
+    private String employeeName;
+    private String employeeCode;
     private String contractNumber;
     private String contractType;
     private LocalDate startDate;

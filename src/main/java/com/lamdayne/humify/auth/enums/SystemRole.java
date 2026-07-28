@@ -18,6 +18,9 @@ public enum SystemRole {
                     PermissionEnum.EMPLOYEE_FULL,
                     PermissionEnum.USER_FULL,
                     PermissionEnum.ROLE_READ,
+                    PermissionEnum.ROLE_CREATE,
+                    PermissionEnum.ROLE_UPDATE,
+                    PermissionEnum.ROLE_DELETE,
                     PermissionEnum.BRANCH_FULL,
                     PermissionEnum.POSITION_FULL,
                     PermissionEnum.DEPARTMENT_FULL,
@@ -25,17 +28,25 @@ public enum SystemRole {
                     PermissionEnum.PERMISSION_READ,
                     PermissionEnum.PROJECT_FULL,
                     PermissionEnum.LEAVE_REQUEST_READ,
+                    PermissionEnum.LEAVE_REQUEST_READ_ALL,
                     PermissionEnum.LEAVE_REQUEST_APPROVE,
                     PermissionEnum.LEAVE_REQUEST_REJECT,
                     PermissionEnum.LEAVE_BALANCE_UPDATE,
                     PermissionEnum.LEAVE_BALANCE_READ,
+                    PermissionEnum.LEAVE_TYPE_READ,
+                    PermissionEnum.LEAVE_TYPE_CREATE,
+                    PermissionEnum.LEAVE_TYPE_UPDATE,
                     PermissionEnum.CONTRACT_FULL,
                     PermissionEnum.PAYROLL_PERIOD_CREATE,
                     PermissionEnum.PAYROLL_READ,
                     PermissionEnum.PAYROLL_CALCULATE,
                     PermissionEnum.PAYROLL_APPROVE,
                     PermissionEnum.KPI_CREATE,
-                    PermissionEnum.PERFORMANCE_REVIEW_MANAGE
+                    PermissionEnum.PERFORMANCE_REVIEW_MANAGE,
+                    PermissionEnum.TASK_FULL,
+                    PermissionEnum.ATTENDANCE_CORRECTION_FULL,
+                    PermissionEnum.ATTENDANCE_LOG_READ,
+                    PermissionEnum.PAYSLIP_UPDATE
             )
     ),
 
@@ -43,6 +54,10 @@ public enum SystemRole {
             Set.of(
                     PermissionEnum.EMPLOYEE_FULL,
                     PermissionEnum.ATTENDANCE_FULL,
+                    PermissionEnum.PERMISSION_READ,
+                    PermissionEnum.ROLE_READ,
+                    PermissionEnum.ROLE_CREATE,
+                    PermissionEnum.ROLE_UPDATE,
                     PermissionEnum.USER_CREATE,
                     PermissionEnum.USER_READ,
                     PermissionEnum.USER_UPDATE,
@@ -53,16 +68,25 @@ public enum SystemRole {
                     PermissionEnum.PROJECT_UPDATE,
                     PermissionEnum.PROJECT_CREATE,
                     PermissionEnum.LEAVE_REQUEST_READ,
+                    PermissionEnum.LEAVE_REQUEST_READ_ALL,
                     PermissionEnum.LEAVE_REQUEST_APPROVE,
                     PermissionEnum.LEAVE_REQUEST_REJECT,
                     PermissionEnum.LEAVE_BALANCE_READ,
                     PermissionEnum.LEAVE_BALANCE_UPDATE,
+                    PermissionEnum.LEAVE_TYPE_READ,
+                    PermissionEnum.LEAVE_TYPE_CREATE,
+                    PermissionEnum.LEAVE_TYPE_UPDATE,
                     PermissionEnum.CONTRACT_READ,
                     PermissionEnum.CONTRACT_CREATE,
                     PermissionEnum.CONTRACT_UPDATE,
                     PermissionEnum.PAYROLL_READ,
                     PermissionEnum.PAYROLL_CALCULATE,
-                    PermissionEnum.KPI_CREATE
+                    PermissionEnum.KPI_CREATE,
+                    PermissionEnum.TASK_FULL,
+                    PermissionEnum.ATTENDANCE_CORRECTION_FULL,
+                    PermissionEnum.ATTENDANCE_LOG_READ,
+                    PermissionEnum.PAYROLL_PERIOD_CREATE,
+                    PermissionEnum.PAYSLIP_UPDATE
             )
     ),
 
@@ -73,7 +97,12 @@ public enum SystemRole {
                     PermissionEnum.ATTENDANCE_CHECKOUT,
                     PermissionEnum.LEAVE_REQUEST_READ,
                     PermissionEnum.LEAVE_REQUEST_CREATE,
-                    PermissionEnum.PROJECT_READ
+                    PermissionEnum.LEAVE_REQUEST_UPDATE,
+                    PermissionEnum.LEAVE_REQUEST_CANCEL,
+                    PermissionEnum.PROJECT_READ,
+                    PermissionEnum.ATTENDANCE_CORRECTION_CREATE,
+                    PermissionEnum.ATTENDANCE_CORRECTION_READ,
+                    PermissionEnum.LEAVE_TYPE_READ
             )
     );
 

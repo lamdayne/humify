@@ -28,4 +28,11 @@ public interface UserHasRoleRepository extends JpaRepository<UserHasRole, Long> 
 
     @Query("SELECT uhr.role.name FROM UserHasRole uhr WHERE uhr.user.id = :userId")
     List<String> findAllRoleNameByUserId(@Param("userId") Long userId);
+
+    @Query("""
+            select uhr from UserHasRole uhr
+            join fetch uhr.role
+            where uhr.user.id in :userIds
+            """)
+    List<UserHasRole> findAllByUserIdIn(@Param("userIds") List<Long> userIds);
 }

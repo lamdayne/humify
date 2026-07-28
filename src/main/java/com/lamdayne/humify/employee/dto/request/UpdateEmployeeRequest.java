@@ -31,4 +31,6 @@ public class UpdateEmployeeRequest implements Serializable {
 
     private LocalDate startDate;
 
+    private String avatarUrl;
+
 }

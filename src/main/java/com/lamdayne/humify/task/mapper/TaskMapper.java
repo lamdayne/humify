@@ -31,6 +31,7 @@ public interface TaskMapper {
     TaskDetailResponse toDetailResponse(Task task);
 
     @Mapping(source = "column.id", target = "columnId")
+    @Mapping(source = "completedAt", target = "completedAt")
     SubtaskResponse toSubtaskResponse(Task task);
 
     void updateTask(@MappingTarget Task task, UpdateTaskRequest request);
