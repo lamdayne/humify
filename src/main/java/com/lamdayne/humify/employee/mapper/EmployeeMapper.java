@@ -12,8 +12,11 @@ public interface EmployeeMapper {
     Employee toEmployee(CreateEmployeeRequest request);
   
     @Mapping(source = "employee.id", target = "id")
+    @Mapping(source = "employee.branch.id", target = "branchId")
     @Mapping(source = "employee.branch.name", target = "branchName")
+    @Mapping(source = "employee.department.id", target = "departmentId")
     @Mapping(source = "employee.department.name", target = "departmentName")
+    @Mapping(source = "employee.position.id", target = "positionId")
     @Mapping(source = "employee.position.name", target = "positionName")
     EmployeeResponse toEmployeeResponse(Employee employee);
 

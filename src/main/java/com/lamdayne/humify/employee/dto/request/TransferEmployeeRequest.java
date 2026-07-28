@@ -17,4 +17,7 @@ public class TransferEmployeeRequest implements Serializable {
     @Positive(message = "DEPARTMENT_ID_INVALID")
     private Long departmentId;
 
+    @Positive(message = "POSITION_ID_INVALID")
+    private Long positionId;
+
 }
