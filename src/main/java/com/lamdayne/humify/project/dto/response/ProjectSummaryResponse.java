@@ -20,4 +20,5 @@ public class ProjectSummaryResponse {
     private List<TypeCountResponse> typesOfWork;
     private List<WorkloadResponse> teamWorkload;
     private List<RecentActivityResponse> recentActivities;
+    private List<MemberPerformanceResponse> memberPerformance;
 }

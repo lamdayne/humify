@@ -8,6 +8,8 @@ import com.lamdayne.humify.branch.service.BranchAccessService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.search.SearchCriteriaParser;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.common.util.ExcelCellUtils;
 import com.lamdayne.humify.common.util.ExcelRowUtils;
 import com.lamdayne.humify.common.util.PageableUtil;
@@ -23,6 +25,7 @@ import com.lamdayne.humify.employee.enums.EmployeeStatus;
 import com.lamdayne.humify.employee.enums.Gender;
 import com.lamdayne.humify.employee.mapper.EmployeeMapper;
 import com.lamdayne.humify.employee.repository.EmployeeRepository;
+import com.lamdayne.humify.employee.repository.EmployeeSpecification;
 import com.lamdayne.humify.employee.service.EmployeeEducationService;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import com.lamdayne.humify.employee.validator.EmployeeValidator;
@@ -33,6 +36,7 @@ import com.lamdayne.humify.user.enums.PasswordFlag;
 import com.lamdayne.humify.user.service.UserService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,6 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final BranchAccessService branchAccessService;
     private final CompanyAccessService companyAccessService;
     private final PositionAccessService positionAccessService;
+    private final EmployeeSpecification employeeSpecification;
     private final DepartmentAccessService departmentAccessService;
     private final PasswordResetTokenService passwordResetTokenService;
     private final EmployeeEducationService employeeEducationService;
@@ -125,6 +130,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public EmployeeResponse getEmployeeById(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        return employeeMapper.toEmployeeResponse(employee);
+    }
+
+    @Override
     @Transactional
     public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
         Employee employee = employeeRepository.findById(id)
@@ -146,6 +159,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employee.setBranch(branchAccessService.getReferenceById(request.getBranchId()));
         employee.setDepartment(departmentAccessService.getReferenceById(request.getDepartmentId()));
+
+        if (request.getPositionId() != null) {
+            employee.setPosition(positionAccessService.getReferenceById(request.getPositionId()));
+        }
 
         employeeRepository.save(employee);
     }
@@ -464,6 +481,31 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (data.positionName == null || data.positionName.isBlank()) {
             responses.add(new EmployeeImportResponse(rowIdx, "Position", "Position name is required"));
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmployee(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        employeeRepository.delete(employee);
+    }
+
+    @Override
+    public PageResponse<EmployeeResponse> filterEmployees(Pageable pageable, String[] params) {
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(params);
+        Specification<Employee> specification = employeeSpecification.build(criteriaList);
+        Page<Employee> employeePage = employeeRepository.findAll(specification, pageable);
+        List<EmployeeResponse> responses = employeePage.stream()
+                .map(employeeMapper::toEmployeeResponse)
+                .toList();
+        return PageResponse.<EmployeeResponse>builder()
+                .pageNo(pageable.getPageNumber())
+                .pageSize(pageable.getPageSize())
+                .totalElements(employeePage.getTotalElements())
+                .totalPages(employeePage.getTotalPages())
+                .items(responses)
+                .build();
     }
 
 }

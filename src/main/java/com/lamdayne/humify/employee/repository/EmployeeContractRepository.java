@@ -83,4 +83,9 @@ public interface EmployeeContractRepository extends JpaRepository<EmployeeContra
             @Param("periodStartDate") LocalDate periodStartDate,
             @Param("periodEndDate") LocalDate periodEndDate
     );
+
+    Optional<EmployeeContract> findByEmployeeIdAndStatus(
+            Long employeeId,
+            ContractStatus status
+    );
 }

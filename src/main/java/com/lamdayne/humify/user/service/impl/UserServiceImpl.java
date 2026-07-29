@@ -1,6 +1,8 @@
 package com.lamdayne.humify.user.service.impl;
 
+import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.SystemRole;
+import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.service.RoleAccessService;
 import com.lamdayne.humify.common.exception.AppException;
@@ -13,6 +15,7 @@ import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
+import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.enums.PasswordFlag;
 import com.lamdayne.humify.user.mapper.UserMapper;
@@ -27,9 +30,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
-import java.util.Optional;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +47,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleAccessService roleAccessService;
     private final CompanyAccessService companyAccessService;
+    private final UserHasRoleRepository userHasRoleRepository;
 
     @Override
     public boolean existsByEmail(String email) {
@@ -103,7 +110,10 @@ public class UserServiceImpl implements UserService {
         user.setCompany(companyAccessService.getReferenceById(userPrincipal.getCompanyId()));
         user = userRepository.save(user);
         roleAccessService.assignRoles(user, request.getRoleIds());
-        return userMapper.toResponse(user);
+
+        UserResponse response = userMapper.toResponse(user);
+        response.setRoles(findRolesByUserIds(List.of(user.getId())).getOrDefault(user.getId(), List.of()));
+        return response;
     }
 
     @Override
@@ -111,9 +121,19 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageableUtil.buildPageable(page, size, sorts);
         Page<User> users = userRepository.findAll(pageable);
 
-        List<UserResponse> userResponses = users.getContent().stream()
+        List<User> filteredUsers = users.getContent().stream()
                 .filter(u -> u.getCompany() != null)
-                .map(userMapper::toResponse)
+                .toList();
+
+        List<Long> userIds = filteredUsers.stream().map(User::getId).toList();
+        Map<Long, List<UserRoleResponse>> rolesByUserId = findRolesByUserIds(userIds);
+
+        List<UserResponse> userResponses = filteredUsers.stream()
+                .map(user -> {
+                    UserResponse response = userMapper.toResponse(user);
+                    response.setRoles(rolesByUserId.getOrDefault(user.getId(), List.of()));
+                    return response;
+                })
                 .toList();
 
         return PageResponse.<UserResponse>builder()
@@ -123,6 +143,29 @@ public class UserServiceImpl implements UserService {
                 .totalElements(users.getTotalElements())
                 .items(userResponses)
                 .build();
+    }
+
+    private Map<Long, List<UserRoleResponse>> findRolesByUserIds(List<Long> userIds) {
+        if (userIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return userHasRoleRepository.findAllByUserIdIn(userIds).stream()
+                .collect(Collectors.groupingBy(
+                        uhr -> uhr.getUser().getId(),
+                        Collectors.mapping(
+                                uhr -> UserRoleResponse.builder()
+                                        .id(uhr.getRole().getId())
+                                        .name(uhr.getRole().getName())
+                                        .build(),
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream()
+                                                .sorted(Comparator.comparing(UserRoleResponse::getName))
+                                                .toList()
+                                )
+                        )
+                ));
     }
 
     @Override
@@ -141,7 +184,9 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
 
-        return userMapper.toResponse(user);
+        UserResponse response = userMapper.toResponse(user);
+        response.setRoles(findRolesByUserIds(List.of(user.getId())).getOrDefault(user.getId(), List.of()));
+        return response;
     }
 
     @Override
