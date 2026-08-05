@@ -10,6 +10,7 @@ import com.lamdayne.humify.task.service.TaskCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,8 @@ public class TaskCommentController {
 
     private final TaskCommentService taskCommentService;
 
-
     @PutMapping("/comments/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_COMMENT', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable Long id,
             @Valid @RequestBody UpdateCommentRequest request,
@@ -33,6 +34,7 @@ public class TaskCommentController {
     }
 
     @DeleteMapping("/comments/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_COMMENT', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {

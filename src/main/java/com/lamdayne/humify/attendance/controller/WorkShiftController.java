@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class WorkShiftController {
     private final WorkShiftService workShiftService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'WORK_SHIFT_CREATE', 'WORK_SHIFT_FULL')")
     public ResponseEntity<ApiResponse<WorkShiftResponse>> createWorkShift(
             @Valid @RequestBody CreateWorkShiftRequest request
     ) {
@@ -32,6 +34,7 @@ public class WorkShiftController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'WORK_SHIFT_READ', 'WORK_SHIFT_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<WorkShiftResponse>>> getWorkShifts(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
@@ -45,6 +48,7 @@ public class WorkShiftController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'WORK_SHIFT_READ', 'WORK_SHIFT_FULL')")
     public ResponseEntity<ApiResponse<WorkShiftResponse>> getWorkShiftDetail(@PathVariable Long id) {
         WorkShiftResponse response = workShiftService.getWorkShiftDetail(id);
         return ResponseEntity.ok()
@@ -52,6 +56,7 @@ public class WorkShiftController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'WORK_SHIFT_UPDATE', 'WORK_SHIFT_FULL')")
     public ResponseEntity<ApiResponse<WorkShiftResponse>> updateWorkShift(
             @PathVariable Long id,
             @Valid @RequestBody UpdateWorkShiftRequest request
@@ -62,6 +67,7 @@ public class WorkShiftController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'WORK_SHIFT_DELETE', 'WORK_SHIFT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteWorkShift(@PathVariable Long id) {
         workShiftService.deactivateWorkShift(id);
         return ResponseEntity.ok()

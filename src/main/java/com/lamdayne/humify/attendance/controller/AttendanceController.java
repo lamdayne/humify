@@ -28,6 +28,7 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<AttendanceDetailResponse>>> getPersonalView(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(required = false, name = "attendance") String[] searchParams
@@ -37,7 +38,7 @@ public class AttendanceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_READ', 'ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceDetailResponse>>> getHRView(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
@@ -50,6 +51,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/summary")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_READ', 'ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<List<AttendanceSummaryReportResponse>>> getSummaryReport(
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
@@ -59,7 +61,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_FULL', 'ATTENDANCE_UPDATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_UPDATE', 'ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<AttendanceDetailResponse>> updateManual(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal userPrincipal,

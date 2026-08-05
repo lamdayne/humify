@@ -30,6 +30,7 @@ public class AttendanceLogController {
     private final AttendanceLogService attendanceLogService;
 
     @PostMapping("/web-swipe")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<AttendanceLogResponse>> webSwipe(
             @Valid @RequestBody WebSwipeRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -52,7 +53,7 @@ public class AttendanceLogController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_LOG_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_LOG_READ', 'ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceLogResponse>>> getAllLogs(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page,
@@ -66,6 +67,7 @@ public class AttendanceLogController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<AttendanceLogResponse>>> getMyLogs(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,

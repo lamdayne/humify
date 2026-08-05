@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class EmployeeContractController {
     private final EmployeeContractService contractService;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'CONTRACT_READ', 'CONTRACT_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<EmployeeContractResponse>>> getContracts(
             @RequestParam(required = false) Long employeeId,
             @RequestParam(required = false) ContractStatus status,
@@ -36,6 +38,7 @@ public class EmployeeContractController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'CONTRACT_READ', 'CONTRACT_FULL')")
     public ResponseEntity<ApiResponse<EmployeeContractResponse>> getContractById(
             @PathVariable Long id
     ) {
@@ -45,6 +48,7 @@ public class EmployeeContractController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'CONTRACT_CREATE', 'CONTRACT_FULL')")
     public ResponseEntity<ApiResponse<EmployeeContractResponse>> createContract(
             @Valid @RequestBody CreateContractRequest request
     ) {
@@ -54,6 +58,7 @@ public class EmployeeContractController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'CONTRACT_UPDATE', 'CONTRACT_FULL')")
     public ResponseEntity<ApiResponse<EmployeeContractResponse>> updateContract(
             @PathVariable Long id,
             @Valid @RequestBody UpdateContractRequest request
@@ -64,6 +69,7 @@ public class EmployeeContractController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'CONTRACT_DELETE', 'CONTRACT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable Long id) {
         contractService.deleteContract(id);
         return ResponseEntity.ok()

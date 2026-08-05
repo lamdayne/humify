@@ -23,7 +23,7 @@ public class PayrollPeriodController {
     private final PayrollPeriodService payrollPeriodService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('PAYROLL_PERIOD_CREATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_PERIOD_CREATE', 'PAYROLL_FULL')")
     public ResponseEntity<ApiResponse<PayrollPeriodResponse>> createPayrollPeriod(
             @Valid @RequestBody CreatePayrollPeriodRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
@@ -36,7 +36,7 @@ public class PayrollPeriodController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PAYROLL_READ', 'PAYROLL_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<PayrollPeriodResponse>>> getPayrollPeriods(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,

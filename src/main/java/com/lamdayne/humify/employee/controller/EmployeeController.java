@@ -41,6 +41,7 @@ public class EmployeeController {
     private final UserService userService;
 
     @GetMapping("/{employeeId}/leave-balances")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_BALANCE_READ', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
             @PathVariable Long employeeId,
             @RequestParam(required = false) Integer year
@@ -51,6 +52,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}/leave-balances")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_BALANCE_UPDATE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveBalanceResponse>> updateLeaveBalance(
             @PathVariable Long employeeId,
             @Valid @RequestBody UpdateLeaveBalanceRequest request
@@ -61,6 +63,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/{employeeId}/id-documents")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> createDocument(
             @PathVariable Long employeeId,
             @Valid @RequestBody EmployeeIdDocumentRequest request
@@ -71,6 +74,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/id-documents")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<List<EmployeeIdDocumentResponse>>> getDocuments(
             @PathVariable Long employeeId
     ) {
@@ -80,6 +84,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/id-documents/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> getDocumentDetail(
             @PathVariable Long employeeId,
             @PathVariable Long id
@@ -90,6 +95,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}/id-documents/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeIdDocumentResponse>> updateDocument(
             @PathVariable Long employeeId,
             @PathVariable Long id,
@@ -101,6 +107,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{employeeId}/id-documents/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteDocument(
             @PathVariable Long employeeId,
             @PathVariable Long id
@@ -137,6 +144,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeResponse>> getMyProfile() {
         Long employeeId = userService.getCurrentEmployeeId();
         return ResponseEntity.status(HttpStatus.OK)
@@ -147,6 +155,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeResponse>> updateMyProfile(
             @RequestBody @Valid UpdateEmployeeRequest request
     ) {
@@ -350,7 +359,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/{employeeId}/work-experiences")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> createWorkExperience(
             @PathVariable(name = "employeeId") Long employeeId, @Valid @RequestBody CreateEmployeeWorkExperienceRequest request) {
         EmployeeWorkExperienceResponse response = employeeWorkExperienceService.create(employeeId, request);
@@ -401,6 +410,7 @@ public class EmployeeController {
 
 
     @GetMapping("/my-payslips")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PageResponse<MyPayslipResponse>>> getMyPayslips(
             @RequestParam(required = false) Integer year,
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
@@ -415,6 +425,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/import/xlsx")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_CREATE', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<List<EmployeeImportResponse>>> importXlsx(
             MultipartFile file
     ) {
@@ -438,6 +449,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/filter")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<EmployeeResponse>>> filterEmployees(
             Pageable pageable,
             @RequestParam(required = false) String[] params

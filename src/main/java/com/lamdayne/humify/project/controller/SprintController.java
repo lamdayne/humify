@@ -9,6 +9,7 @@ import com.lamdayne.humify.project.service.SprintService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class SprintController {
     private final SprintService sprintService;
 
     @PutMapping("/sprints/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'SPRINT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<SprintResponse>> updateSprint(
             @PathVariable Long id,
             @Valid @RequestBody UpdateSprintRequest request) {
@@ -29,6 +31,7 @@ public class SprintController {
     }
 
     @PutMapping("/sprints/{id}/status")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'SPRINT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<SprintResponse>> updateSprintStatus(
             @PathVariable Long id,
             @Valid @RequestBody UpdateSprintStatusRequest request) {
@@ -40,6 +43,7 @@ public class SprintController {
     }
 
     @DeleteMapping("/sprints/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'SPRINT_DELETE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteSprint(@PathVariable Long id) {
         sprintService.deleteSprint(id);
         return ResponseEntity.ok()
