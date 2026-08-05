@@ -42,11 +42,13 @@ public class SecurityConfig {
 
     private final String[] WHITE_LIST = {
             "/auth/**",
-            "/invitations/validate"
+            "/invitations/validate",
+            "/attendance-logs/nfc-swipe"
     };
 
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/companies"
+            "/companies",
+            "/attendance-logs/nfc-swipe"
     };
 
     @Bean

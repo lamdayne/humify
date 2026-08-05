@@ -297,6 +297,8 @@ public enum ErrorCode {
     ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
     NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+    NFC_CARD_ALREADY_EXISTS("NFC_CARD_ALREADY_EXISTS", "NFC card UID is already assigned to another active employee", HttpStatus.BAD_REQUEST),
+    NFC_CARD_CONFLICT("NFC_CARD_CONFLICT", "Multiple active employees found with the same NFC card UID", HttpStatus.CONFLICT),
 
     //PAYSLIP
     PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),

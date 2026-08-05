@@ -64,6 +64,9 @@ public class Employee extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private LocalDate startDate;
 
+    @Column(length = 100)
+    private String nfcCardUid;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
