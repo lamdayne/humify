@@ -93,6 +93,8 @@ public enum PermissionEnum {
     LEAVE_TYPE_READ("View leave type data", PermissionModule.LEAVE),
     LEAVE_TYPE_CREATE("Create new leave type information", PermissionModule.LEAVE),
     LEAVE_TYPE_UPDATE("Update leave type information", PermissionModule.LEAVE),
+    LEAVE_TYPE_DELETE("Delete leave type information", PermissionModule.LEAVE),
+    LEAVE_FULL("Full access leave management", PermissionModule.LEAVE),
 
     // Contract
     CONTRACT_READ("View contract data", PermissionModule.CONTRACT),
@@ -106,14 +108,30 @@ public enum PermissionEnum {
     PAYROLL_READ("View payroll data", PermissionModule.PAYROLL),
     PAYROLL_CALCULATE("Calculate payroll", PermissionModule.PAYROLL),
     PAYROLL_APPROVE("Approve payroll", PermissionModule.PAYROLL),
+    PAYROLL_UPDATE("Update payroll period information", PermissionModule.PAYROLL),
+    PAYROLL_DELETE("Delete payroll period", PermissionModule.PAYROLL),
+    PAYROLL_PAY("Execute payroll payment", PermissionModule.PAYROLL),
+    PAYROLL_FULL("Full access payroll", PermissionModule.PAYROLL),
 
     // Payslip
+    PAYSLIP_READ("View payslip data", PermissionModule.PAYSLIP),
     PAYSLIP_UPDATE("Update info payslip", PermissionModule.PAYSLIP),
 
-    // Kpi
+    // Performance & Kpi
+    KPI_READ("View KPI data", PermissionModule.PERFORMANCE),
     KPI_CREATE("Create KPI targets", PermissionModule.PERFORMANCE),
     KPI_UPDATE("Update KPI information", PermissionModule.PERFORMANCE),
+    KPI_DELETE("Delete KPI", PermissionModule.PERFORMANCE),
+    KPI_FULL("Full access KPI", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_READ("View performance review data", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_CREATE("Create performance review cycle", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_UPDATE("Update performance review information", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_DELETE("Delete performance review", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_SELF("Submit self review score", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_EVALUATE("Submit manager review score", PermissionModule.PERFORMANCE),
+    PERFORMANCE_REVIEW_COMPLETE("Complete performance review", PermissionModule.PERFORMANCE),
     PERFORMANCE_REVIEW_MANAGE("Manage review cycles", PermissionModule.PERFORMANCE),
+    PERFORMANCE_FULL("Full access performance and KPI management", PermissionModule.PERFORMANCE),
 
     // Task
     TASK_CREATE("Create task information", PermissionModule.TASK),
@@ -133,6 +151,23 @@ public enum PermissionEnum {
 
     // Attendance Log
     ATTENDANCE_LOG_READ("Attendance log information", PermissionModule.ATTENDANCE),
+
+    // Work Shift
+    WORK_SHIFT_READ("View work shift data", PermissionModule.ATTENDANCE),
+    WORK_SHIFT_CREATE("Create new work shift", PermissionModule.ATTENDANCE),
+    WORK_SHIFT_UPDATE("Update work shift information", PermissionModule.ATTENDANCE),
+    WORK_SHIFT_DELETE("Delete work shift", PermissionModule.ATTENDANCE),
+    WORK_SHIFT_FULL("Full access work shift", PermissionModule.ATTENDANCE),
+
+    // Sprint & Board Column
+    SPRINT_READ("View sprint data", PermissionModule.PROJECT),
+    SPRINT_CREATE("Create new sprint", PermissionModule.PROJECT),
+    SPRINT_UPDATE("Update sprint information", PermissionModule.PROJECT),
+    SPRINT_DELETE("Delete sprint", PermissionModule.PROJECT),
+    COLUMN_READ("View board columns", PermissionModule.PROJECT),
+    COLUMN_CREATE("Create new board column", PermissionModule.PROJECT),
+    COLUMN_UPDATE("Update board column", PermissionModule.PROJECT),
+    COLUMN_DELETE("Delete board column", PermissionModule.PROJECT),
 
     ;
 
