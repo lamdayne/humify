@@ -985,10 +985,10 @@ CREATE TABLE attendances
     id                  BIGSERIAL PRIMARY KEY,
     company_id          BIGINT            NOT NULL,
     employee_id         BIGINT            NOT NULL,
-    work_shift_id       BIGINT            NULL,
+    work_shift_id       BIGINT NULL,
     work_date           DATE              NOT NULL,
-    check_in_time       TIMESTAMPTZ       NULL,
-    check_out_time      TIMESTAMPTZ       NULL,
+    check_in_time       TIMESTAMPTZ NULL,
+    check_out_time      TIMESTAMPTZ NULL,
     worked_hours        NUMERIC(5, 2)     NOT NULL DEFAULT 0.00,
     late_minutes        INTEGER           NOT NULL DEFAULT 0,
     early_minutes       INTEGER           NOT NULL DEFAULT 0,
@@ -997,11 +997,11 @@ CREATE TABLE attendances
     checked_status      checked_status    NOT NULL DEFAULT 'NOT_CHECKED',
     status              attendance_status NOT NULL DEFAULT 'ABSENT',
     is_modified         BOOLEAN           NOT NULL DEFAULT FALSE,
-    modified_by_id      BIGINT            NULL,
-    modification_reason VARCHAR(255)      NULL,
+    modified_by_id      BIGINT NULL,
+    modification_reason VARCHAR(255) NULL,
     created_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    deleted_at          TIMESTAMPTZ       NULL,
+    deleted_at          TIMESTAMPTZ NULL,
     CONSTRAINT fk_attendances_company_id FOREIGN KEY (company_id) REFERENCES companies (id),
     CONSTRAINT fk_attendances_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id),
     CONSTRAINT fk_attendances_work_shift_id FOREIGN KEY (work_shift_id) REFERENCES work_shifts (id),
@@ -1081,12 +1081,30 @@ ALTER TABLE roles
 ALTER TABLE user_has_roles
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE positions
-    DISABLE ROW LEVEL SECURITY;
+    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_social_accounts
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE kpis
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE performance_reviews
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leave_types
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leave_balances
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leave_requests
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employee_contracts
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payroll_periods
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payslips
+    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_shifts
     ENABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
@@ -1156,6 +1174,69 @@ POLICY tenant_isolation ON tasks
 
 CREATE
 POLICY tenant_isolation ON user_social_accounts
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON kpis
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON performance_reviews
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON leave_types
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON leave_balances
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON leave_requests
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON employee_contracts
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON payroll_periods
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON payslips
+    USING (
+        current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON work_shifts
     USING (
         current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
