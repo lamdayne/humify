@@ -6,8 +6,6 @@ import com.lamdayne.humify.attendance.dto.response.AttendanceLogResponse;
 import com.lamdayne.humify.attendance.service.AttendanceLogService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
-import com.lamdayne.humify.common.exception.AppException;
-import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
@@ -16,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,38 +32,21 @@ public class AttendanceLogController {
 
     private final AttendanceLogService attendanceLogService;
 
-    @Value("${system.iot.api-key:IoT-Default-Auth-Key-2026}")
-    private String expectedIotApiKey;
-
     @PostMapping("/nfc-swipe")
     public ResponseEntity<ApiResponse<AttendanceLogResponse>> nfcSwipe(
             @Valid @RequestBody NfcSwipeRequest request,
             @RequestHeader(name = "X-IoT-API-Key", required = false) String iotApiKey) {
-
-        String keyToCompare = (expectedIotApiKey != null && !expectedIotApiKey.isBlank())
-                ? expectedIotApiKey.trim() : "IoT-Default-Auth-Key-2026";
-
-        if (iotApiKey != null) {
-            iotApiKey = iotApiKey.trim();
-        }
-
-        log.info("NFC Swipe API Key Check - Received: '{}', Expected: '{}'", iotApiKey, keyToCompare);
-
-        if (iotApiKey != null && !iotApiKey.isBlank() && !iotApiKey.trim().equalsIgnoreCase(keyToCompare)) {
-            log.warn("IoT API Key mismatch!");
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
         try {
             CompanyContext.setAdmin(true);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(ApiResponse.success(
                             SuccessCode.ATTENDANCE_LOG_CREATE_SUCCESS,
-                            attendanceLogService.registerNfcSwipe(request)
+                            attendanceLogService.registerNfcSwipe(request, iotApiKey)
                     ));
         } finally {
             CompanyContext.clear();
         }
+
     }
 
     @PostMapping("/web-swipe")

@@ -25,6 +25,7 @@ import com.lamdayne.humify.employee.enums.EmployeeStatus;
 import com.lamdayne.humify.employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,9 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
     private final CompanyRepository companyRepository;
     private final CompanyService companyService;
     private final AttendanceLogMapper attendanceLogMapper;
+
+    @Value("${system.iot.api-key:IoT-Default-Auth-Key-2026}")
+    private String expectedIotApiKey;
 
     @Override
     @Transactional
@@ -108,7 +112,19 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
 
     @Override
     @Transactional
-    public AttendanceLogResponse registerNfcSwipe(NfcSwipeRequest request) {
+    public AttendanceLogResponse registerNfcSwipe(NfcSwipeRequest request, String iotApiKey) {
+        String keyToCompare = (expectedIotApiKey != null && !expectedIotApiKey.isBlank())
+                ? expectedIotApiKey.trim() : "IoT-Default-Auth-Key-2026";
+
+        String cleanedHeaderKey = iotApiKey != null ? iotApiKey.trim() : null;
+
+        log.info("NFC Swipe API Key Check - Received: '{}', Expected: '{}'", cleanedHeaderKey, keyToCompare);
+
+        if (cleanedHeaderKey != null && !cleanedHeaderKey.isBlank() && !cleanedHeaderKey.equalsIgnoreCase(keyToCompare)) {
+            log.warn("IoT API Key mismatch!");
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
         String companyCode = request.getCompanyCode() != null ? request.getCompanyCode().trim() : "";
         String employeeCode = request.getEmployeeCode() != null ? request.getEmployeeCode().trim() : "";
         String cardUid = request.getCardUid() != null ? request.getCardUid().trim() : "";

@@ -11,7 +11,7 @@ import java.util.List;
 public interface AttendanceLogService {
 
     AttendanceLogResponse registerWebSwipe(String email, Long companyId, WebSwipeRequest request, String ipAddress, String userAgent);
-    AttendanceLogResponse registerNfcSwipe(NfcSwipeRequest request);
+    AttendanceLogResponse registerNfcSwipe(NfcSwipeRequest request, String iotApiKey);
     PageResponse<AttendanceLogResponse> getAllLogsForHr(String search, int page, int size);
     List<AttendanceLogResponse> getMyLogs(String email, Long companyId, LocalDate startDate, LocalDate endDate);
 }
