@@ -262,6 +262,7 @@ CREATE TABLE employees
     phone         VARCHAR(20) NULL,
     address       TEXT NULL,
     start_date    DATE            NOT NULL,
+    nfc_card_uid  VARCHAR(100) NULL,
     status        employee_status NOT NULL DEFAULT 'PROBATION',
     created_at    TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ     NOT NULL DEFAULT NOW(),

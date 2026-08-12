@@ -40,13 +40,15 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private final String[] WHITE_LIST = {
+    private static final String[] WHITE_LIST = {
             "/auth/**",
-            "/invitations/validate"
+            "/invitations/validate",
+            "/attendance-logs/nfc-swipe"
     };
 
-    private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/companies"
+    private static final String[] PUBLIC_POST_ENDPOINTS = {
+            "/companies",
+            "/attendance-logs/nfc-swipe"
     };
 
     @Bean

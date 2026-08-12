@@ -11,6 +11,9 @@ import com.lamdayne.humify.position.service.PositionAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import com.lamdayne.humify.employee.enums.EmployeeStatus;
+import com.lamdayne.humify.employee.repository.EmployeeRepository;
+
 @Component
 @RequiredArgsConstructor
 public class EmployeeValidator {
@@ -18,6 +21,7 @@ public class EmployeeValidator {
     private final BranchAccessService branchAccessService;
     private final PositionAccessService positionAccessService;
     private final DepartmentAccessService departmentAccessService;
+    private final EmployeeRepository employeeRepository;
 
     public void validateRefs(Long companyId, CreateEmployeeRequest request) {
         if (!branchAccessService.existsByIdAndCompanyId(request.getBranchId(), companyId)) {
@@ -30,6 +34,22 @@ public class EmployeeValidator {
 
         if (!positionAccessService.existsByIdAndCompanyId(request.getPositionId(), companyId)) {
             throw new AppException(ErrorCode.POSITION_NOT_FOUND);
+        }
+    }
+
+    public void validateNfcCardUid(String nfcCardUid, Long currentEmployeeId) {
+        if (nfcCardUid == null || nfcCardUid.isBlank()) {
+            return;
+        }
+
+        boolean inUseByActiveEmployee = employeeRepository.findAllByNfcCardUidIgnoreCase(nfcCardUid.trim()).stream()
+                .anyMatch(e -> e.getDeletedAt() == null
+                        && e.getStatus() != EmployeeStatus.RESIGNED
+                        && e.getStatus() != EmployeeStatus.TERMINATED
+                        && (currentEmployeeId == null || !e.getId().equals(currentEmployeeId)));
+
+        if (inUseByActiveEmployee) {
+            throw new AppException(ErrorCode.NFC_CARD_ALREADY_EXISTS);
         }
     }
 
@@ -58,3 +78,4 @@ public class EmployeeValidator {
     }
 
 }
+
