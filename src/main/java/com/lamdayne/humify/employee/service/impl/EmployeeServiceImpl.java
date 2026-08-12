@@ -48,6 +48,9 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -143,6 +146,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
+        if (request.getNfcCardUid() != null && !request.getNfcCardUid().isBlank()) {
+            employeeValidator.validateNfcCardUid(request.getNfcCardUid(), id);
+        }
+
         employeeMapper.updateEmployee(employee, request);
 
         return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
@@ -173,7 +180,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
-        employee.setStatus(EmployeeStatus.valueOf(request.getStatus()));
+        EmployeeStatus newStatus = EmployeeStatus.valueOf(request.getStatus());
+        employee.setStatus(newStatus);
+
+        if (newStatus == EmployeeStatus.RESIGNED || newStatus == EmployeeStatus.TERMINATED) {
+            employee.setNfcCardUid(null);
+            log.info("Cleared NFC card UID for employee id={} because status changed to {}", id, newStatus);
+        }
 
         employeeRepository.save(employee);
     }
