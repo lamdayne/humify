@@ -161,6 +161,15 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>com/lamdayne/humify/**/dto/**</exclude>
+                        <exclude>com/lamdayne/humify/**/enums/**</exclude>
+                        <exclude>com/lamdayne/humify/**/config/**</exclude>
+                        <exclude>com/lamdayne/humify/**/mapper/**</exclude>
+                        <exclude>com/lamdayne/humify/**/*Application.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
