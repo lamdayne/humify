@@ -14,6 +14,24 @@ public enum PermissionEnum {
     EMPLOYEE_DELETE("Delete employee", PermissionModule.EMPLOYEE),
     EMPLOYEE_FULL("Full access resources employee", PermissionModule.EMPLOYEE),
 
+    // Employee Certification
+    EMPLOYEE_CERTIFICATION_READ("View employee certification data", PermissionModule.EMPLOYEE),
+    EMPLOYEE_CERTIFICATION_CREATE("Create employee certification", PermissionModule.EMPLOYEE),
+    EMPLOYEE_CERTIFICATION_UPDATE("Update employee certification", PermissionModule.EMPLOYEE),
+    EMPLOYEE_CERTIFICATION_DELETE("Delete employee certification", PermissionModule.EMPLOYEE),
+
+    // Employee Education
+    EMPLOYEE_EDUCATION_READ("View employee education data", PermissionModule.EMPLOYEE),
+    EMPLOYEE_EDUCATION_CREATE("Create employee education", PermissionModule.EMPLOYEE),
+    EMPLOYEE_EDUCATION_UPDATE("Update employee education", PermissionModule.EMPLOYEE),
+    EMPLOYEE_EDUCATION_DELETE("Delete employee education", PermissionModule.EMPLOYEE),
+
+    // Employee Work Experience
+    EMPLOYEE_WORK_EXPERIENCE_READ("View employee work experience data", PermissionModule.EMPLOYEE),
+    EMPLOYEE_WORK_EXPERIENCE_CREATE("Create employee work experience", PermissionModule.EMPLOYEE),
+    EMPLOYEE_WORK_EXPERIENCE_UPDATE("Update employee work experience", PermissionModule.EMPLOYEE),
+    EMPLOYEE_WORK_EXPERIENCE_DELETE("Delete employee work experience", PermissionModule.EMPLOYEE),
+
     // User
     USER_READ("View user data", PermissionModule.USER),
     USER_CREATE("Create new user", PermissionModule.USER),

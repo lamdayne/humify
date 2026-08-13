@@ -41,6 +41,18 @@ public enum SystemRole {
     HR_MANAGER("HR_MANAGER", "Manage employees and attendance",
             Set.of(
                     PermissionEnum.EMPLOYEE_FULL,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_READ,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_CREATE,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_UPDATE,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_DELETE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_READ,
+                    PermissionEnum.EMPLOYEE_EDUCATION_CREATE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_UPDATE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_DELETE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_READ,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_CREATE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_UPDATE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_DELETE,
                     PermissionEnum.ATTENDANCE_FULL,
                     PermissionEnum.LEAVE_FULL,
                     PermissionEnum.WORK_SHIFT_FULL,
@@ -101,7 +113,19 @@ public enum SystemRole {
                     PermissionEnum.WORK_SHIFT_READ,
                     PermissionEnum.KPI_READ,
                     PermissionEnum.PERFORMANCE_REVIEW_READ,
-                    PermissionEnum.PERFORMANCE_REVIEW_SELF
+                    PermissionEnum.PERFORMANCE_REVIEW_SELF,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_READ,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_CREATE,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_UPDATE,
+                    PermissionEnum.EMPLOYEE_CERTIFICATION_DELETE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_READ,
+                    PermissionEnum.EMPLOYEE_EDUCATION_CREATE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_UPDATE,
+                    PermissionEnum.EMPLOYEE_EDUCATION_DELETE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_READ,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_CREATE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_UPDATE,
+                    PermissionEnum.EMPLOYEE_WORK_EXPERIENCE_DELETE
             )
     );
 

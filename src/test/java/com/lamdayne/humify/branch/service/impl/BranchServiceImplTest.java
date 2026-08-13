@@ -13,6 +13,7 @@ import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -210,4 +211,21 @@ class BranchServiceImplTest {
 
         assertTrue(result);
     }
+
+    @Test
+    @DisplayName("Update branch when branch not found")
+    void updateBranch_branchNotFound() {
+        when(branchRepository.findById(100L)).thenReturn(Optional.empty());
+
+        final AppException exception = assertThrows(
+                AppException.class,
+                () -> branchService.updateBranch(100L, updateRequest)
+        );
+
+        verify(branchRepository, times(1)).findById(100L);
+        assertEquals(ErrorCode.BRANCH_NOT_FOUND, exception.getErrorCode());
+        verify(branchRepository, never()).save(any(Branch.class));
+        verify(branchMapper, never()).toBranchResponse(any());
+    }
+
 }

@@ -222,7 +222,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/{employeeId}/certifications")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_CREATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_CREATE', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_CERTIFICATION_CREATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeCertificationResponse>> addCertification(
         @PathVariable(name = "employeeId") Long employeeId,
         @RequestBody @Valid CreateEmployeeCertificationRequest request
@@ -235,7 +235,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/certifications")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL', 'EMPLOYEE_CERTIFICATION_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<PageResponse<EmployeeCertificationResponse>>> getCertification(
             @PathVariable(name = "employeeId") Long employeeId,
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
@@ -250,7 +250,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/certifications/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL', 'EMPLOYEE_CERTIFICATION_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeCertificationResponse>> getCertificationById(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(name = "employeeId") Long employeeId,
@@ -266,7 +266,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}/certifications/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_CERTIFICATION_UPDATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeCertificationResponse>> updateCertification(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable(name = "employeeId") Long employeeId,
@@ -283,7 +283,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{employeeId}/certifications/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_CERTIFICATION_DELETE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> deleteCertification(
             @PathVariable(name = "employeeId") Long employeeId,
             @PathVariable(name = "id") Long id
@@ -296,7 +296,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/{employeeId}/educations")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_EDUCATION_CREATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeEducationResponse>> createEducation(
             @PathVariable Long employeeId,
             @Valid @RequestBody CreateEmployeeEducationRequest request) {
@@ -309,7 +309,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/educations")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL', 'EMPLOYEE_EDUCATION_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<List<EmployeeEducationResponse>>> getEducations(
             @PathVariable Long employeeId) {
 
@@ -321,7 +321,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/educations/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_READ', 'EMPLOYEE_FULL', 'EMPLOYEE_EDUCATION_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeEducationResponse>> getEducationDetail(
             @PathVariable Long employeeId,
             @PathVariable Long id) {
@@ -334,7 +334,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}/educations/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_EDUCATION_UPDATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeEducationResponse>> updateEducation(
             @PathVariable Long employeeId,
             @PathVariable Long id,
@@ -348,7 +348,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{employeeId}/educations/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_EDUCATION_DELETE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> deleteEducation(
             @PathVariable Long employeeId,
             @PathVariable Long id) {
@@ -359,7 +359,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/{employeeId}/work-experiences")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_WORK_EXPERIENCE_CREATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> createWorkExperience(
             @PathVariable(name = "employeeId") Long employeeId, @Valid @RequestBody CreateEmployeeWorkExperienceRequest request) {
         EmployeeWorkExperienceResponse response = employeeWorkExperienceService.create(employeeId, request);
@@ -369,7 +369,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/work-experiences")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL','EMPLOYEE_WORK_EXPERIENCE_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<List<EmployeeWorkExperienceResponse>>> getAll(
             @PathVariable(name = "employeeId") Long employeeId
     ) {
@@ -379,7 +379,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}/work-experiences/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_READ','EMPLOYEE_FULL','EMPLOYEE_WORK_EXPERIENCE_READ') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> getById(
             @PathVariable(name = "employeeId") Long employeeId,
             @PathVariable(name = "id") Long id
@@ -390,7 +390,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}/work-experiences/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL','EMPLOYEE_WORK_EXPERIENCE_UPDATE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<EmployeeWorkExperienceResponse>> updateWorkExperience(
             @PathVariable(name = "employeeId") Long employeeId,
             @PathVariable(name = "id") Long id, @Valid @RequestBody UpdateEmployeeWorkExperienceRequest request
@@ -400,7 +400,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{employeeId}/work-experiences/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS','EMPLOYEE_UPDATE','EMPLOYEE_FULL','EMPLOYEE_WORK_EXPERIENCE_DELETE') or isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> deleteWorkExperience(
             @PathVariable(name = "employeeId") Long employeeId, @PathVariable(name = "id") Long id
     ) {

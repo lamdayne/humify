@@ -3,6 +3,7 @@ package com.lamdayne.humify.company.service.impl;
 import com.lamdayne.humify.auth.service.RoleAccessService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.util.SqidsUtil;
 import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
 import com.lamdayne.humify.company.dto.request.UpdateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
@@ -33,6 +34,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CompanyServiceImplTest {
+
+    @Mock
+    private SqidsUtil sqidsUtil;
 
     @Mock
     private CompanyMapper companyMapper;
