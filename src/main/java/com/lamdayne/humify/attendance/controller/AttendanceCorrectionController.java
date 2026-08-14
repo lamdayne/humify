@@ -24,7 +24,7 @@ public class AttendanceCorrectionController {
     private final AttendanceCorrectionService correctionService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_CREATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_CORRECTION_CREATE', 'ATTENDANCE_CORRECTION_FULL')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> createCorrection(
             @Valid @RequestBody AttendanceCorrectionRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -37,7 +37,7 @@ public class AttendanceCorrectionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_CORRECTION_READ', 'ATTENDANCE_CORRECTION_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getAllCorrections(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long employeeId,
@@ -51,6 +51,7 @@ public class AttendanceCorrectionController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceCorrectionResponse>>> getMyCorrections(
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
@@ -65,7 +66,7 @@ public class AttendanceCorrectionController {
     }
 
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_APPROVE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_CORRECTION_APPROVE', 'ATTENDANCE_CORRECTION_FULL')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> approveCorrection(
             @PathVariable Long id,
             @Valid @RequestBody CorrectionActionRequest request,
@@ -78,7 +79,7 @@ public class AttendanceCorrectionController {
     }
 
     @PutMapping("/{id}/reject")
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_CORRECTION_FULL', 'ATTENDANCE_CORRECTION_REJECT')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_CORRECTION_REJECT', 'ATTENDANCE_CORRECTION_FULL')")
     public ResponseEntity<ApiResponse<AttendanceCorrectionResponse>> rejectCorrection(
             @PathVariable Long id,
             @Valid @RequestBody CorrectionActionRequest request,

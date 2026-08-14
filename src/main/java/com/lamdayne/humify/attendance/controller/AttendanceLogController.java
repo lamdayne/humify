@@ -1,9 +1,11 @@
 package com.lamdayne.humify.attendance.controller;
 
+import com.lamdayne.humify.attendance.dto.request.NfcSwipeRequest;
 import com.lamdayne.humify.attendance.dto.request.WebSwipeRequest;
 import com.lamdayne.humify.attendance.dto.response.AttendanceLogResponse;
 import com.lamdayne.humify.attendance.service.AttendanceLogService;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.response.ApiResponse;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
@@ -11,6 +13,7 @@ import com.lamdayne.humify.common.util.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +24,33 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/attendance-logs")
-
 public class AttendanceLogController {
 
     private final AttendanceLogService attendanceLogService;
 
+    @PostMapping("/nfc-swipe")
+    public ResponseEntity<ApiResponse<AttendanceLogResponse>> nfcSwipe(
+            @Valid @RequestBody NfcSwipeRequest request,
+            @RequestHeader(name = "X-IoT-API-Key", required = false) String iotApiKey) {
+        try {
+            CompanyContext.setAdmin(true);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success(
+                            SuccessCode.ATTENDANCE_LOG_CREATE_SUCCESS,
+                            attendanceLogService.registerNfcSwipe(request, iotApiKey)
+                    ));
+        } finally {
+            CompanyContext.clear();
+        }
+
+    }
+
     @PostMapping("/web-swipe")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<AttendanceLogResponse>> webSwipe(
             @Valid @RequestBody WebSwipeRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -52,7 +73,7 @@ public class AttendanceLogController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ATTENDANCE_LOG_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'ATTENDANCE_LOG_READ', 'ATTENDANCE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<AttendanceLogResponse>>> getAllLogs(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page,
@@ -66,6 +87,7 @@ public class AttendanceLogController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<AttendanceLogResponse>>> getMyLogs(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,

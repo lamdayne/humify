@@ -8,6 +8,7 @@ import com.lamdayne.humify.task.service.TaskWorkLogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class TaskWorklogController {
     private final TaskWorkLogService taskWorkLogService;
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<WorklogResponse>> updateWorklog(
             @PathVariable Long id, @RequestBody @Valid UpdateWorklogRequest request
     ) {
@@ -29,6 +31,7 @@ public class TaskWorklogController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteWorklog(
             @PathVariable long id
     ) {

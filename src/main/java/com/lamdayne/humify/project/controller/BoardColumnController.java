@@ -8,6 +8,7 @@ import com.lamdayne.humify.project.service.BoardColumnService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 public class BoardColumnController {
 
     private final BoardColumnService boardColumnService;
+
     @PutMapping("/columns/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'COLUMN_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<BoardColumnResponse>> updateColumn(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid UpdateColumnRequest request
@@ -28,6 +31,7 @@ public class BoardColumnController {
     }
 
     @DeleteMapping("/columns/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'COLUMN_DELETE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteColumn(
             @PathVariable(name = "id") Long id,
             @RequestParam(name = "moveToColumnId", required = false) Long moveToColumnId

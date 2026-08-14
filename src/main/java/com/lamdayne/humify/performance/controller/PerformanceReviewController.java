@@ -10,6 +10,7 @@ import com.lamdayne.humify.performance.service.PerformanceReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class PerformanceReviewController {
 
     // 1. Tạo mới bản đánh giá hiệu suất (Khởi tạo chu kỳ)
     @PostMapping("/employees/{employeeId}/reviews")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_CREATE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @PathVariable Long employeeId,
             @Valid @RequestBody ReviewRequests.CreateReviewRequest request) {
@@ -36,6 +38,7 @@ public class PerformanceReviewController {
 
     // 2. Lấy danh sách lịch sử đánh giá của một nhân viên
     @GetMapping("/employees/{employeeId}/reviews")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_READ', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<List<ReviewResponse>>> getReviewsByEmployeeId(
             @PathVariable Long employeeId) {
 
@@ -48,6 +51,7 @@ public class PerformanceReviewController {
 
     // 3. Xem chi tiết một bản đánh giá
     @GetMapping("/reviews/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_READ', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(
             @PathVariable Long id) {
 
@@ -60,6 +64,7 @@ public class PerformanceReviewController {
 
     // 4. Nhân viên tự đánh giá (SELF_REVIEW)
     @PutMapping("/reviews/{id}/self-score")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<ReviewResponse>> submitSelfScore(
             @PathVariable Long id,
             @Valid @RequestBody ReviewRequests.SubmitSelfScoreRequest request,
@@ -74,6 +79,7 @@ public class PerformanceReviewController {
 
     // 5. Quản lý đánh giá và nhận xét (MANAGER_REVIEW)
     @PutMapping("/reviews/{id}/reviewer-score")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_EVALUATE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<ReviewResponse>> submitReviewerScore(
             @PathVariable Long id,
             @Valid @RequestBody ReviewRequests.SubmitReviewerScoreRequest request,
@@ -88,6 +94,7 @@ public class PerformanceReviewController {
 
     // 6. Chốt điểm và đóng chu kỳ đánh giá (COMPLETED)
     @PutMapping("/reviews/{id}/complete")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_COMPLETE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<ReviewResponse>> completeReview(
             @PathVariable Long id,
             @Valid @RequestBody ReviewRequests.CompleteReviewRequest request,

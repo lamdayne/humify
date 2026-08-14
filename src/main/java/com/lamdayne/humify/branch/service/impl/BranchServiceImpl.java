@@ -61,7 +61,7 @@ public class BranchServiceImpl implements BranchService, BranchAccessService {
         branch.setWebsite(request.getWebsite());
         branch.setAddress(request.getAddress());
         branch.setStandardHoursPerDay(request.getStandardHoursPerDay());
-        branch.setStatus(com.lamdayne.humify.branch.enums.BranchStatus.valueOf(request.getStatus()));
+        branch.setStatus(BranchStatus.valueOf(request.getStatus()));
 
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
