@@ -268,7 +268,7 @@ class BranchServiceImplTest {
 
         assertNotNull(result);
         assertThat(result.getItems()).isEmpty();
-        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getTotalElements()).isZero();
         verify(branchMapper, never()).toBranchResponse(any());
     }
 

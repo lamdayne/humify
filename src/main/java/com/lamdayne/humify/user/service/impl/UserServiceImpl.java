@@ -1,6 +1,5 @@
 package com.lamdayne.humify.user.service.impl;
 
-import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.SystemRole;
 import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
@@ -94,8 +93,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse create(CreateUserRequest request) {
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long companyId = userPrincipal.getCompanyId();
+        Long companyId = CompanyContext.getCompanyId();
 
         boolean emailExists = companyId != null
                 ? userRepository.existsByEmailAndCompanyId(request.getEmail(), companyId)
@@ -107,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCompany(companyAccessService.getReferenceById(userPrincipal.getCompanyId()));
+        user.setCompany(companyAccessService.getReferenceById(companyId));
         user = userRepository.save(user);
         roleAccessService.assignRoles(user, request.getRoleIds());
 

@@ -1,7 +1,6 @@
 package com.lamdayne.humify.user.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -9,6 +8,8 @@ import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponse implements Serializable {
     private Long id;
     private String email;
@@ -17,3 +18,4 @@ public class UserResponse implements Serializable {
     private Instant updatedAt;
     private List<UserRoleResponse> roles;
 }
+

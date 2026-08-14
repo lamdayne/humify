@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PositionServiceImplTest {
+class PositionServiceImplTest {
 
     @Mock
     private PositionRepository positionRepository;
@@ -151,7 +151,7 @@ public class PositionServiceImplTest {
 
         assertNotNull(result);
         assertThat(result.getItems()).isEmpty();
-        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getTotalElements()).isZero();
         assertThat(result.getPageSize()).isEqualTo(5);
     }
 
