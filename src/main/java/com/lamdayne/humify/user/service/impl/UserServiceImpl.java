@@ -1,6 +1,5 @@
 package com.lamdayne.humify.user.service.impl;
 
-import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.SystemRole;
 import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
