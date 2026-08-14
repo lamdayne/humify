@@ -163,6 +163,7 @@
                 </executions>
                 <configuration>
                     <excludes>
+                        <exclude>com/lamdayne/humify/**/controller/**</exclude>
                         <exclude>com/lamdayne/humify/**/dto/**</exclude>
                         <exclude>com/lamdayne/humify/**/enums/**</exclude>
                         <exclude>com/lamdayne/humify/**/config/**</exclude>

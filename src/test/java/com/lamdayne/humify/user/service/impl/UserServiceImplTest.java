@@ -7,20 +7,23 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyAccessService;
+import com.lamdayne.humify.user.dto.request.CreateUserRequest;
+import com.lamdayne.humify.user.dto.response.UserResponse;
+import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.mapper.UserMapper;
 import com.lamdayne.humify.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,11 +55,18 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    private MockedStatic<CompanyContext> companyContextMocked;
     private User user;
+    private Company company;
+    private CreateUserRequest createUserRequest;
+    private UserResponse userResponse;
+    private List<UserRoleResponse> userRoles;
 
     @BeforeEach
     void setUp() {
-        Company company = new Company();
+        this.companyContextMocked = Mockito.mockStatic(CompanyContext.class);
+
+        this.company = new Company();
 
         this.user = User.builder()
                 .company(company)
@@ -64,6 +74,30 @@ class UserServiceImplTest {
                 .password("password")
                 .active(true)
                 .build();
+        this.user.setId(1L);
+
+        this.createUserRequest = CreateUserRequest.builder()
+                .email("test@gmail.com")
+                .password("password")
+                .roleIds(List.of(1L, 2L, 3L))
+                .build();
+
+        this.userResponse = UserResponse.builder()
+                .id(1L)
+                .email("test@gmail.com")
+                .active(true)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        this.userRoles = new ArrayList<>();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (companyContextMocked != null && !companyContextMocked.isClosed()) {
+            companyContextMocked.close();
+        }
     }
 
     @Nested
@@ -75,21 +109,19 @@ class UserServiceImplTest {
             // given
             String email = "test@example.com";
             Long companyId = 1L;
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
+            when(userRepository.existsByEmailAndCompanyId(email, companyId)).thenReturn(Boolean.TRUE);
 
-                when(userRepository.existsByEmailAndCompanyId(email, companyId)).thenReturn(Boolean.TRUE);
+            // when
+            boolean result = userService.existsByEmail(email);
 
-                // when
-                boolean result = userService.existsByEmail(email);
+            // Then
+            assertTrue(result);
 
-                // Then
-                assertTrue(result);
+            verify(userRepository, never()).existsByEmailAndCompanyIsNull(email);
+            verify(userRepository, times(1)).existsByEmailAndCompanyId(email, companyId);
 
-                verify(userRepository, never()).existsByEmailAndCompanyIsNull(email);
-                verify(userRepository, times(1)).existsByEmailAndCompanyId(email, companyId);
-            }
         }
 
         @Test
@@ -98,21 +130,20 @@ class UserServiceImplTest {
             // Given
             String email = "test@gmail.com";
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(null);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(null);
 
-                when(userRepository.existsByEmailAndCompanyIsNull(email)).thenReturn(Boolean.TRUE);
+            when(userRepository.existsByEmailAndCompanyIsNull(email)).thenReturn(Boolean.TRUE);
 
-                // when
-                boolean result = userService.existsByEmail(email);
+            // when
+            boolean result = userService.existsByEmail(email);
 
-                // Then
-                assertTrue(result);
+            // Then
+            assertTrue(result);
 
-                verify(userRepository).existsByEmailAndCompanyIsNull(email);
+            verify(userRepository).existsByEmailAndCompanyIsNull(email);
 
-                verify(userRepository, never()).existsByEmailAndCompanyId(anyString(), anyLong());
-            }
+            verify(userRepository, never()).existsByEmailAndCompanyId(anyString(), anyLong());
+
         }
     }
 
@@ -134,19 +165,17 @@ class UserServiceImplTest {
             String email = "test@gmail.com";
             Long companyId = 1L;
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
 
-                when(userRepository.findByEmailAndCompanyId(email, companyId)).thenReturn(Optional.of(user));
+            when(userRepository.findByEmailAndCompanyId(email, companyId)).thenReturn(Optional.of(user));
 
-                // When
-                userService.findByEmail(email);
+            // When
+            userService.findByEmail(email);
 
-                // Then
-                verify(userRepository, times(1)).findByEmailAndCompanyId(email, companyId);
-                verify(userRepository, never()).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, never()).findAllByEmail(email);
-            }
+            // Then
+            verify(userRepository, times(1)).findByEmailAndCompanyId(email, companyId);
+            verify(userRepository, never()).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, never()).findAllByEmail(email);
         }
 
         @Test
@@ -156,23 +185,22 @@ class UserServiceImplTest {
             String email = "test@gmail.com";
             Long companyId = 1L;
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(companyId);
 
-                when(userRepository.findByEmailAndCompanyId(email, companyId)).thenReturn(Optional.empty());
+            when(userRepository.findByEmailAndCompanyId(email, companyId)).thenReturn(Optional.empty());
 
-                // When
-                final AppException exception = assertThrows(
-                        AppException.class,
-                        () -> userService.findByEmail(email)
-                );
+            // When
+            final AppException exception = assertThrows(
+                    AppException.class,
+                    () -> userService.findByEmail(email)
+            );
 
-                // Then
-                assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-                verify(userRepository, times(1)).findByEmailAndCompanyId(email, companyId);
-                verify(userRepository, never()).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, never()).findAllByEmail(email);
-            }
+            // Then
+            assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+            verify(userRepository, times(1)).findByEmailAndCompanyId(email, companyId);
+            verify(userRepository, never()).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, never()).findAllByEmail(email);
+
         }
 
         @Test
@@ -181,20 +209,19 @@ class UserServiceImplTest {
             // Given
             String email = "test@gmail.com";
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(null);
-                when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.of(user));
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(null);
+            when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.of(user));
 
-                // When
-                final User result = userService.findByEmail(email);
+            // When
+            final User result = userService.findByEmail(email);
 
-                // Then
-                assertSame(user, result);
+            // Then
+            assertSame(user, result);
 
-                verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
-                verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, never()).findAllByEmail(email);
-            }
+            verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
+            verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, never()).findAllByEmail(email);
+
         }
 
         @Test
@@ -203,24 +230,23 @@ class UserServiceImplTest {
             // Given
             String email = "test@gmail.com";
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(null);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(null);
 
-                when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
-                when(userRepository.findAllByEmail(email)).thenReturn(List.of());
+            when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
+            when(userRepository.findAllByEmail(email)).thenReturn(List.of());
 
-                // When
-                final AppException exception = assertThrows(
-                        AppException.class,
-                        () -> userService.findByEmail(email)
-                );
+            // When
+            final AppException exception = assertThrows(
+                    AppException.class,
+                    () -> userService.findByEmail(email)
+            );
 
-                // Then
-                assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-                verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
-                verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, times(1)).findAllByEmail(email);
-            }
+            // Then
+            assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+            verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
+            verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, times(1)).findAllByEmail(email);
+
         }
 
         @Test
@@ -229,21 +255,20 @@ class UserServiceImplTest {
             // Given
             String email = "test@gmail.com";
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(null);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(null);
 
-                when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
-                when(userRepository.findAllByEmail(email)).thenReturn(List.of(user));
+            when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
+            when(userRepository.findAllByEmail(email)).thenReturn(List.of(user));
 
-                // When
-                final User result = userService.findByEmail(email);
+            // When
+            final User result = userService.findByEmail(email);
 
-                // Then
-                assertSame(user, result);
-                verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
-                verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, times(1)).findAllByEmail(email);
-            }
+            // Then
+            assertSame(user, result);
+            verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
+            verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, times(1)).findAllByEmail(email);
+
         }
 
         @Test
@@ -254,25 +279,30 @@ class UserServiceImplTest {
             User user1 = new User();
             User user2 = new User();
 
-            try (MockedStatic<CompanyContext> mocked = mockStatic(CompanyContext.class)) {
-                mocked.when(CompanyContext::getCompanyId).thenReturn(null);
+            companyContextMocked.when(CompanyContext::getCompanyId).thenReturn(null);
 
-                when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
-                when(userRepository.findAllByEmail(email)).thenReturn(List.of(user1, user2));
+            when(userRepository.findByEmailAndCompanyIsNull(email)).thenReturn(Optional.empty());
+            when(userRepository.findAllByEmail(email)).thenReturn(List.of(user1, user2));
 
-                // When
-                final AppException exception = assertThrows(
-                        AppException.class,
-                        () -> userService.findByEmail(email)
-                );
+            // When
+            final AppException exception = assertThrows(
+                    AppException.class,
+                    () -> userService.findByEmail(email)
+            );
 
-                // Then
-                assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-                verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
-                verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
-                verify(userRepository, times(1)).findAllByEmail(email);
-            }
+            // Then
+            assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+            verify(userRepository, never()).findByEmailAndCompanyId(eq(email), anyLong());
+            verify(userRepository, times(1)).findByEmailAndCompanyIsNull(email);
+            verify(userRepository, times(1)).findAllByEmail(email);
+
         }
+    }
+
+    @Nested
+    @DisplayName("createUser Tests")
+    class CreateUserTests {
+
     }
 
 }
