@@ -2,11 +2,13 @@ package com.lamdayne.humify.employee.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateEmployeeEducationRequest {
 
     @NotBlank(message = "DEGREE_LEVEL_REQUIRED")
