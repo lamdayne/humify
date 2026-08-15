@@ -103,6 +103,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         refreshTokenService.revokeIfValid(token);
 
         UserPrincipal userPrincipal = (UserPrincipal) userDetailsService.loadUserByUsername(email);
+        if (!userPrincipal.isEnabled()) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVATED);
+        }
 
         String accessToken = jwtService.generateAccessToken(userPrincipal);
         String refreshToken = jwtService.generateRefreshToken(userPrincipal);

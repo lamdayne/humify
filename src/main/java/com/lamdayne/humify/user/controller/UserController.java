@@ -7,6 +7,7 @@ import com.lamdayne.humify.common.response.SuccessCode;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
+import com.lamdayne.humify.user.dto.request.UpdateUserStatusRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.service.UserService;
 import jakarta.validation.Valid;
@@ -58,6 +59,20 @@ public class UserController {
         userService.changeRole(userId, request);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(SuccessCode.USER_CHANGE_ROLE_SUCCESS));
+    }
+
+    @PutMapping("/{userId}/status")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'USER_UPDATE', 'USER_FULL')")
+    public ResponseEntity<ApiResponse<UserResponse>> updateStatus(
+            @PathVariable("userId") Long userId,
+            @RequestBody @Valid UpdateUserStatusRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.USER_UPDATE_STATUS_SUCCESS,
+                        userService.updateStatus(userId, request, userPrincipal)
+                ));
     }
 
     @GetMapping("/{userId}")

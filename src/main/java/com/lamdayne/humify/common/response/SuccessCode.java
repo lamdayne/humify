@@ -94,6 +94,7 @@ public enum SuccessCode {
     USER_READ_SUCCESS("USER_READ_SUCCESS", "Get all user successfully"),
     USER_CHANGE_ROLE_SUCCESS("USER_CHANGE_ROLE_SUCCESS", "Change role successfully"),
     USER_CHANGE_PASSWORD_SUCCESS("USER_CHANGE_PASSWORD_SUCCESS", "Change password successfully"),
+    USER_UPDATE_STATUS_SUCCESS("USER_UPDATE_STATUS_SUCCESS", "Update user status successfully"),
 
     // Media
     FILE_UPLOAD_SUCCESS("FILE_UPLOAD_SUCCESS", "File uploaded successfully"),

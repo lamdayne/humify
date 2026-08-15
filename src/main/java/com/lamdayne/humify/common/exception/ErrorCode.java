@@ -99,6 +99,8 @@ public enum ErrorCode {
     USER_EMAIL_EXISTED("USER_EMAIL_EXISTED", "Email already exists", HttpStatus.BAD_REQUEST),
     USER_OLD_PASSWORD_REQUIRED("USER_OLD_PASSWORD_REQUIRED", "Old password is required", HttpStatus.BAD_REQUEST),
     USER_PASSWORD_NOT_MATCH("USER_PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
+    USER_STATUS_REQUIRED("USER_STATUS_REQUIRED", "Active status is required", HttpStatus.BAD_REQUEST),
+    CANNOT_DEACTIVATE_SELF("CANNOT_DEACTIVATE_SELF", "You cannot deactivate your own account", HttpStatus.BAD_REQUEST),
 
     // Auth
     JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.UNAUTHORIZED),
@@ -108,7 +110,7 @@ public enum ErrorCode {
     PASSWORD_REQUIRED("PASSWORD_REQUIRED", "Password cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD("INVALID_PASSWORD", "Invalid password", HttpStatus.BAD_REQUEST),
-    USER_NOT_ACTIVATED("USER_NOT_ACTIVATED", "User is not activated", HttpStatus.BAD_REQUEST),
+    USER_NOT_ACTIVATED("USER_NOT_ACTIVATED", "User is not activated", HttpStatus.UNAUTHORIZED),
     TOKEN_NOT_FOUND("TOKEN_NOT_FOUND", "Token not found", HttpStatus.NOT_FOUND),
     PASSWORD_NOT_MATCH("PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
     RESET_TOKEN_EXPIRED("RESET_TOKEN_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),

@@ -25,4 +25,6 @@ public interface LeaveRequestService {
 
     PageResponse<LeaveRequestResponse> getLeaveRequests(Pageable pageable, String[] leaveRequest);
 
+    PageResponse<LeaveRequestResponse> getMyLeaveRequests(UserPrincipal userPrincipal, Pageable pageable, String[] leaveRequest);
+
 }

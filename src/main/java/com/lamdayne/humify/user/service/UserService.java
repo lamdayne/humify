@@ -6,6 +6,7 @@ import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
+import com.lamdayne.humify.user.dto.request.UpdateUserStatusRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.entity.User;
 
@@ -40,5 +41,7 @@ public interface UserService {
     Long getCurrentEmployeeId();
 
     User createEmployeeUser(User user);
+
+    UserResponse updateStatus(Long id, UpdateUserStatusRequest request, UserPrincipal currentUser);
 
 }
