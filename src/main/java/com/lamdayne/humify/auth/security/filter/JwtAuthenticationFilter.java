@@ -66,6 +66,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (!userDetails.isEnabled()) {
+                    SecurityContextHolder.clearContext();
+                    request.setAttribute("errorCode", ErrorCode.USER_NOT_ACTIVATED);
+                    throw new InsufficientAuthenticationException(ErrorCode.USER_NOT_ACTIVATED.getCode());
+                }
                 if (jwtService.isValid(token, TokenType.ACCESS_TOKEN, userDetails)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

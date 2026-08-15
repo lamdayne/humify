@@ -13,6 +13,7 @@ import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
+import com.lamdayne.humify.user.dto.request.UpdateUserStatusRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
@@ -270,5 +271,27 @@ public class UserServiceImpl implements UserService {
         User userEntity = userRepository.save(user);
         roleAccessService.assignEmployeeRole(userEntity);
         return userEntity;
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateStatus(Long id, UpdateUserStatusRequest request, UserPrincipal currentUser) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getCompany() == null) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        // Prevent self-deactivation
+        if (currentUser != null && currentUser.getId().equals(id) && Boolean.FALSE.equals(request.getActive())) {
+            throw new AppException(ErrorCode.CANNOT_DEACTIVATE_SELF);
+        }
+
+        user.setActive(request.getActive());
+        userRepository.save(user);
+
+        UserResponse response = userMapper.toResponse(user);
+        response.setRoles(findRolesByUserIds(List.of(user.getId())).getOrDefault(user.getId(), List.of()));
+        return response;
     }
 }
