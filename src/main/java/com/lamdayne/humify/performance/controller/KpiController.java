@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class KpiController {
     private final KpiService kpiService;
 
     @PostMapping("/employees/{employeeId}/kpis")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_CREATE', 'KPI_FULL', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<KpiResponse>> createKpi(
             @PathVariable Long employeeId,
             @Valid @RequestBody CreateKpiRequest request
@@ -34,6 +36,7 @@ public class KpiController {
     }
 
     @GetMapping("/employees/{employeeId}/kpis")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_READ', 'KPI_FULL', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<List<KpiResponse>>> getKpis(
             @PathVariable Long employeeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -45,6 +48,7 @@ public class KpiController {
     }
 
     @PutMapping("/kpis/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_UPDATE', 'KPI_FULL', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<KpiResponse>> updateKpi(
             @PathVariable Long id,
             @Valid @RequestBody CreateKpiRequest request
@@ -55,6 +59,7 @@ public class KpiController {
     }
 
     @PutMapping("/kpis/{id}/progress")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<KpiResponse>> updateProgress(
             @PathVariable Long id,
             @Valid @RequestBody UpdateKpiProgressRequest request
@@ -65,6 +70,7 @@ public class KpiController {
     }
 
     @DeleteMapping("/kpis/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_DELETE', 'KPI_FULL', 'PERFORMANCE_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteKpi(@PathVariable Long id) {
         kpiService.deleteKpi(id);
         return ResponseEntity.ok()

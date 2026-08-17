@@ -1,6 +1,5 @@
 package com.lamdayne.humify.user.service.impl;
 
-import com.lamdayne.humify.auth.entity.UserHasRole;
 import com.lamdayne.humify.auth.enums.SystemRole;
 import com.lamdayne.humify.auth.repository.UserHasRoleRepository;
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
@@ -14,6 +13,7 @@ import com.lamdayne.humify.company.service.CompanyAccessService;
 import com.lamdayne.humify.user.dto.request.ChangePasswordRequest;
 import com.lamdayne.humify.user.dto.request.ChangeRoleRequest;
 import com.lamdayne.humify.user.dto.request.CreateUserRequest;
+import com.lamdayne.humify.user.dto.request.UpdateUserStatusRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
@@ -94,8 +94,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse create(CreateUserRequest request) {
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long companyId = userPrincipal.getCompanyId();
+        Long companyId = CompanyContext.getCompanyId();
 
         boolean emailExists = companyId != null
                 ? userRepository.existsByEmailAndCompanyId(request.getEmail(), companyId)
@@ -107,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCompany(companyAccessService.getReferenceById(userPrincipal.getCompanyId()));
+        user.setCompany(companyAccessService.getReferenceById(companyId));
         user = userRepository.save(user);
         roleAccessService.assignRoles(user, request.getRoleIds());
 
@@ -272,5 +271,27 @@ public class UserServiceImpl implements UserService {
         User userEntity = userRepository.save(user);
         roleAccessService.assignEmployeeRole(userEntity);
         return userEntity;
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateStatus(Long id, UpdateUserStatusRequest request, UserPrincipal currentUser) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getCompany() == null) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        // Prevent self-deactivation
+        if (currentUser != null && currentUser.getId().equals(id) && Boolean.FALSE.equals(request.getActive())) {
+            throw new AppException(ErrorCode.CANNOT_DEACTIVATE_SELF);
+        }
+
+        user.setActive(request.getActive());
+        userRepository.save(user);
+
+        UserResponse response = userMapper.toResponse(user);
+        response.setRoles(findRolesByUserIds(List.of(user.getId())).getOrDefault(user.getId(), List.of()));
+        return response;
     }
 }

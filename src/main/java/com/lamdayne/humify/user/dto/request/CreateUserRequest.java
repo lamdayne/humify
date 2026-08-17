@@ -2,12 +2,16 @@ package com.lamdayne.humify.user.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateUserRequest implements Serializable {
 
     private Long employeeId;

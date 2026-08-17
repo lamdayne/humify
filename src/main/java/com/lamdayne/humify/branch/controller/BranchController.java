@@ -29,7 +29,7 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('BRANCH_CREATE', 'BRANCH_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'BRANCH_CREATE', 'BRANCH_FULL')")
     public ResponseEntity<ApiResponse<BranchResponse>> createBranch(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateBranchRequest request

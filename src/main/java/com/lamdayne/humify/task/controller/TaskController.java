@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,7 @@ public class TaskController {
     private final TaskActivityService taskActivityService;
 
     @GetMapping("/{taskId}/activities")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<List<ActivityResponse>>> getTaskActivities(
             @PathVariable Long taskId
     ) {
@@ -44,6 +46,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/{taskId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_ATTACHMENT', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long taskId,
@@ -55,6 +58,7 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}/attachment")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_ATTACHMENT', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<AttachmentResponse>> uploadAttachment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long taskId,
@@ -68,6 +72,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/attachments")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<List<AttachmentResponse>>> getTaskAttachments(
             @PathVariable Long taskId
     ) {
@@ -79,6 +84,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<TaskDetailResponse>> getTaskById(
             @PathVariable(name = "id") Long id
     ) {
@@ -90,6 +96,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid UpdateTaskRequest request
@@ -102,6 +109,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/assign")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<TaskResponse>> assignTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid AssignTaskRequest request
@@ -114,6 +122,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/move")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<TaskResponse>> moveTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid MoveTaskRequest request
@@ -126,6 +135,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/reorder")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<TaskResponse>> reorderTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid ReorderTaskRequest request
@@ -138,6 +148,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_DELETE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteTask(
             @PathVariable(name = "id") Long id
     ) {
@@ -147,6 +158,7 @@ public class TaskController {
     }
 
     @PostMapping("{taskId}/worklogs")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<WorklogResponse>> create(
             @PathVariable Long taskId,
             @RequestBody @Valid CreateWorklogRequest request
@@ -159,6 +171,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/worklogs")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<List<WorklogResponse>>> getAll(
             @PathVariable Long taskId) {
         return ResponseEntity.ok()
@@ -169,6 +182,7 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}/comments")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_COMMENT', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable Long taskId,
             @Valid @RequestBody CreateCommentRequest request,
@@ -181,6 +195,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/comments")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getComments(@PathVariable Long taskId) {
         return ResponseEntity.ok()
                 .body(ApiResponse.success(

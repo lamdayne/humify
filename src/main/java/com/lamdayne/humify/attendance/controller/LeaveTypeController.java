@@ -26,7 +26,7 @@ public class LeaveTypeController {
     private final LeaveTypeService leaveTypeService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('LEAVE_TYPE_READ')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_TYPE_READ', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<List<LeaveTypeResponse>>> getLeaveTypes(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
@@ -38,7 +38,7 @@ public class LeaveTypeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('LEAVE_TYPE_CREATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_TYPE_CREATE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveTypeResponse>> createLeaveType(
             @Valid @RequestBody CreateLeaveTypeRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -51,7 +51,7 @@ public class LeaveTypeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('LEAVE_TYPE_UPDATE')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_TYPE_UPDATE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveTypeResponse>> updateLeaveType(
             @PathVariable Long id,
             @Valid @RequestBody UpdateLeaveTypeRequest request,
@@ -65,6 +65,7 @@ public class LeaveTypeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_TYPE_DELETE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteLeaveType(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {

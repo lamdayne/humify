@@ -10,14 +10,20 @@ import com.lamdayne.humify.branch.mapper.BranchMapper;
 import com.lamdayne.humify.branch.repository.BranchRepository;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -210,4 +216,168 @@ class BranchServiceImplTest {
 
         assertTrue(result);
     }
+
+    @Test
+    @DisplayName("Update branch when branch not found")
+    void updateBranch_branchNotFound() {
+        when(branchRepository.findById(100L)).thenReturn(Optional.empty());
+
+        final AppException exception = assertThrows(
+                AppException.class,
+                () -> branchService.updateBranch(100L, updateRequest)
+        );
+
+        verify(branchRepository, times(1)).findById(100L);
+        assertEquals(ErrorCode.BRANCH_NOT_FOUND, exception.getErrorCode());
+        verify(branchRepository, never()).save(any(Branch.class));
+        verify(branchMapper, never()).toBranchResponse(any());
+    }
+
+    // BR-SRV-11: getAllBranches - Thành công, có dữ liệu
+    @Test
+    @DisplayName("Get all branches - success with data")
+    void getAllBranches_success() {
+        Page<Branch> branchPage = new PageImpl<>(List.of(branch), PageRequest.of(0, 10), 1);
+
+        when(branchRepository.findAll(any(Pageable.class)))
+                .thenReturn(branchPage);
+        when(branchMapper.toBranchResponse(branch)).thenReturn(branchResponse);
+
+        PageResponse<BranchResponse> result = branchService.getAllBranches(1, 10, "name:asc");
+
+        assertNotNull(result);
+        assertThat(result.getPageNo()).isEqualTo(1);
+        assertThat(result.getPageSize()).isEqualTo(10);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getItems().get(0).getId()).isEqualTo(100L);
+        verify(branchRepository).findAll(any(Pageable.class));
+    }
+
+    // BR-SRV-12: getAllBranches - Thành công, không có dữ liệu
+    @Test
+    @DisplayName("Get all branches - success with empty result")
+    void getAllBranches_emptyResult() {
+        Page<Branch> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+
+        when(branchRepository.findAll(any(Pageable.class)))
+                .thenReturn(emptyPage);
+
+        PageResponse<BranchResponse> result = branchService.getAllBranches(1, 10);
+
+        assertNotNull(result);
+        assertThat(result.getItems()).isEmpty();
+        assertThat(result.getTotalElements()).isZero();
+        verify(branchMapper, never()).toBranchResponse(any());
+    }
+
+    // BR-SRV-13: getReferenceById - Thành công
+    @Test
+    @DisplayName("Get reference by id - success")
+    void getReferenceById_success() {
+        when(branchRepository.getReferenceById(100L)).thenReturn(branch);
+
+        Branch result = branchService.getReferenceById(100L);
+
+        assertNotNull(result);
+        assertThat(result).isEqualTo(branch);
+        verify(branchRepository).getReferenceById(100L);
+    }
+
+    // BR-SRV-14: getById - Thành công
+    @Test
+    @DisplayName("Get by id - success")
+    void getById_success() {
+        when(branchRepository.findById(100L)).thenReturn(Optional.of(branch));
+
+        Branch result = branchService.getById(100L);
+
+        assertNotNull(result);
+        assertThat(result).isEqualTo(branch);
+    }
+
+    // BR-SRV-15: getById - Thất bại do không tồn tại
+    @Test
+    @DisplayName("Get by id - not found")
+    void getById_notFound() {
+        when(branchRepository.findById(999L)).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> branchService.getById(999L)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BRANCH_NOT_FOUND);
+    }
+
+    // BR-SRV-16: existsById - Thành công, tồn tại
+    @Test
+    @DisplayName("Exists by id - true")
+    void existsById_true() {
+        when(branchRepository.existsById(100L)).thenReturn(true);
+
+        boolean result = branchService.existsById(100L);
+
+        assertTrue(result);
+    }
+
+    // BR-SRV-17: existsById - Thành công, không tồn tại
+    @Test
+    @DisplayName("Exists by id - false")
+    void existsById_false() {
+        when(branchRepository.existsById(999L)).thenReturn(false);
+
+        boolean result = branchService.existsById(999L);
+
+        assertFalse(result);
+    }
+
+    // BR-SRV-18: existsByIdAndCompanyId - Thất bại (không tồn tại)
+    @Test
+    @DisplayName("Exists by id and company id - false")
+    void existsByIdAndCompanyId_false() {
+        when(branchRepository.existsByIdAndCompanyId(999L, 10L)).thenReturn(false);
+
+        boolean result = branchService.existsByIdAndCompanyId(999L, 10L);
+
+        assertFalse(result);
+    }
+
+    // BR-SRV-19: findByName - Thành công, tìm thấy
+    @Test
+    @DisplayName("Find by name - found")
+    void findByName_found() {
+        when(branchRepository.findByName("VP Quận 2")).thenReturn(Optional.of(branch));
+
+        Optional<Branch> result = branchService.findByName("VP Quận 2");
+
+        assertTrue(result.isPresent());
+        assertThat(result.get().getName()).isEqualTo("VP Quận 2");
+    }
+
+    // BR-SRV-20: findByName - Không tìm thấy
+    @Test
+    @DisplayName("Find by name - not found")
+    void findByName_notFound() {
+        when(branchRepository.findByName("Không tồn tại")).thenReturn(Optional.empty());
+
+        Optional<Branch> result = branchService.findByName("Không tồn tại");
+
+        assertTrue(result.isEmpty());
+    }
+
+    // BR-SRV-21: save - Thành công
+    @Test
+    @DisplayName("Save branch - success")
+    void save_success() {
+        when(branchRepository.save(branch)).thenReturn(branch);
+
+        Branch result = branchService.save(branch);
+
+        assertNotNull(result);
+        assertThat(result).isEqualTo(branch);
+        verify(branchRepository).save(branch);
+    }
+
 }

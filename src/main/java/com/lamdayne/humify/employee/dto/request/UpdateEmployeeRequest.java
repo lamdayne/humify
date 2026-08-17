@@ -33,4 +33,5 @@ public class UpdateEmployeeRequest implements Serializable {
 
     private String avatarUrl;
 
+    private String nfcCardUid;
 }

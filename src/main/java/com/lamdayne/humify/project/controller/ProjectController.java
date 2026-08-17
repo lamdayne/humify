@@ -16,6 +16,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class ProjectController {
     private final ProjectSummaryService projectSummaryService;
 
     @PostMapping("/{projectId}/invitations")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<InvitationResponse>> createInvitation(
             @PathVariable Long projectId,
             @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -49,6 +51,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/members")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<ProjectMemberResponse>>> findAllMemberByProjectId(
             @PathVariable(name = "projectId") Long projectId,
             @RequestParam(defaultValue = "0", required = false) @Min(value = 0, message = "PAGE_NO_INVALID") int page,
@@ -63,6 +66,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}/members/{userId}/role")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectMemberResponse>> updateMemberRole(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "userId") Long userId,
@@ -76,6 +80,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{projectId}/members/{userId}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteMember(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "userId") Long userId
@@ -85,6 +90,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/members/{userId}/approve")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectMemberResponse>> approveMember(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "userId") Long userId
@@ -97,6 +103,7 @@ public class ProjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_CREATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
             @RequestBody @Valid CreateProjectRequest request
     ) {
@@ -108,6 +115,7 @@ public class ProjectController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<ProjectResponse>>> getAllProjects(
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "PAGE_NO_INVALID")
@@ -126,6 +134,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectResponse>> getProjectById(
             @PathVariable long id
     ) {
@@ -137,6 +146,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
             @PathVariable long id, @RequestBody @Valid UpdateProjectRequest request
     ) {
@@ -148,6 +158,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_DELETE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteProject(
             @PathVariable long id
     ) {
@@ -157,6 +168,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/sprints")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'SPRINT_CREATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<SprintResponse>> createSprint(
             @PathVariable Long projectId,
             @Valid @RequestBody CreateSprintRequest request) {
@@ -168,6 +180,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/sprints")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'SPRINT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<List<SprintResponse>>> getSprints(
             @PathVariable Long projectId,
             @RequestParam(required = false) SprintStatus status) {
@@ -179,6 +192,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/columns")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'COLUMN_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> getColumns(
             @PathVariable(name = "projectId") Long projectId
     ) {
@@ -190,6 +204,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/columns")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'COLUMN_CREATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<BoardColumnResponse>> createColumn(
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody @Valid CreateColumnRequest request
@@ -202,6 +217,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}/columns/reorder")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_UPDATE', 'COLUMN_UPDATE', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<List<BoardColumnResponse>>> reorderColumns(
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody @Valid ReorderColumnsRequest request
@@ -214,6 +230,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/tasks")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_CREATE', 'TASK_FULL', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<TaskResponse>> createTask(
             @PathVariable Long projectId,
             @RequestBody @Valid CreateTaskRequest request,
@@ -227,6 +244,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/tasks")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(
             @PathVariable Long projectId,
             @RequestParam(defaultValue = "0") @Min(value = 0, message = "PAGE_NO_INVALID") int page,
@@ -241,6 +259,7 @@ public class ProjectController {
     }
 
     @GetMapping("/roles")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<List<ProjectRoleResponse>>> getProjectRole() {
         return ResponseEntity.ok()
                 .body(ApiResponse.success(
@@ -250,6 +269,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/summary")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PROJECT_READ', 'PROJECT_FULL')")
     public ResponseEntity<ApiResponse<ProjectSummaryResponse>> getProjectSummary(
             @PathVariable Long projectId
     ) {

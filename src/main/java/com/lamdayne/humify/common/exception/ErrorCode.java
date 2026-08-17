@@ -99,6 +99,8 @@ public enum ErrorCode {
     USER_EMAIL_EXISTED("USER_EMAIL_EXISTED", "Email already exists", HttpStatus.BAD_REQUEST),
     USER_OLD_PASSWORD_REQUIRED("USER_OLD_PASSWORD_REQUIRED", "Old password is required", HttpStatus.BAD_REQUEST),
     USER_PASSWORD_NOT_MATCH("USER_PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
+    USER_STATUS_REQUIRED("USER_STATUS_REQUIRED", "Active status is required", HttpStatus.BAD_REQUEST),
+    CANNOT_DEACTIVATE_SELF("CANNOT_DEACTIVATE_SELF", "You cannot deactivate your own account", HttpStatus.BAD_REQUEST),
 
     // Auth
     JWT_EXPIRED("JWT_EXPIRED", "Token expired", HttpStatus.UNAUTHORIZED),
@@ -108,7 +110,7 @@ public enum ErrorCode {
     PASSWORD_REQUIRED("PASSWORD_REQUIRED", "Password cannot be blank", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD("INVALID_PASSWORD", "Invalid password", HttpStatus.BAD_REQUEST),
-    USER_NOT_ACTIVATED("USER_NOT_ACTIVATED", "User is not activated", HttpStatus.BAD_REQUEST),
+    USER_NOT_ACTIVATED("USER_NOT_ACTIVATED", "User is not activated", HttpStatus.UNAUTHORIZED),
     TOKEN_NOT_FOUND("TOKEN_NOT_FOUND", "Token not found", HttpStatus.NOT_FOUND),
     PASSWORD_NOT_MATCH("PASSWORD_NOT_MATCH", "Password does not match", HttpStatus.BAD_REQUEST),
     RESET_TOKEN_EXPIRED("RESET_TOKEN_EXPIRED", "Token expired", HttpStatus.BAD_REQUEST),
@@ -297,6 +299,8 @@ public enum ErrorCode {
     ALREADY_CHECKED_IN("ALREADY_CHECKED_IN", "You have already checked in today", HttpStatus.BAD_REQUEST),
     NOT_CHECKED_IN_YET("NOT_CHECKED_IN_YET", "You must check in before checking out", HttpStatus.BAD_REQUEST),
     ALREADY_CHECKED_OUT("ALREADY_CHECKED_OUT", "You have already checked out today", HttpStatus.BAD_REQUEST),
+    NFC_CARD_ALREADY_EXISTS("NFC_CARD_ALREADY_EXISTS", "NFC card UID is already assigned to another active employee", HttpStatus.BAD_REQUEST),
+    NFC_CARD_CONFLICT("NFC_CARD_CONFLICT", "Multiple active employees found with the same NFC card UID", HttpStatus.CONFLICT),
 
     //PAYSLIP
     PAYSLIP_NOT_FOUND("PAYSLIP_NOT_FOUND", "Payslip not found", HttpStatus.NOT_FOUND),

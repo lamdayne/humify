@@ -247,6 +247,38 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 .build();
     }
 
+    @Override
+    public PageResponse<LeaveRequestResponse> getMyLeaveRequests(UserPrincipal userPrincipal, Pageable pageable, String[] leaveRequest) {
+        User user = userService.getUserById(userPrincipal.getId());
+        Employee employee = user.getEmployee();
+        if (employee == null) {
+            return PageResponse.<LeaveRequestResponse>builder()
+                    .pageNo(pageable.getPageNumber())
+                    .pageSize(pageable.getPageSize())
+                    .totalElements(0)
+                    .totalPages(0)
+                    .items(List.of())
+                    .build();
+        }
+
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(leaveRequest);
+        Specification<LeaveRequest> spec = leaveRequestSpecification.build(criteriaList);
+        Specification<LeaveRequest> employeeSpec = (root, query, cb) -> cb.equal(root.get("employee").get("id"), employee.getId());
+        Specification<LeaveRequest> finalSpec = spec != null ? spec.and(employeeSpec) : employeeSpec;
+
+        Page<LeaveRequest> page = leaveRequestRepository.findAll(finalSpec, pageable);
+
+        List<LeaveRequestResponse> responses = page.stream().map(leaveRequestMapper::toLeaveRequestResponse).toList();
+
+        return PageResponse.<LeaveRequestResponse>builder()
+                .pageNo(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .items(responses)
+                .build();
+    }
+
     private LeaveRequest getLeaveRequest(long id) {
         return leaveRequestRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LEAVE_REQUEST_NOT_FOUND));
     }

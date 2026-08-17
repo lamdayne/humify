@@ -5,6 +5,7 @@ import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
+import com.lamdayne.humify.common.util.SqidsUtil;
 import com.lamdayne.humify.company.dto.request.CreateCompanyRequest;
 import com.lamdayne.humify.company.dto.request.UpdateCompanyRequest;
 import com.lamdayne.humify.company.dto.response.CompanyResponse;
@@ -48,6 +49,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
     private static final int TEMP_PASSWORD_LENGTH = 12;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+    private final SqidsUtil sqidsUtil;
     private final UserRepository userRepository;
     private final CompanyMapper companyMapper;
     private final PasswordEncoder passwordEncoder;
@@ -68,7 +70,7 @@ public class CompanyServiceImpl implements CompanyService, CompanyAccessService 
         }
 
         Company company = companyMapper.toCompany(request);
-        String companyCode = UUID.randomUUID().toString();
+        String companyCode = sqidsUtil.encode(Instant.now().toEpochMilli());
         company.setCompanyCode(companyCode);
 
         company = companyRepository.save(company);

@@ -27,7 +27,7 @@ public class LeaveRequestController {
     private final LeaveRequestService leaveRequestService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_CREATE')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_CREATE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveRequestResponse>> createLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateLeaveRequest request
@@ -40,7 +40,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_READ')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_READ', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveRequestResponse>> getLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable long id
@@ -54,7 +54,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_UPDATE')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_UPDATE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveRequestResponse>> updateLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable long id,
@@ -68,7 +68,7 @@ public class LeaveRequestController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_CANCEL')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_CANCEL', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<Void>> cancelLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable long id
@@ -78,7 +78,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_APPROVE')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_APPROVE', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveRequestResponse>> approveLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable long id,
@@ -92,7 +92,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/{id}/reject")
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_REJECT')")
+    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_REJECT', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<LeaveRequestResponse>> rejectLeaveRequest(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable long id,
@@ -105,8 +105,22 @@ public class LeaveRequestController {
                 ));
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<PageResponse<LeaveRequestResponse>>> getMyLeaveRequests(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            Pageable pageable,
+            @RequestParam(required = false) String[] leaveRequest
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.LEAVE_REQUEST_READ_SUCCESS,
+                        leaveRequestService.getMyLeaveRequests(userPrincipal, pageable, leaveRequest)
+                ));
+    }
+
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('LEAVE_REQUEST_READ_ALL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'LEAVE_REQUEST_READ_ALL', 'LEAVE_FULL')")
     public ResponseEntity<ApiResponse<PageResponse<LeaveRequestResponse>>> getLeaveRequests(
             Pageable pageable,
             @RequestParam(required = false) String[] leaveRequest
