@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +34,15 @@ public class WorkShiftServiceImpl implements WorkShiftService {
     private final WorkShiftRepository workShiftRepository;
     private final WorkShiftSpecification workShiftSpecification;
     private final WorkShiftMapper workShiftMapper;
+    private final CompanyRepository companyRepository;
 
     @Override
     @Transactional
     public WorkShiftResponse createWorkShift(CreateWorkShiftRequest request) {
+        Long companyId = CompanyContext.getCompanyId();
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+
         if (workShiftRepository.existsByShiftCodeAndDeletedAtIsNull(request.getShiftCode())) {
             throw new AppException(ErrorCode.SHIFT_CODE_ALREADY_EXISTS);
         }
@@ -42,6 +50,7 @@ public class WorkShiftServiceImpl implements WorkShiftService {
         validateShiftTimes(request.getStartTime(), request.getEndTime(), request.getBreakStartTime(), request.getBreakEndTime());
 
         WorkShift shift = workShiftMapper.toEntity(request);
+        shift.setCompany(company);
         shift.setStatus(Boolean.TRUE);
 
         return workShiftMapper.toResponse(workShiftRepository.save(shift));
