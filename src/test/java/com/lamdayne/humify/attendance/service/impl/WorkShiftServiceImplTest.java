@@ -7,9 +7,13 @@ import com.lamdayne.humify.attendance.entity.WorkShift;
 import com.lamdayne.humify.attendance.mapper.WorkShiftMapper;
 import com.lamdayne.humify.attendance.repository.WorkShiftRepository;
 import com.lamdayne.humify.attendance.repository.WorkShiftSpecification;
+import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.service.CompanyService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,17 +40,20 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("WorkShiftServiceImpl Unit Tests")
 class WorkShiftServiceImplTest {
 
     @Mock private WorkShiftRepository workShiftRepository;
     @Mock private WorkShiftSpecification workShiftSpecification;
     @Mock private WorkShiftMapper workShiftMapper;
+    @Mock private CompanyService companyService;
 
     @InjectMocks
     private WorkShiftServiceImpl workShiftService;
 
     private WorkShift workShift;
+    private Company company;
     private Instant start;
     private Instant end;
     private Instant breakStart;
@@ -68,6 +77,17 @@ class WorkShiftServiceImplTest {
                 .status(Boolean.TRUE)
                 .build();
         workShift.setId(1L);
+
+        company = new Company();
+        company.setId(1L);
+
+        CompanyContext.setCompanyId(1L);
+        when(companyService.getCompanyById(1L)).thenReturn(company);
+    }
+
+    @AfterEach
+    void tearDown() {
+        CompanyContext.clear();
     }
 
     // ---- createWorkShift ----
@@ -93,6 +113,7 @@ class WorkShiftServiceImplTest {
 
         assertNotNull(result);
         assertThat(workShift.getStatus()).isTrue();
+        assertThat(workShift.getCompany()).isEqualTo(company);
         verify(workShiftRepository).save(workShift);
     }
 
