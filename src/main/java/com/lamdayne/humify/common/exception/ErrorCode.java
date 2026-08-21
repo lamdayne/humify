@@ -41,6 +41,10 @@ public enum ErrorCode {
     SHIFT_END_TIME_REQUIRED("SHIFT_END_TIME_REQUIRED", "End time cannot be null", HttpStatus.BAD_REQUEST),
     GRACE_PERIOD_INVALID("GRACE_PERIOD_INVALID", "Grace period minutes must be greater than or equal to 0", HttpStatus.BAD_REQUEST),
 
+    // Employee Shift
+    EMPLOYEE_SHIFT_NOT_FOUND("EMPLOYEE_SHIFT_NOT_FOUND", "Employee shift assignment not found", HttpStatus.NOT_FOUND),
+    EMPLOYEE_SHIFT_OVERLAP("EMPLOYEE_SHIFT_OVERLAP", "Employee already has an active shift assignment overlapping this period", HttpStatus.BAD_REQUEST),
+
     // Common
     VALIDATION_ERROR("VALIDATION_ERROR", "Request validation failed", HttpStatus.BAD_REQUEST),
     INVALID_ERROR_CODE("INVALID_ERROR_CODE", "Invalid error code", HttpStatus.BAD_REQUEST),

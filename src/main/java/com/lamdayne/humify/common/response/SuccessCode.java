@@ -26,6 +26,12 @@ public enum SuccessCode {
     WORK_SHIFT_UPDATE_SUCCESS("WORK_SHIFT_UPDATE_SUCCESS", "Work shift updated successfully"),
     WORK_SHIFT_DELETE_SUCCESS("WORK_SHIFT_DELETE_SUCCESS", "Work shift deactivated successfully"),
 
+    // Employee Shift
+    EMPLOYEE_SHIFT_CREATE_SUCCESS("EMPLOYEE_SHIFT_CREATE_SUCCESS", "Employee shift assigned successfully"),
+    EMPLOYEE_SHIFT_READ_SUCCESS("EMPLOYEE_SHIFT_READ_SUCCESS", "Get employee shifts successfully"),
+    EMPLOYEE_SHIFT_UPDATE_SUCCESS("EMPLOYEE_SHIFT_UPDATE_SUCCESS", "Employee shift assignment updated successfully"),
+    EMPLOYEE_SHIFT_DELETE_SUCCESS("EMPLOYEE_SHIFT_DELETE_SUCCESS", "Employee shift assignment deleted successfully"),
+
     // Auth
     LOGIN_SUCCESS("LOGIN_SUCCESS", "Login Success"),
     REFRESH_TOKEN_SUCCESS("REFRESH_TOKEN_SUCCESS", "Refresh Token Success"),
