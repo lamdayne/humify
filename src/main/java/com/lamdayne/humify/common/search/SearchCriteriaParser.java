@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class SearchCriteriaParser {
 
-    private static final Pattern PATTERN = Pattern.compile("(\\w+?)([:<>~!])(\\*?)(.+?)(\\*?)(')?$");
+    private static final Pattern PATTERN = Pattern.compile("([\\w.]+?)([:<>~!])(\\*?)(.+?)(\\*?)(')?$");
 
     private SearchCriteriaParser() {
 
