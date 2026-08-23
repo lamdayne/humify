@@ -212,7 +212,8 @@ public class RoleServiceImpl implements RoleService, RoleAccessService {
             return true;
         }
 
-        String module = permissionName.contains("_") ? permissionName.split("_")[0] : permissionName;
+        int lastIndexScore = permissionName.lastIndexOf("_");
+        String module = lastIndexScore > 0 ? permissionName.substring(0, lastIndexScore) : permissionName;
         return userPermissions.contains(String.format("%s_FULL", module));
     }
 

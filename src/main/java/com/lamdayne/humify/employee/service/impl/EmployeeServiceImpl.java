@@ -144,6 +144,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (request.getNfcCardUid() != null && !request.getNfcCardUid().isBlank()) {
             employeeValidator.validateNfcCardUid(request.getNfcCardUid(), id);
+        } else if (request.getNfcCardUid() != null && request.getNfcCardUid().isBlank()) {
+            employee.setNfcCardUid(null);
         }
 
         employeeMapper.updateEmployee(employee, request);

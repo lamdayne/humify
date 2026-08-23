@@ -31,7 +31,8 @@ public class RoleValidator {
             return true;
         }
 
-        String module = permissionName.split("_")[0];
+        int lastIndexScore = permissionName.lastIndexOf("_");
+        String module = lastIndexScore > 0 ? permissionName.substring(0, lastIndexScore) : permissionName;
         return userPermissions.contains(String.format("%s_FULL", module));
     }
 
