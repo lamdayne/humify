@@ -158,6 +158,7 @@ public enum PermissionEnum {
     TASK_READ("View task information", PermissionModule.TASK),
     TASK_ATTACHMENT("Attachment file", PermissionModule.TASK),
     TASK_COMMENT("Comment on task", PermissionModule.TASK),
+    TASK_MOVE("Move task", PermissionModule.TASK),
     TASK_FULL("Full task information", PermissionModule.TASK),
 
     // Attendance Correction
