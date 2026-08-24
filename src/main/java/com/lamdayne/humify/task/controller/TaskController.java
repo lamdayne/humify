@@ -122,7 +122,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/move")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL', 'TASK_MOVE')")
     public ResponseEntity<ApiResponse<TaskResponse>> moveTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid MoveTaskRequest request
@@ -135,7 +135,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/reorder")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL', 'TASK_MOVE')")
     public ResponseEntity<ApiResponse<TaskResponse>> reorderTask(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid ReorderTaskRequest request
