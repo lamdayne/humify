@@ -1,5 +1,6 @@
 package com.lamdayne.humify.user.repository;
 
+import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndCompanyId(String email, Long companyId);
 
     boolean existsByEmailAndCompanyIsNull(String email);
+
+    Optional<User> findByIdAndCompanyIdAndDeletedAtIsNull(Long id, Long companyId);
+    Optional<User> findByEmployeeIdAndCompanyIdAndDeletedAtIsNull(Long employeeId, Long companyId);
 }

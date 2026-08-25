@@ -294,4 +294,36 @@ public class UserServiceImpl implements UserService {
         response.setRoles(findRolesByUserIds(List.of(user.getId())).getOrDefault(user.getId(), List.of()));
         return response;
     }
+
+//    phần kpis
+    @Override
+    public User getUserEntityByIdAndCompanyId(Long userId, Long companyId) {
+        return userRepository
+                .findByIdAndCompanyIdAndDeletedAtIsNull(
+                        userId,
+                        companyId
+                )
+                .orElseThrow(() ->
+                        new AppException(
+                                ErrorCode.USER_NOT_FOUND
+                        )
+                );
+    }
+
+    @Override
+    public User getUserEntityByEmployeeIdAndCompanyId(
+            Long employeeId,
+            Long companyId
+    ) {
+        return userRepository
+                .findByEmployeeIdAndCompanyIdAndDeletedAtIsNull(
+                        employeeId,
+                        companyId
+                )
+                .orElseThrow(() ->
+                        new AppException(
+                                ErrorCode.USER_NOT_FOUND
+                        )
+                );
+    }
 }

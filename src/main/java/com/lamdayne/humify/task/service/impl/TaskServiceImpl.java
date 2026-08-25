@@ -39,6 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
@@ -281,6 +283,83 @@ public class TaskServiceImpl implements TaskService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return userService.getUserById(userPrincipal.getId());
+    }
+
+
+//    phần kpis
+@Override
+public long countEligibleTasks(
+        Long userId,
+        LocalDate periodStart,
+        LocalDate periodEnd
+) {
+    ZoneId zoneId = ZoneId.systemDefault();
+
+    Instant start = periodStart
+            .atStartOfDay(zoneId)
+            .toInstant();
+
+    Instant endExclusive = periodEnd
+            .plusDays(1)
+            .atStartOfDay(zoneId)
+            .toInstant();
+
+    return taskRepository.countEligibleTasks(
+            userId,
+            start,
+            endExclusive,
+            TaskType.EPIC
+    );
+}
+
+    @Override
+    public long countCompletedEligibleTasks(
+            Long userId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        Instant start = periodStart
+                .atStartOfDay(zoneId)
+                .toInstant();
+
+        Instant endExclusive = periodEnd
+                .plusDays(1)
+                .atStartOfDay(zoneId)
+                .toInstant();
+
+        return taskRepository.countCompletedEligibleTasks(
+                userId,
+                start,
+                endExclusive,
+                TaskType.EPIC
+        );
+    }
+
+    @Override
+    public long countOnTimeEligibleTasks(
+            Long userId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        Instant start = periodStart
+                .atStartOfDay(zoneId)
+                .toInstant();
+
+        Instant endExclusive = periodEnd
+                .plusDays(1)
+                .atStartOfDay(zoneId)
+                .toInstant();
+
+        return taskRepository.countOnTimeEligibleTasks(
+                userId,
+                start,
+                endExclusive,
+                TaskType.EPIC
+                );
     }
 
 }

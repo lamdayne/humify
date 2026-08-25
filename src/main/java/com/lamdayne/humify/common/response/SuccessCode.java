@@ -219,8 +219,17 @@ public enum SuccessCode {
     ATTENDANCE_CORRECTION_REJECT_SUCCESS("ATTENDANCE_CORRECTION_REJECT_SUCCESS", "Attendance correction request rejected successfully"),
     ATTENDANCE_CORRECTION_READ_SUCCESS("ATTENDANCE_CORRECTION_READ_SUCCESS", "Get attendance corrections successfully"),
 
-    ;
 
+    KPI_CALCULATE_SUCCESS("KPI_CALCULATE_SUCCESS", "Get kpi calculate successfully" ),
+    KPI_TEMPLATE_CREATE_SUCCESS( "KPI_TEMPLATE_CREATE_SUCCESS","KPI template created successfully"),
+    KPI_TEMPLATE_READ_SUCCESS("KPI_TEMPLATE_READ_SUCCESS","KPI template retrieved successfully"),
+    KPI_TEMPLATE_UPDATE_SUCCESS("KPI_TEMPLATE_UPDATE_SUCCESS","KPI template updated successfully"),
+    KPI_TEMPLATE_DELETE_SUCCESS("KPI_TEMPLATE_DELETE_SUCCESS","KPI template deleted successfully"),
+    PERFORMANCE_REVIEW_CREATE_SUCCESS("PERFORMANCE_REVIEW_CREATE_SUCCESS","performance review created successfully"),
+    PERFORMANCE_REVIEW_READ_SUCCESS("PERFORMANCE_REVIEW_READ_SUCCESS","performance review retrieved successfully"),
+    PERFORMANCE_REVIEW_SELF_REVIEW_SUCCESS("PERFORMANCE_REVIEW_SELF_REVIEW_SUCCESS","performance review self review retrieved successfully" ),
+    PERFORMANCE_REVIEW_MANAGER_REVIEW_SUCCESS("PERFORMANCE_REVIEW_MANAGER_REVIEW_SUCCESS","performance review manager review retrieved successfully" ),
+    PERFORMANCE_REVIEW_COMPLETE_SUCCESS("PERFORMANCE_REVIEW_COMPLETE_SUCCESS", "performance review completed successfully"),;
     private String code;
     private String defaultMessage;
 }

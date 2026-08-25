@@ -1,7 +1,8 @@
 package com.lamdayne.humify.performance.mapper;
 
-
-import com.lamdayne.humify.performance.dto.response.ReviewResponse;
+import com.lamdayne.humify.performance.dto.response.KpiResponse;
+import com.lamdayne.humify.performance.dto.response.PerformanceReviewResponse;
+import com.lamdayne.humify.performance.entity.Kpi;
 import com.lamdayne.humify.performance.entity.PerformanceReview;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,9 +10,29 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PerformanceReviewMapper {
 
-    @Mapping(source = "employee.id", target = "employeeId")
-    @Mapping(source = "reviewer.id", target = "reviewerId")
-    @Mapping(source = "feedBack", target = "feedback")
-    @Mapping(target = "systemCalculatedMetrics", ignore = true)
-    ReviewResponse toResponse(PerformanceReview review);
+    KpiResponse toKpiResponse(Kpi kpi);
+
+    @Mapping(
+            target = "employeeId",
+            source = "employee.id"
+    )
+    @Mapping(
+            target = "employeeName",
+            source = "employee.fullName"
+    )
+    @Mapping(
+            target = "reviewerId",
+            source = "reviewer.id"
+    )
+    @Mapping(
+            target = "templateId",
+            source = "template.id"
+    )
+    @Mapping(
+            target = "templateName",
+            source = "template.name"
+    )
+    PerformanceReviewResponse toResponse(
+            PerformanceReview review
+    );
 }

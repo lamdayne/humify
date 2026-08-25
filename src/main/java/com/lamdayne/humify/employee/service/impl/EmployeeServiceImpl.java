@@ -273,4 +273,21 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
     }
 
+    @Override
+    public Employee getEmployeeEntityByIdAndCompanyId(
+            Long employeeId,
+            Long companyId
+    ) {
+        return employeeRepository
+                .findByIdAndCompanyIdAndDeletedAtIsNull(
+                        employeeId,
+                        companyId
+                )
+                .orElseThrow(() ->
+                        new AppException(
+                                ErrorCode.EMPLOYEE_NOT_FOUND
+                        )
+                );
+    }
+
 }

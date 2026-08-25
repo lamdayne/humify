@@ -44,4 +44,7 @@ public interface UserService {
 
     UserResponse updateStatus(Long id, UpdateUserStatusRequest request, UserPrincipal currentUser);
 
+    User getUserEntityByIdAndCompanyId(Long userId, Long companyId);
+
+    User getUserEntityByEmployeeIdAndCompanyId(Long employeeId, Long companyId);
 }

@@ -36,4 +36,5 @@ public interface EmployeeService {
 
     PageResponse<EmployeeResponse> filterEmployees(Pageable pageable, String[] params);
 
+    Employee getEmployeeEntityByIdAndCompanyId(Long employeeId, Long companyId);
 }
