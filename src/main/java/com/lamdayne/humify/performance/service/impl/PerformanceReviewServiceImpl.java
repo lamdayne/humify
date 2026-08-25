@@ -1,174 +1,825 @@
 package com.lamdayne.humify.performance.service.impl;
 
+
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
+import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.util.PageableUtil;
+import com.lamdayne.humify.company.entity.Company;
+import com.lamdayne.humify.company.repository.CompanyRepository;
+import com.lamdayne.humify.company.service.CompanyService;
 import com.lamdayne.humify.employee.entity.Employee;
 import com.lamdayne.humify.employee.repository.EmployeeRepository;
-import com.lamdayne.humify.performance.dto.request.ReviewRequests;
-import com.lamdayne.humify.performance.dto.response.ReviewResponse;
-import com.lamdayne.humify.performance.dto.response.SystemCalculatedMetricsResponse;
+import com.lamdayne.humify.employee.service.EmployeeService;
+import com.lamdayne.humify.performance.dto.request.CreatePerformanceReviewRequest;
+import com.lamdayne.humify.performance.dto.request.ManagerReviewRequest;
+import com.lamdayne.humify.performance.dto.request.SelfReviewRequest;
+import com.lamdayne.humify.performance.dto.response.PerformanceReviewResponse;
+import com.lamdayne.humify.performance.dto.response.PerformanceReviewSummaryResponse;
+import com.lamdayne.humify.performance.entity.Kpi;
+import com.lamdayne.humify.performance.entity.KpiTemplate;
+import com.lamdayne.humify.performance.entity.KpiTemplateItem;
 import com.lamdayne.humify.performance.entity.PerformanceReview;
+import com.lamdayne.humify.performance.enums.KpiStatus;
 import com.lamdayne.humify.performance.enums.PerformanceReviewStatus;
 import com.lamdayne.humify.performance.mapper.PerformanceReviewMapper;
+import com.lamdayne.humify.performance.repository.KpiTemplateRepository;
 import com.lamdayne.humify.performance.repository.PerformanceReviewRepository;
+import com.lamdayne.humify.performance.service.KpiCalculationService;
 import com.lamdayne.humify.performance.service.PerformanceReviewService;
-import com.lamdayne.humify.task.entity.Task;
-import com.lamdayne.humify.task.enums.TaskType;
-import com.lamdayne.humify.task.repository.TaskRepository;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PerformanceReviewServiceImpl implements PerformanceReviewService {
+@Transactional(readOnly = true)
+public class PerformanceReviewServiceImpl
+        implements PerformanceReviewService {
 
+    private final PerformanceReviewRepository performanceReviewRepository;
+    private final KpiTemplateRepository kpiTemplateRepository;
 
-    private final PerformanceReviewRepository reviewRepository;
-    private final EmployeeRepository employeeRepository;
-    private final UserRepository userRepository;
-    private final PerformanceReviewMapper reviewMapper;
-    private final TaskRepository taskRepository;
+    private final EmployeeService employeeService;
+    private final UserService userService;
+    private final CompanyService companyService;
+    private final KpiCalculationService kpiCalculationService;
+    private final PerformanceReviewMapper performanceReviewMapper;
 
     @Override
     @Transactional
-    public ReviewResponse createReview(Long employeeId, ReviewRequests.CreateReviewRequest request) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+    public PerformanceReviewResponse createReview(
+            UserPrincipal userPrincipal,
+            CreatePerformanceReviewRequest request
+    ) {
+        Long companyId = userPrincipal.getCompanyId();
 
-        User reviewer = userRepository.findById(request.getReviewerId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        validatePeriod(
+                request.getPeriodStart(),
+                request.getPeriodEnd()
+        );
 
-        if (reviewRepository.existsByEmployeeIdAndReviewPeriod(employeeId, request.getReviewPeriod())) {
-            throw new AppException(ErrorCode.REVIEW_PERIOD_DUPLICATE);
+        Company company =companyService.getCompanyById(companyId);
+
+        Employee employee =
+                employeeService.getEmployeeEntityByIdAndCompanyId(
+                        request.getEmployeeId(),
+                        companyId
+                );
+
+        User reviewer = userService.getUserEntityByIdAndCompanyId(
+
+                request.getReviewerId(),
+                companyId
+        );
+
+        KpiTemplate template = getTemplateOrThrow(
+                companyId,
+                request.getTemplateId()
+        );
+
+        validateTemplate(template);
+
+        validateDuplicateReview(
+                companyId,
+                employee.getId(),
+                request.getPeriodStart(),
+                request.getPeriodEnd()
+        );
+
+        PerformanceReview review =
+                new PerformanceReview();
+
+        review.setCompany(company);
+        review.setEmployee(employee);
+        review.setReviewer(reviewer);
+        review.setTemplate(template);
+
+        review.setPeriodStart(request.getPeriodStart());
+        review.setPeriodEnd(request.getPeriodEnd());
+
+        review.setStatus(
+                PerformanceReviewStatus.DRAFT
+        );
+
+        review.setSelfScore(null);
+        review.setReviewerScore(null);
+        review.setFinalScore(null);
+        review.setFeedback(null);
+
+        copyTemplateItemsToKpis(
+                review,
+                company,
+                employee,
+                template,
+                request.getPeriodStart(),
+                request.getPeriodEnd()
+        );
+
+        PerformanceReview saved =
+                performanceReviewRepository.save(review);
+
+        return performanceReviewMapper.toResponse(saved);
+    }
+
+    @Override
+    public PerformanceReviewResponse getReviewById(
+            UserPrincipal userPrincipal,
+            Long reviewId
+    ) {
+        PerformanceReview review =
+                getReviewOrThrow(
+                        userPrincipal.getCompanyId(),
+                        reviewId
+                );
+
+        return performanceReviewMapper.toResponse(review);
+    }
+
+    @Override
+    public PageResponse<PerformanceReviewResponse> getReviews(
+            UserPrincipal userPrincipal,
+            Long employeeId,
+            PerformanceReviewStatus status,
+            LocalDate periodStart,
+            LocalDate periodEnd,
+            int page,
+            int size,
+            String... sorts
+    ) {
+        if (periodStart != null
+                && periodEnd != null
+                && periodStart.isAfter(periodEnd)) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_PERIOD_INVALID
+            );
         }
 
-        User employeeAccount = userRepository.findByEmail(employee.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Pageable pageable =
+                PageableUtil.buildPageable(
+                        page,
+                        size,
+                        sorts
+                );
 
-        SystemCalculatedMetricsResponse metrics = calculateMetrics(employeeAccount.getId());
+        Specification<PerformanceReview> spec =
+                (root, query, cb) ->
+                        cb.equal(
+                                root.get("company").get("id"),
+                                userPrincipal.getCompanyId()
+                        );
 
-        PerformanceReview review = PerformanceReview.builder()
-                .company(employee.getCompany())
-                .employee(employee)
-                .reviewer(reviewer)
-                .reviewPeriod(request.getReviewPeriod())
-                .status(PerformanceReviewStatus.DRAFT)
+        spec = spec.and(
+                (root, query, cb) ->
+                        cb.isNull(root.get("deletedAt"))
+        );
+
+        if (employeeId != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.equal(
+                                    root.get("employee").get("id"),
+                                    employeeId
+                            )
+            );
+        }
+
+        if (status != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.equal(
+                                    root.get("status"),
+                                    status
+                            )
+            );
+        }
+
+        if (periodStart != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.greaterThanOrEqualTo(
+                                    root.get("periodEnd"),
+                                    periodStart
+                            )
+            );
+        }
+
+        if (periodEnd != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.lessThanOrEqualTo(
+                                    root.get("periodStart"),
+                                    periodEnd
+                            )
+            );
+        }
+
+        Page<PerformanceReview> reviewPage =
+                performanceReviewRepository.findAll(
+                        spec,
+                        pageable
+                );
+
+        List<PerformanceReviewResponse> reviews =
+                reviewPage.stream()
+                        .map(performanceReviewMapper::toResponse)
+                        .toList();
+
+        return PageResponse.<PerformanceReviewResponse>builder()
+                .pageNo(page)
+                .pageSize(size)
+                .totalPages(reviewPage.getTotalPages())
+                .totalElements(reviewPage.getTotalElements())
+                .items(reviews)
                 .build();
+    }
+    @Override
+    public PageResponse<PerformanceReviewResponse> getMyReviews(
+            UserPrincipal userPrincipal,
+            PerformanceReviewStatus status,
+            LocalDate periodStart,
+            LocalDate periodEnd,
+            int page,
+            int size,
+            String... sorts
+    ) {
 
-        review = reviewRepository.save(review);
+        if (periodStart != null
+                && periodEnd != null
+                && periodStart.isAfter(periodEnd)) {
 
-        return reviewMapper.toResponse(review)
-                .toBuilder()
-                .systemCalculatedMetrics(metrics)
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_PERIOD_INVALID
+            );
+        }
+
+        User user =
+                userService.getUserEntityByIdAndCompanyId(
+                        userPrincipal.getId(),
+                        userPrincipal.getCompanyId()
+                );
+
+        if (user.getEmployee() == null) {
+            throw new AppException(
+                    ErrorCode.EMPLOYEE_NOT_FOUND
+            );
+        }
+
+        Long employeeId = user.getEmployee().getId();
+
+        Pageable pageable =
+                PageableUtil.buildPageable(
+                        page,
+                        size,
+                        sorts
+                );
+
+        Specification<PerformanceReview> spec =
+                (root, query, cb) ->
+                        cb.and(
+                                cb.equal(
+                                        root.get("company").get("id"),
+                                        userPrincipal.getCompanyId()
+                                ),
+                                cb.equal(
+                                        root.get("employee").get("id"),
+                                        employeeId
+                                ),
+                                cb.isNull(
+                                        root.get("deletedAt")
+                                )
+                        );
+
+        if (status != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.equal(
+                                    root.get("status"),
+                                    status
+                            )
+            );
+        }
+
+        if (periodStart != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.greaterThanOrEqualTo(
+                                    root.get("periodEnd"),
+                                    periodStart
+                            )
+            );
+        }
+
+        if (periodEnd != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.lessThanOrEqualTo(
+                                    root.get("periodStart"),
+                                    periodEnd
+                            )
+            );
+        }
+
+        Page<PerformanceReview> reviewPage =
+                performanceReviewRepository.findAll(
+                        spec,
+                        pageable
+                );
+
+        List<PerformanceReviewResponse> reviews =
+                reviewPage.stream()
+                        .map(performanceReviewMapper::toResponse)
+                        .toList();
+
+        return PageResponse.<PerformanceReviewResponse>builder()
+                .pageNo(page)
+                .pageSize(size)
+                .totalPages(reviewPage.getTotalPages())
+                .totalElements(reviewPage.getTotalElements())
+                .items(reviews)
                 .build();
     }
 
+    //  review of manager/hr
     @Override
-    public List<ReviewResponse> getReviewsByEmployeeId(Long employeeId) {
-        if (!employeeRepository.existsById(employeeId)) {
-            throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+    public PageResponse<PerformanceReviewResponse> getMyAssignedReviews(
+            UserPrincipal userPrincipal,
+            Long employeeId,
+            PerformanceReviewStatus status,
+            LocalDate periodStart,
+            LocalDate periodEnd,
+            int page,
+            int size,
+            String... sorts
+    ) {
+
+        if (periodStart != null
+                && periodEnd != null
+                && periodStart.isAfter(periodEnd)) {
+
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_PERIOD_INVALID
+            );
         }
-        return reviewRepository.findByEmployeeIdOrderByCreatedAtDesc(employeeId).stream()
-                .map(reviewMapper::toResponse)
-                .toList();
+
+        Long companyId = userPrincipal.getCompanyId();
+        Long reviewerId = userPrincipal.getId();
+
+        Pageable pageable =
+                PageableUtil.buildPageable(
+                        page,
+                        size,
+                        sorts
+                );
+
+        Specification<PerformanceReview> spec =
+                (root, query, cb) ->
+                        cb.and(
+                                cb.equal(
+                                        root.get("company").get("id"),
+                                        companyId
+                                ),
+                                cb.equal(
+                                        root.get("reviewer").get("id"),
+                                        reviewerId
+                                ),
+                                cb.isNull(
+                                        root.get("deletedAt")
+                                )
+                        );
+
+        if (employeeId != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.equal(
+                                    root.get("employee").get("id"),
+                                    employeeId
+                            )
+            );
+        }
+
+        if (status != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.equal(
+                                    root.get("status"),
+                                    status
+                            )
+            );
+        }
+
+        if (periodStart != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.greaterThanOrEqualTo(
+                                    root.get("periodEnd"),
+                                    periodStart
+                            )
+            );
+        }
+
+        if (periodEnd != null) {
+            spec = spec.and(
+                    (root, query, cb) ->
+                            cb.lessThanOrEqualTo(
+                                    root.get("periodStart"),
+                                    periodEnd
+                            )
+            );
+        }
+
+        Page<PerformanceReview> reviewPage =
+                performanceReviewRepository.findAll(
+                        spec,
+                        pageable
+                );
+
+        List<PerformanceReviewResponse> reviews =
+                reviewPage.stream()
+                        .map(performanceReviewMapper::toResponse)
+                        .toList();
+
+        return PageResponse.<PerformanceReviewResponse>builder()
+                .pageNo(page)
+                .pageSize(size)
+                .totalPages(reviewPage.getTotalPages())
+                .totalElements(reviewPage.getTotalElements())
+                .items(reviews)
+                .build();
     }
 
-    @Override
-    public ReviewResponse getReviewById(Long id) {
-        PerformanceReview review = reviewRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
-        return reviewMapper.toResponse(review);
+    private void copyTemplateItemsToKpis(
+            PerformanceReview review,
+            Company company,
+            Employee employee,
+            KpiTemplate template,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        for (KpiTemplateItem item : template.getItems()) {
+
+            if (item.getDeletedAt() != null) {
+                continue;
+            }
+
+            Kpi kpi = Kpi.builder()
+                    .company(company)
+                    .employee(employee)
+
+                    .title(item.getTitle())
+                    .description(item.getDescription())
+
+                    .metricType(item.getMetricType())
+
+                    .targetValue(item.getTargetValue())
+                    .currentValue(0.0)
+
+                    .unit(item.getUnit())
+                    .weight(item.getWeight())
+
+                    .score(0.0)
+
+                    .startDate(periodStart)
+                    .endDate(periodEnd)
+
+                    .status(KpiStatus.IN_PROGRESS)
+
+                    .build();
+
+            review.addKpi(kpi);
+        }
+    }
+
+    private void validatePeriod(
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        if (periodStart == null || periodEnd == null) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_PERIOD_REQUIRED
+            );
+        }
+
+        if (periodStart.isAfter(periodEnd)) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_PERIOD_INVALID
+            );
+        }
+    }
+
+    private void validateTemplate(
+            KpiTemplate template
+    ) {
+        if (!Boolean.TRUE.equals(template.getIsActive())) {
+            throw new AppException(
+                    ErrorCode.KPI_TEMPLATE_INACTIVE
+            );
+        }
+
+        boolean hasActiveItems = template.getItems()
+                .stream()
+                .anyMatch(item ->
+                        item.getDeletedAt() == null
+                );
+
+        if (!hasActiveItems) {
+            throw new AppException(
+                    ErrorCode.KPI_TEMPLATE_ITEMS_EMPTY
+            );
+        }
+    }
+
+    private void validateDuplicateReview(
+            Long companyId,
+            Long employeeId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        boolean exists =
+                performanceReviewRepository
+                        .existsByCompany_IdAndEmployee_IdAndPeriodStartAndPeriodEndAndDeletedAtIsNull(
+                                companyId,
+                                employeeId,
+                                periodStart,
+                                periodEnd
+                        );
+
+        if (exists) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_EXISTED
+            );
+        }
+    }
+
+    private PerformanceReview getReviewOrThrow(
+            Long companyId,
+            Long reviewId
+    ) {
+        return performanceReviewRepository
+                .findByIdAndCompany_IdAndDeletedAtIsNull(
+                        reviewId,
+                        companyId
+                )
+                .orElseThrow(() ->
+                        new AppException(
+                                ErrorCode.PERFORMANCE_REVIEW_NOT_FOUND
+                        )
+                );
+    }
+
+    private KpiTemplate getTemplateOrThrow(
+            Long companyId,
+            Long templateId
+    ) {
+        return kpiTemplateRepository
+                .findByIdAndCompanyIdAndDeletedAtIsNull(
+                        templateId,
+                        companyId
+                )
+                .orElseThrow(() ->
+                        new AppException(
+                                ErrorCode.KPI_TEMPLATE_NOT_FOUND
+                        )
+                );
     }
 
     @Override
     @Transactional
-    public ReviewResponse submitSelfScore(Long id, ReviewRequests.SubmitSelfScoreRequest request, Long currentUserId) {
-        PerformanceReview review = reviewRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+    public PerformanceReviewResponse selfReview(
+            UserPrincipal userPrincipal,
+            Long reviewId,
+            SelfReviewRequest request
+    ) {
 
-        User employeeAccount = userRepository.findByEmail(review.getEmployee().getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        PerformanceReview review =
+                getReviewOrThrow(
+                        userPrincipal.getCompanyId(),
+                        reviewId
+                );
 
-        if (!employeeAccount.getId().equals(currentUserId)) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+        if (review.getStatus()
+                != PerformanceReviewStatus.DRAFT) {
+
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_INVALID_STATUS
+            );
         }
 
-        if (review.getStatus() != PerformanceReviewStatus.DRAFT) {
-            throw new AppException(ErrorCode.REVIEW_STATUS_INVALID);
+        User currentUser =
+                userService.getUserEntityByIdAndCompanyId(
+                        userPrincipal.getId(),
+                        userPrincipal.getCompanyId()
+                );
+
+        if (currentUser.getEmployee() == null
+                || !currentUser.getEmployee()
+                .getId()
+                .equals(
+                        review.getEmployee().getId()
+                )) {
+
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_SELF_REVIEW_FORBIDDEN
+            );
         }
 
-        review.setSelfScore(request.getSelfScore());
-        review.setStatus(PerformanceReviewStatus.SELF_REVIEW);
+        review.setSelfScore(
+                request.getSelfScore()
+        );
 
-        return reviewMapper.toResponse(reviewRepository.save(review));
+        review.setStatus(
+                PerformanceReviewStatus.SELF_REVIEW
+        );
+
+        return performanceReviewMapper.toResponse(
+                performanceReviewRepository.save(review)
+        );
     }
+
 
     @Override
     @Transactional
-    public ReviewResponse submitReviewerScore(Long id, ReviewRequests.SubmitReviewerScoreRequest request, Long currentUserId) {
-        PerformanceReview review = reviewRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+    public PerformanceReviewResponse managerReview(
+            UserPrincipal userPrincipal,
+            Long reviewId,
+            ManagerReviewRequest request
+    ) {
+        PerformanceReview review = getReviewOrThrow(
+                userPrincipal.getCompanyId(),
+                reviewId
+        );
 
-        if (!review.getReviewer().getId().equals(currentUserId)) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+        if (review.getStatus() != PerformanceReviewStatus.SELF_REVIEW) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_INVALID_STATUS
+            );
         }
+        if (!review.getReviewer()
+                .getId()
+                .equals(userPrincipal.getId())) {
 
-        if (review.getStatus() == PerformanceReviewStatus.COMPLETED) {
-            throw new AppException(ErrorCode.REVIEW_STATUS_INVALID);
+            boolean fullAccess =
+                    userPrincipal.getAuthorities()
+                            .stream()
+                            .anyMatch(authority ->
+                                    authority.getAuthority()
+                                            .equals("FULL_ACCESS")
+                            );
+
+            if (!fullAccess) {
+                throw new AppException(
+                        ErrorCode.PERFORMANCE_REVIEW_REVIEWER_FORBIDDEN
+                );
+            }
         }
-
         review.setReviewerScore(request.getReviewerScore());
-        review.setFeedBack(request.getFeedback());
-        review.setStatus(PerformanceReviewStatus.MANAGER_REVIEW);
+        review.setFeedback(request.getFeedback());
 
-        return reviewMapper.toResponse(reviewRepository.save(review));
+        review.setStatus(
+                PerformanceReviewStatus.MANAGER_REVIEW
+        );
+
+        PerformanceReview saved =
+                performanceReviewRepository.save(review);
+
+        return performanceReviewMapper.toResponse(saved);
     }
 
     @Override
     @Transactional
-    public ReviewResponse completeReview(Long id, ReviewRequests.CompleteReviewRequest request, Long currentUserId) {
-        PerformanceReview review = reviewRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+    public PerformanceReviewResponse completeReview(
+            UserPrincipal userPrincipal,
+            Long reviewId
+    ) {
 
-        if (!review.getReviewer().getId().equals(currentUserId)) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+        PerformanceReview review =
+                getReviewOrThrow(
+                        userPrincipal.getCompanyId(),
+                        reviewId
+                );
+
+        if (review.getStatus()
+                != PerformanceReviewStatus.MANAGER_REVIEW) {
+
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_INVALID_STATUS
+            );
         }
 
-        if (review.getStatus() != PerformanceReviewStatus.MANAGER_REVIEW) {
-            throw new AppException(ErrorCode.REVIEW_STATUS_INVALID);
+        // Chỉ reviewer được gán hoặc FULL_ACCESS mới được complete
+        if (!review.getReviewer()
+                .getId()
+                .equals(userPrincipal.getId())) {
+
+            boolean fullAccess =
+                    userPrincipal.getAuthorities()
+                            .stream()
+                            .anyMatch(authority ->
+                                    authority.getAuthority()
+                                            .equals("FULL_ACCESS")
+                            );
+
+            if (!fullAccess) {
+                throw new AppException(
+                        ErrorCode.PERFORMANCE_REVIEW_REVIEWER_FORBIDDEN
+                );
+            }
         }
 
-        review.setFinalScore(request.getFinalScore());
-        review.setStatus(PerformanceReviewStatus.COMPLETED);
+        // Tính KPI lần cuối
+        kpiCalculationService.calculateReviewKpis(review);
 
-        return reviewMapper.toResponse(reviewRepository.save(review));
+        // Chốt trạng thái KPI
+        for (Kpi kpi : review.getKpis()) {
+
+            if (kpi.getDeletedAt() != null) {
+                continue;
+            }
+
+            if (kpi.getCurrentValue() >= kpi.getTargetValue()) {
+                kpi.setStatus(KpiStatus.ACHIEVED);
+            } else {
+                kpi.setStatus(KpiStatus.FAILED);
+            }
+        }
+
+        // Lock review
+        review.setStatus(
+                PerformanceReviewStatus.COMPLETED
+        );
+
+        PerformanceReview saved =
+                performanceReviewRepository.save(review);
+
+        return performanceReviewMapper.toResponse(saved);
     }
 
-    private SystemCalculatedMetricsResponse calculateMetrics(Long userId) {
-        List<Task> userTasks = taskRepository.findByAssignee_Id(userId);
+    @Override
+    public PerformanceReviewSummaryResponse getMyAssignedReviewSummary(
+            UserPrincipal userPrincipal
+    ) {
 
-        // Nếu nhân viên chưa có task nào, trả về 0 hết
-        if (userTasks.isEmpty()) {
-            return new SystemCalculatedMetricsResponse(0.0, 0.0, 0.0, 0.0);
-        }
+        Long companyId =
+                userPrincipal.getCompanyId();
 
-        double totalTasks = userTasks.size();
-        double completedTasks = userTasks.stream().filter(t -> t.getCompletedAt() != null).count();
-        double bugCount = userTasks.stream().filter(t -> t.getType() == TaskType.BUG).count();
+        Long reviewerId =
+                userPrincipal.getId();
 
-        double completionRate = Math.round((completedTasks / totalTasks) * 1000.0) / 10.0;
+        long totalReviews =
+                performanceReviewRepository
+                        .countByCompany_IdAndReviewer_IdAndDeletedAtIsNull(
+                                companyId,
+                                reviewerId
+                        );
 
-        return SystemCalculatedMetricsResponse.builder()
-                .taskCompletionRate(completionRate) // Tính data thật: % hoàn thành
-                .bugLeakageRate(bugCount)           // Tính data thật: Số lượng bug gây ra
-                .onTimeDeliveryRate(95.0)           // Fix cứng số liệu đẹp để demo
-                .worklogBurnedRate(1.0)             // Fix cứng số liệu đẹp để demo
+        long awaitingSelfReview =
+                performanceReviewRepository
+                        .countByCompany_IdAndReviewer_IdAndStatusAndDeletedAtIsNull(
+                                companyId,
+                                reviewerId,
+                                PerformanceReviewStatus.DRAFT
+                        );
+
+        long awaitingManagerReview =
+                performanceReviewRepository
+                        .countByCompany_IdAndReviewer_IdAndStatusAndDeletedAtIsNull(
+                                companyId,
+                                reviewerId,
+                                PerformanceReviewStatus.SELF_REVIEW
+                        );
+
+        long awaitingCompletion =
+                performanceReviewRepository
+                        .countByCompany_IdAndReviewer_IdAndStatusAndDeletedAtIsNull(
+                                companyId,
+                                reviewerId,
+                                PerformanceReviewStatus.MANAGER_REVIEW
+                        );
+
+        long completed =
+                performanceReviewRepository
+                        .countByCompany_IdAndReviewer_IdAndStatusAndDeletedAtIsNull(
+                                companyId,
+                                reviewerId,
+                                PerformanceReviewStatus.COMPLETED
+                        );
+
+        return PerformanceReviewSummaryResponse.builder()
+                .totalReviews(totalReviews)
+                .awaitingSelfReview(awaitingSelfReview)
+                .awaitingManagerReview(awaitingManagerReview)
+                .awaitingCompletion(awaitingCompletion)
+                .completed(completed)
                 .build();
     }
-
 }

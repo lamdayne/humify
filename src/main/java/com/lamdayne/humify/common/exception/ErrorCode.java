@@ -247,7 +247,12 @@ public enum ErrorCode {
     // KPI
     KPI_NOT_FOUND("KPI_NOT_FOUND", "KPI not found", HttpStatus.NOT_FOUND),
     KPI_WEIGHT_INVALID("KPI_WEIGHT_INVALID", "Total weight of KPIs cannot exceed 1.0 (100%)", HttpStatus.BAD_REQUEST),
-    
+    KPI_TEMPLATE_NOT_FOUND("KPI_TEMPLATE_NOT_FOUND", "KPI template not found", HttpStatus.NOT_FOUND),
+    KPI_TEMPLATE_NAME_EXISTED("KPI_TEMPLATE_NAME_EXISTED", "KPI template name already exists", HttpStatus.BAD_REQUEST),
+    KPI_TEMPLATE_WEIGHT_INVALID("KPI_TEMPLATE_WEIGHT_INVALID", "Total KPI template weight must equal 100%", HttpStatus.BAD_REQUEST),
+    KPI_TEMPLATE_ITEMS_EMPTY("KPI_TEMPLATE_ITEMS_EMPTY", "KPI template must contain at least one item", HttpStatus.BAD_REQUEST),
+    KPI_TEMPLATE_INACTIVE("KPI_TEMPLATE_INACTIVE", "KPI template is inactive", HttpStatus.BAD_REQUEST),
+
     // Performance Review
     REVIEW_NOT_FOUND("REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
     REVIEW_PERIOD_DUPLICATE("REVIEW_PERIOD_DUPLICATE", "Review for this employee in this period already exists", HttpStatus.BAD_REQUEST),
@@ -256,6 +261,12 @@ public enum ErrorCode {
     REVIEW_READ_SUCCESS("REVIEW_READ_SUCCESS", "Performance reviews retrieved successfully", HttpStatus.OK),
     REVIEW_UPDATE_SUCCESS("REVIEW_UPDATE_SUCCESS", "Performance review updated successfully", HttpStatus.OK),
     SCORE_REQUIRED("SCORE_REQUIRED", "Score is required", HttpStatus.BAD_REQUEST),
+    PERFORMANCE_REVIEW_EXISTED("PERFORMANCE_REVIEW_EXISTED", "Performance review already exists for this employee and period", HttpStatus.BAD_REQUEST),
+    PERFORMANCE_REVIEW_NOT_FOUND("PERFORMANCE_REVIEW_NOT_FOUND", "Performance review not found", HttpStatus.NOT_FOUND),
+    PERFORMANCE_REVIEW_PERIOD_REQUIRED("PERFORMANCE_REVIEW_PERIOD_REQUIRED", "Performance review period start and end dates are required", HttpStatus.BAD_REQUEST),
+    PERFORMANCE_REVIEW_PERIOD_INVALID("PERFORMANCE_REVIEW_PERIOD_INVALID", "Performance review start date cannot be after end date", HttpStatus.BAD_REQUEST),
+    PERFORMANCE_REVIEW_COMPLETED("PERFORMANCE_REVIEW_COMPLETED", "Performance review completed successfully", HttpStatus.OK ),
+    PERFORMANCE_REVIEW_INVALID_STATUS("PERFORMANCE_REVIEW_INVALID_STATUS", "Performance review invalid status", HttpStatus.BAD_REQUEST ),
 
     // Employee Certification
     EMPLOYEE_CERTIFICATION_NAME_REQUIRED("EMPLOYEE_CERTIFICATION_NAME_REQUIRED", "Employee certification name can not blank", HttpStatus.BAD_REQUEST),
@@ -320,8 +331,10 @@ public enum ErrorCode {
     ATTENDANCE_ID_REQUIRED("ATTENDANCE_ID_REQUIRED", "Attendance ID cannot be null", HttpStatus.BAD_REQUEST),
     CORRECTION_REASON_REQUIRED("CORRECTION_REASON_REQUIRED", "Correction reason cannot be blank", HttpStatus.BAD_REQUEST),
     APPROVER_NOTE_REQUIRED("APPROVER_NOTE_REQUIRED", "Approver note cannot be blank", HttpStatus.BAD_REQUEST),
+    PERFORMANCE_REVIEW_SELF_REVIEW_FORBIDDEN("PERFORMANCE_REVIEW_SELF_REVIEW_FORBIDDEN","Forbidden performance review" , HttpStatus.BAD_REQUEST ),
+    PERFORMANCE_REVIEW_REVIEWER_FORBIDDEN("PERFORMANCE_REVIEW_REVIEWER_FORBIDDEN", "Forbidden performance review" , HttpStatus.BAD_REQUEST ),;
 
-    ;
+
 
     private String code;
     private String defaultMessage;

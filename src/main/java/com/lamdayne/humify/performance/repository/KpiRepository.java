@@ -31,4 +31,8 @@ public interface KpiRepository extends JpaRepository<Kpi, Long> {
             @Param("employeeId") Long employeeId,
             @Param("companyId") Long companyId,
             @Param("kpiId") Long kpiId);
+
+    List<Kpi> findAllByPerformanceReview_Id(
+            Long performanceReviewId
+    );
 }
