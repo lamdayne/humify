@@ -18,6 +18,7 @@ import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.enums.PasswordFlag;
+import com.lamdayne.humify.user.enums.UserRole;
 import com.lamdayne.humify.user.mapper.UserMapper;
 import com.lamdayne.humify.user.repository.UserRepository;
 import com.lamdayne.humify.user.service.UserService;
@@ -30,11 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -323,6 +321,23 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() ->
                         new AppException(
                                 ErrorCode.USER_NOT_FOUND
+                        )
+                );
+    }
+
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean canBePerformanceReviewer(Long userId) {
+
+        return userHasRoleRepository
+                .existsByUser_IdAndRole_NameIn(
+                        userId,
+                        List.of(
+                                UserRole.SYS_ADMIN.name(),
+                                UserRole.COMPANY_ADMIN.name(),
+                                UserRole.MANAGER.name()
                         )
                 );
     }

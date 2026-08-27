@@ -29,7 +29,6 @@ import com.lamdayne.humify.performance.repository.PerformanceReviewRepository;
 import com.lamdayne.humify.performance.service.KpiCalculationService;
 import com.lamdayne.humify.performance.service.PerformanceReviewService;
 import com.lamdayne.humify.user.entity.User;
-import com.lamdayne.humify.user.repository.UserRepository;
 import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -82,7 +81,11 @@ public class PerformanceReviewServiceImpl
                 request.getReviewerId(),
                 companyId
         );
-
+        if (!userService.canBePerformanceReviewer(reviewer.getId())) {
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_REVIEWER_INVALID
+            );
+        }
         KpiTemplate template = getTemplateOrThrow(
                 companyId,
                 request.getTemplateId()
@@ -516,7 +519,6 @@ public class PerformanceReviewServiceImpl
             );
         }
     }
-
     private void validateTemplate(
             KpiTemplate template
     ) {
