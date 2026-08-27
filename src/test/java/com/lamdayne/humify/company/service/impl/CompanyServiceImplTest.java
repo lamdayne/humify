@@ -25,6 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import com.lamdayne.humify.common.response.PageResponse;
 
 import java.util.Optional;
 
@@ -289,5 +292,207 @@ class CompanyServiceImplTest {
         assertThat(result).isTrue();
     }
 
+    //getAllCompanies
+    @Test
+    void getAllCompanies_success() {
+        Page<Company> page = new PageImpl<>(java.util.List.of(company));
+        when(companyRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+        when(companyMapper.toCompanyResponse(company)).thenReturn(response);
+
+        PageResponse<CompanyResponse> result = companyService.getAllCompanies(1, 10);
+
+        assertNotNull(result);
+        assertEquals(1, result.getItems().size());
+        assertEquals("Company Name", result.getItems().get(0).getName());
+    }
+
+    //getCompanyByCode
+    @Test
+    void getCompanyByCode_success() {
+        when(companyRepository.findByCompanyCode("comp-code-123")).thenReturn(Optional.of(company));
+
+        Company result = companyService.getCompanyByCode("comp-code-123");
+
+        assertNotNull(result);
+        assertEquals(company.getName(), result.getName());
+    }
+
+    @Test
+    void getCompanyByCode_notFound() {
+        when(companyRepository.findByCompanyCode("invalid-code")).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.getCompanyByCode("invalid-code")
+        );
+
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND, exception.getErrorCode());
+    }
+
+    //verifyCompany
+    @Test
+    void verifyCompany_success() {
+        CompanyVerification verification = CompanyVerification.builder()
+                .companyId(10L)
+                .token("valid-token")
+                .expiredAt(java.time.Instant.now().plusSeconds(3600))
+                .build();
+
+        when(companyVerificationService.findByToken("valid-token")).thenReturn(verification);
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        companyService.verifyCompany("valid-token");
+
+        assertThat(company.getStatus()).isEqualTo(CompanyStatus.ACTIVE);
+        verify(userRepository).save(any(User.class));
+        verify(roleAccessService).assignCompanyAdmin(any(User.class));
+        verify(publisher).publishEvent(any(SendEmailEvent.class));
+    }
+
+    @Test
+    void verifyCompany_expiredToken() {
+        CompanyVerification verification = CompanyVerification.builder()
+                .companyId(10L)
+                .token("expired-token")
+                .expiredAt(java.time.Instant.now().minusSeconds(10))
+                .build();
+
+        when(companyVerificationService.findByToken("expired-token")).thenReturn(verification);
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.verifyCompany("expired-token")
+        );
+
+        assertEquals(ErrorCode.TOKEN_EXPIRED, exception.getErrorCode());
+    }
+
+    //activeCompany
+    @Test
+    void activeCompany_success() {
+        company.setStatus(CompanyStatus.PENDING);
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        companyService.activeCompany(10L);
+
+        assertThat(company.getStatus()).isEqualTo(CompanyStatus.ACTIVE);
+    }
+
+    @Test
+    void activeCompany_alreadyActive() {
+        company.setStatus(CompanyStatus.ACTIVE);
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.activeCompany(10L)
+        );
+
+        assertEquals(ErrorCode.COMPANY_ALREADY_ACTIVE, exception.getErrorCode());
+    }
+
+    //resendVerification
+    @Test
+    void resendVerification_success() {
+        CompanyVerification verification = CompanyVerification.builder()
+                .companyId(10L)
+                .token("expired-token")
+                .expiredAt(java.time.Instant.now().minusSeconds(10))
+                .build();
+
+        when(companyVerificationService.findByToken("expired-token")).thenReturn(verification);
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+
+        companyService.resendVerification("expired-token");
+
+        verify(companyVerificationService).save(any(CompanyVerification.class));
+        verify(publisher).publishEvent(any(SendEmailEvent.class));
+    }
+
+    @Test
+    void resendVerification_tokenNotExpired() {
+        CompanyVerification verification = CompanyVerification.builder()
+                .companyId(10L)
+                .token("valid-token")
+                .expiredAt(java.time.Instant.now().plusSeconds(3600))
+                .build();
+
+        when(companyVerificationService.findByToken("valid-token")).thenReturn(verification);
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.resendVerification("valid-token")
+        );
+
+        assertEquals(ErrorCode.TOKEN_NOT_EXPIRED, exception.getErrorCode());
+    }
+
+    @Test
+    void resendVerification_companyAlreadyActive() {
+        CompanyVerification verification = CompanyVerification.builder()
+                .companyId(10L)
+                .token("expired-token")
+                .expiredAt(java.time.Instant.now().minusSeconds(10))
+                .build();
+
+        company.setStatus(CompanyStatus.ACTIVE);
+        when(companyVerificationService.findByToken("expired-token")).thenReturn(verification);
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.resendVerification("expired-token")
+        );
+
+        assertEquals(ErrorCode.COMPANY_ALREADY_ACTIVE, exception.getErrorCode());
+    }
+
+    //getReferenceById
+    @Test
+    void getReferenceById_success() {
+        when(companyRepository.getReferenceById(10L)).thenReturn(company);
+
+        Company result = companyService.getReferenceById(10L);
+
+        assertNotNull(result);
+        assertEquals(company.getName(), result.getName());
+    }
+
+    //getById
+    @Test
+    void getById_success() {
+        when(companyRepository.findById(10L)).thenReturn(Optional.of(company));
+
+        Company result = companyService.getById(10L);
+
+        assertNotNull(result);
+        assertEquals(company.getName(), result.getName());
+    }
+
+    @Test
+    void getById_notFound() {
+        when(companyRepository.findById(999L)).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> companyService.getById(999L)
+        );
+
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND, exception.getErrorCode());
+    }
+
+    //findByCompanyCode
+    @Test
+    void findByCompanyCode_success() {
+        when(companyRepository.findByCompanyCode("comp-code-123")).thenReturn(Optional.of(company));
+
+        Company result = companyService.findByCompanyCode("comp-code-123");
+
+        assertNotNull(result);
+        assertEquals(company.getName(), result.getName());
+    }
 
 }
+
