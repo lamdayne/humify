@@ -1,25 +1,25 @@
 package com.lamdayne.humify.performance.dto.response;
 
+
 import com.lamdayne.humify.performance.enums.KpiMetricType;
-import com.lamdayne.humify.performance.enums.KpiStatus;
-import lombok.Builder;
 import lombok.Getter;
-import java.time.Instant;
-import java.time.LocalDate;
+import lombok.Setter;
 
 @Getter
-@Builder
-public class KpiResponse {
+@Setter
+public class KpiTemplateItemResponse {
+
     private Long id;
+
     private String title;
+
     private String description;
+
     private KpiMetricType metricType;
+
     private Double targetValue;
-    private Double currentValue;
+
     private String unit;
+
     private Double weight;
-    private Double score;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private KpiStatus status;
 }

@@ -34,4 +34,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     Optional<Employee> findByNfcCardUidIgnoreCase(String nfcCardUid);
 
     List<Employee> findAllByNfcCardUidIgnoreCase(String nfcCardUid);
+
+    Optional<Employee> findByIdAndCompanyIdAndDeletedAtIsNull(Long id, Long companyId);
 }

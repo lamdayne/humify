@@ -28,4 +28,5 @@ public class EmployeeResponse implements Serializable {
     private String address;
     private LocalDate startDate;
     private EmployeeStatus status;
+    private String nfcCardUid;
 }

@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface KpiMapper {
-    @Mapping(source = "employee.id", target = "employeeId")
+
     KpiResponse toResponse(Kpi kpi);
 }
