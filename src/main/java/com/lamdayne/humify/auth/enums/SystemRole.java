@@ -122,7 +122,6 @@ public enum SystemRole {
                     PermissionEnum.ATTENDANCE_CORRECTION_READ,
                     PermissionEnum.LEAVE_TYPE_READ,
                     PermissionEnum.PAYSLIP_READ,
-                    PermissionEnum.WORK_SHIFT_READ,
                     PermissionEnum.KPI_READ,
                     PermissionEnum.PERFORMANCE_REVIEW_READ,
                     PermissionEnum.PERFORMANCE_REVIEW_SELF,
