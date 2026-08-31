@@ -1,109 +1,302 @@
 package com.lamdayne.humify.performance.controller;
 
-
 import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.common.response.ApiResponse;
+import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.response.SuccessCode;
-import com.lamdayne.humify.performance.dto.request.ReviewRequests;
-import com.lamdayne.humify.performance.dto.response.ReviewResponse;
+import com.lamdayne.humify.performance.dto.request.CreatePerformanceReviewRequest;
+import com.lamdayne.humify.performance.dto.request.ManagerReviewRequest;
+import com.lamdayne.humify.performance.dto.request.SelfReviewRequest;
+import com.lamdayne.humify.performance.dto.response.PerformanceReviewResponse;
+import com.lamdayne.humify.performance.dto.response.PerformanceReviewSummaryResponse;
+import com.lamdayne.humify.performance.enums.PerformanceReviewStatus;
+import com.lamdayne.humify.performance.service.KpiCalculationService;
 import com.lamdayne.humify.performance.service.PerformanceReviewService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/performance-reviews")
 public class PerformanceReviewController {
 
-    private final PerformanceReviewService reviewService;
+    private final PerformanceReviewService performanceReviewService;
+    private final KpiCalculationService kpiCalculationService;
+    @PostMapping
+//    @PreAuthorize(
+//            "hasAnyAuthority('FULL_ACCESS', 'KPI_CREATE', 'KPI_FULL')"
+//    )
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> createReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody CreatePerformanceReviewRequest request
+    ) {
+        PerformanceReviewResponse response =
+                performanceReviewService.createReview(
+                        userPrincipal,
+                        request
+                );
 
-    // 1. Tạo mới bản đánh giá hiệu suất (Khởi tạo chu kỳ)
-    @PostMapping("/employees/{employeeId}/reviews")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_CREATE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
-    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(
-            @PathVariable Long employeeId,
-            @Valid @RequestBody ReviewRequests.CreateReviewRequest request) {
-
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_CREATE_SUCCESS,
-                        reviewService.createReview(employeeId, request)
-                ));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        ApiResponse.success(
+                                SuccessCode.PERFORMANCE_REVIEW_CREATE_SUCCESS,
+                                response
+                        )
+                );
     }
 
-    // 2. Lấy danh sách lịch sử đánh giá của một nhân viên
-    @GetMapping("/employees/{employeeId}/reviews")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_READ', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
-    public ResponseEntity<ApiResponse<List<ReviewResponse>>> getReviewsByEmployeeId(
-            @PathVariable Long employeeId) {
+    @GetMapping
+// @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_READ', 'KPI_FULL')")
+    public ResponseEntity<ApiResponse<PageResponse<PerformanceReviewResponse>>> getReviews(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
 
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_READ_SUCCESS,
-                        reviewService.getReviewsByEmployeeId(employeeId)
-                ));
+            @RequestParam(required = false)
+            Long employeeId,
+
+            @RequestParam(required = false)
+            PerformanceReviewStatus status,
+
+            @RequestParam(required = false)
+            LocalDate periodStart,
+
+            @RequestParam(required = false)
+            LocalDate periodEnd,
+
+            @RequestParam(defaultValue = "0", required = false)
+            @Min(value = 0, message = "PAGE_NO_INVALID")
+            int page,
+
+            @RequestParam(defaultValue = "10", required = false)
+            @Min(value = 10, message = "PAGE_SIZE_INVALID")
+            int size,
+
+            @RequestParam(required = false)
+            String... sorts
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        ApiResponse.success(
+                                SuccessCode.PERFORMANCE_REVIEW_READ_SUCCESS,
+                                performanceReviewService.getReviews(
+                                        userPrincipal,
+                                        employeeId,
+                                        status,
+                                        periodStart,
+                                        periodEnd,
+                                        page,
+                                        size,
+                                        sorts
+                                )
+                        )
+                );
     }
 
-    // 3. Xem chi tiết một bản đánh giá
-    @GetMapping("/reviews/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_READ', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
-    public ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(
-            @PathVariable Long id) {
+    @GetMapping("/{id}")
+//    @PreAuthorize(
+//            "hasAnyAuthority('FULL_ACCESS', 'KPI_READ', 'KPI_FULL')"
+//    )
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> getReviewById(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long id
+    ) {
+        PerformanceReviewResponse response =
+                performanceReviewService.getReviewById(
+                        userPrincipal,
+                        id
+                );
 
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_READ_SUCCESS,
-                        reviewService.getReviewById(id)
-                ));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_READ_SUCCESS,
+                        response
+                )
+        );
+    }
+    @PostMapping("/{id}/refresh-kpis")
+//    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'KPI_UPDATE', 'KPI_FULL')")
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> refreshKpis(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long id
+    ) {
+        PerformanceReviewResponse response =
+                kpiCalculationService.refreshReviewKpis(
+                        userPrincipal,
+                        id
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.KPI_CALCULATE_SUCCESS,
+                        response
+                )
+        );
     }
 
-    // 4. Nhân viên tự đánh giá (SELF_REVIEW)
-    @PutMapping("/reviews/{id}/self-score")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<ReviewResponse>> submitSelfScore(
+    @PutMapping("/{id}/self-review")
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> selfReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long id,
-            @Valid @RequestBody ReviewRequests.SubmitSelfScoreRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_UPDATE_SUCCESS,
-                        reviewService.submitSelfScore(id, request, userPrincipal.getId())
-                ));
+            @Valid @RequestBody SelfReviewRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_SELF_REVIEW_SUCCESS,
+                        performanceReviewService.selfReview(
+                                userPrincipal,
+                                id,
+                                request
+                        )
+                )
+        );
     }
 
-    // 5. Quản lý đánh giá và nhận xét (MANAGER_REVIEW)
-    @PutMapping("/reviews/{id}/reviewer-score")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_EVALUATE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
-    public ResponseEntity<ApiResponse<ReviewResponse>> submitReviewerScore(
+    @PutMapping("/{id}/manager-review")
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> managerReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long id,
-            @Valid @RequestBody ReviewRequests.SubmitReviewerScoreRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_UPDATE_SUCCESS,
-                        reviewService.submitReviewerScore(id, request, userPrincipal.getId())
-                ));
+            @Valid @RequestBody ManagerReviewRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_MANAGER_REVIEW_SUCCESS,
+                        performanceReviewService.managerReview(
+                                userPrincipal,
+                                id,
+                                request
+                        )
+                )
+        );
     }
 
-    // 6. Chốt điểm và đóng chu kỳ đánh giá (COMPLETED)
-    @PutMapping("/reviews/{id}/complete")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'PERFORMANCE_REVIEW_COMPLETE', 'PERFORMANCE_REVIEW_MANAGE', 'PERFORMANCE_FULL')")
-    public ResponseEntity<ApiResponse<ReviewResponse>> completeReview(
-            @PathVariable Long id,
-            @Valid @RequestBody ReviewRequests.CompleteReviewRequest request,
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<ApiResponse<PerformanceReviewResponse>> completeReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_COMPLETE_SUCCESS,
+                        performanceReviewService.completeReview(
+                                userPrincipal,
+                                id
+                        )
+                )
+        );
+    }
 
-        return ResponseEntity.ok()
-                .body(ApiResponse.success(
-                        SuccessCode.REVIEW_UPDATE_SUCCESS,
-                        reviewService.completeReview(id, request, userPrincipal.getId())
-                ));
+    //nhân viên tự xem review của mình
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<PageResponse<PerformanceReviewResponse>>> getMyReviews(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+
+            @RequestParam(required = false)
+            PerformanceReviewStatus status,
+
+            @RequestParam(required = false)
+            LocalDate periodStart,
+
+            @RequestParam(required = false)
+            LocalDate periodEnd,
+
+            @RequestParam(defaultValue = "0", required = false)
+            @Min(value = 0, message = "PAGE_NO_INVALID")
+            int page,
+
+            @RequestParam(defaultValue = "10", required = false)
+            @Min(value = 10, message = "PAGE_SIZE_INVALID")
+            int size,
+
+            @RequestParam(required = false)
+            String... sorts
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_READ_SUCCESS,
+                        performanceReviewService.getMyReviews(
+                                userPrincipal,
+                                status,
+                                periodStart,
+                                periodEnd,
+                                page,
+                                size,
+                                sorts
+                        )
+                )
+        );
+    }
+
+    //
+    @GetMapping("/reviewer/me")
+    public ResponseEntity<ApiResponse<PageResponse<PerformanceReviewResponse>>> getMyAssignedReviews(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+
+            @RequestParam(required = false)
+            Long employeeId,
+
+            @RequestParam(required = false)
+            PerformanceReviewStatus status,
+
+            @RequestParam(required = false)
+            LocalDate periodStart,
+
+            @RequestParam(required = false)
+            LocalDate periodEnd,
+
+            @RequestParam(defaultValue = "0", required = false)
+            @Min(value = 0, message = "PAGE_NO_INVALID")
+            int page,
+
+            @RequestParam(defaultValue = "10", required = false)
+            @Min(value = 10, message = "PAGE_SIZE_INVALID")
+            int size,
+
+            @RequestParam(required = false)
+            String... sorts
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_READ_SUCCESS,
+                        performanceReviewService.getMyAssignedReviews(
+                                userPrincipal,
+                                employeeId,
+                                status,
+                                periodStart,
+                                periodEnd,
+                                page,
+                                size,
+                                sorts
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/reviewer/me/summary")
+    public ResponseEntity<
+            ApiResponse<PerformanceReviewSummaryResponse>
+            > getMyAssignedReviewSummary(
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_READ_SUCCESS,
+                        performanceReviewService
+                                .getMyAssignedReviewSummary(
+                                        userPrincipal
+                                )
+                )
+        );
     }
 }

@@ -19,7 +19,7 @@ public class TaskWorklogController {
     private final TaskWorkLogService taskWorkLogService;
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_WORKLOG_UPDATE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<WorklogResponse>> updateWorklog(
             @PathVariable Long id, @RequestBody @Valid UpdateWorklogRequest request
     ) {
@@ -31,7 +31,7 @@ public class TaskWorklogController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_WORKLOG_DELETE', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<Void>> deleteWorklog(
             @PathVariable long id
     ) {

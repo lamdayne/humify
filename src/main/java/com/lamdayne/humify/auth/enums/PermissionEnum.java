@@ -160,6 +160,9 @@ public enum PermissionEnum {
     TASK_COMMENT("Comment on task", PermissionModule.TASK),
     TASK_MOVE("Move task", PermissionModule.TASK),
     TASK_FULL("Full task information", PermissionModule.TASK),
+    TASK_WORKLOG_INSERT("Worklog insert", PermissionModule.TASK),
+    TASK_WORKLOG_UPDATE("Update worklog information", PermissionModule.TASK),
+    TASK_WORKLOG_DELETE("Delete worklog information", PermissionModule.TASK),
 
     // Attendance Correction
     ATTENDANCE_CORRECTION_APPROVE("Correction approve", PermissionModule.ATTENDANCE),

@@ -165,6 +165,12 @@ CREATE TYPE attendance_verify_method AS ENUM (
     'NFC'
     );
 
+CREATE TYPE kpi_metric_type AS ENUM (
+    'MANUAL',
+    'TASK_COMPLETION_RATE',
+    'TASK_ON_TIME_RATE'
+    );
+
 -- Table: companies
 
 CREATE TABLE companies
@@ -631,31 +637,46 @@ CREATE TABLE task_worklogs
     CONSTRAINT fk_tw_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+-- Table: kpi_templates
 
--- Table: kpis
-
-CREATE TABLE kpis
+CREATE TABLE kpi_templates
 (
-    id            BIGSERIAL PRIMARY KEY,
-    company_id    BIGINT           NOT NULL,
-    employee_id   BIGINT           NOT NULL,
-    title         VARCHAR(255)     NOT NULL,
-    description   TEXT,
-    target_value  DOUBLE PRECISION NOT NULL,
-    current_value DOUBLE PRECISION          DEFAULT 0.0,
-    unit          VARCHAR(50)      NOT NULL,
-    weight        DOUBLE PRECISION NOT NULL,
-    start_date    DATE             NOT NULL,
-    end_date      DATE             NOT NULL,
-    status        kpi_status       NOT NULL DEFAULT 'IN_PROGRESS',
-    created_at    TIMESTAMPTZ               DEFAULT NOW(),
-    updated_at    TIMESTAMPTZ               DEFAULT NOW(),
-    deleted_at    TIMESTAMPTZ,
-    CONSTRAINT fk_kpi_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
-    CONSTRAINT fk_kpi_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE
+    id          BIGSERIAL PRIMARY KEY,
+    company_id  BIGINT       NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_by  BIGINT       NOT NULL,
+    created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at  TIMESTAMPTZ,
+
+    CONSTRAINT fk_kpi_template_company FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_kpi_template_created_by FOREIGN KEY (created_by) REFERENCES users (id)
 );
 
-CREATE INDEX idx_kpi_employee_id ON kpis (employee_id);
+CREATE INDEX idx_kpi_templates_company ON kpi_templates (company_id);
+CREATE INDEX idx_kpi_templates_active ON kpi_templates (company_id, is_active);
+
+-- Table: kpi_template_items
+
+CREATE TABLE kpi_template_items
+(
+    id           BIGSERIAL PRIMARY KEY,
+    template_id  BIGINT           NOT NULL,
+    title        VARCHAR(255)     NOT NULL,
+    description  TEXT,
+    metric_type  kpi_metric_type  NOT NULL,
+    target_value DOUBLE PRECISION NOT NULL,
+    unit         VARCHAR(50)      NOT NULL,
+    weight       DOUBLE PRECISION NOT NULL,
+    created_at   TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
+    deleted_at   TIMESTAMPTZ,
+    CONSTRAINT fk_kpi_template_item_template FOREIGN KEY (template_id) REFERENCES kpi_templates (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_kpi_template_items_template_id ON kpi_template_items (template_id);
 
 -- Table: performance_reviews
 
@@ -665,7 +686,9 @@ CREATE TABLE performance_reviews
     company_id     BIGINT                    NOT NULL,
     employee_id    BIGINT                    NOT NULL,
     reviewer_id    BIGINT                    NOT NULL,
-    review_period  VARCHAR(100)              NOT NULL,
+    template_id    BIGINT,
+    period_start   DATE                      NOT NULL,
+    period_end     DATE                      NOT NULL,
     self_score     DOUBLE PRECISION,
     reviewer_score DOUBLE PRECISION,
     final_score    DOUBLE PRECISION,
@@ -676,10 +699,40 @@ CREATE TABLE performance_reviews
     deleted_at     TIMESTAMPTZ,
     CONSTRAINT fk_pr_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
     CONSTRAINT fk_pr_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
-    CONSTRAINT fk_pr_reviewer FOREIGN KEY (reviewer_id) REFERENCES users (id)
+    CONSTRAINT fk_pr_reviewer FOREIGN KEY (reviewer_id) REFERENCES users (id),
+    CONSTRAINT fk_performance_reviews_template FOREIGN KEY (template_id) REFERENCES kpi_templates (id)
 );
 
 CREATE INDEX idx_perf_review_employee_id ON performance_reviews (employee_id);
+
+-- Table: kpis
+
+CREATE TABLE kpis
+(
+    id                    BIGSERIAL PRIMARY KEY,
+    company_id            BIGINT           NOT NULL,
+    employee_id           BIGINT           NOT NULL,
+    performance_review_id BIGINT,
+    title                 VARCHAR(255)     NOT NULL,
+    description           TEXT,
+    target_value          DOUBLE PRECISION NOT NULL,
+    current_value         DOUBLE PRECISION          DEFAULT 0.0,
+    unit                  VARCHAR(50)      NOT NULL,
+    weight                DOUBLE PRECISION NOT NULL,
+    score                 DOUBLE PRECISION          DEFAULT 0,
+    start_date            DATE             NOT NULL,
+    end_date              DATE             NOT NULL,
+    metric_type           kpi_metric_type  NOT NULL DEFAULT 'MANUAL',
+    status                kpi_status       NOT NULL DEFAULT 'IN_PROGRESS',
+    created_at            TIMESTAMPTZ               DEFAULT NOW(),
+    updated_at            TIMESTAMPTZ               DEFAULT NOW(),
+    deleted_at            TIMESTAMPTZ,
+    CONSTRAINT fk_kpi_company_id FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE,
+    CONSTRAINT fk_kpi_employee_id FOREIGN KEY (employee_id) REFERENCES employees (id) ON DELETE CASCADE,
+    CONSTRAINT fk_kpis_performance_review FOREIGN KEY (performance_review_id) REFERENCES performance_reviews (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_kpi_employee_id ON kpis (employee_id);
 
 
 -- Table: employee_educations
@@ -1107,40 +1160,42 @@ ALTER TABLE payslips
     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE work_shifts
     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE kpi_templates
+    ENABLE ROW LEVEL SECURITY;
 
 -- Policy cho từng bảng
 CREATE
 POLICY tenant_isolation ON branches
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON employees
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON users
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON attendances
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON roles
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
         OR (company_id IS NULL AND is_system = true)
     );
@@ -1148,98 +1203,105 @@ POLICY tenant_isolation ON roles
 CREATE
 POLICY tenant_isolation ON user_has_roles
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON positions
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON projects
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON tasks
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON user_social_accounts
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON kpis
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON performance_reviews
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON leave_types
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON leave_balances
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON leave_requests
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON employee_contracts
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON payroll_periods
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON payslips
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 
 CREATE
 POLICY tenant_isolation ON work_shifts
     USING (
-        current_setting('app.is_admin', true) = 'true'
+    current_setting('app.is_admin', true) = 'true'
+        OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
+    );
+
+CREATE
+POLICY tenant_isolation ON kpi_templates
+    USING (
+    current_setting('app.is_admin', true) = 'true'
         OR company_id = NULLIF(current_setting('app.company_id', true), '')::BIGINT
     );
 

@@ -6,6 +6,8 @@ import com.lamdayne.humify.task.dto.request.*;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
 
+import java.time.LocalDate;
+
 public interface TaskService {
 
     TaskResponse createTask(UserPrincipal reporter, Long projectId, CreateTaskRequest request);
@@ -23,5 +25,23 @@ public interface TaskService {
     void deleteTask(Long id);
 
     TaskResponse reorderTask(Long taskId, ReorderTaskRequest request);
+
+    long countEligibleTasks(
+            Long userId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    );
+
+    long countCompletedEligibleTasks(
+            Long userId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    );
+
+    long countOnTimeEligibleTasks(
+            Long userId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    );
 
 }

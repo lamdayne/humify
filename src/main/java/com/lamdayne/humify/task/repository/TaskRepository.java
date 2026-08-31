@@ -1,6 +1,7 @@
 package com.lamdayne.humify.task.repository;
 
 import com.lamdayne.humify.task.entity.Task;
+import com.lamdayne.humify.task.enums.TaskType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,4 +40,61 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "project", "column", "assignee", "assignee.employee", "reporter", "reporter.employee", "parent"
     })
     List<Task> findByProjectId(Long projectId);
+
+    @Query("""
+    SELECT COUNT(t)
+    FROM Task t
+    WHERE t.assignee.id = :userId
+      AND t.deletedAt IS NULL
+      AND t.dueDate >= :start
+      AND t.dueDate < :endExclusive
+      AND t.type <> :excludedType
+      AND t.parent IS NULL
+""")
+    long countEligibleTasks(
+            @Param("userId") Long userId,
+            @Param("start") Instant start,
+            @Param("endExclusive") Instant endExclusive,
+             @Param("excludedType") TaskType excludedType
+
+    );
+
+    @Query("""
+    SELECT COUNT(t)
+    FROM Task t
+    WHERE t.assignee.id = :userId
+      AND t.deletedAt IS NULL
+      AND t.dueDate >= :start
+      AND t.dueDate < :endExclusive
+      AND t.type <> :excludedType
+      AND t.parent IS NULL
+      AND t.completedAt IS NOT NULL
+""")
+    long countCompletedEligibleTasks(
+            @Param("userId") Long userId,
+            @Param("start") Instant start,
+            @Param("endExclusive") Instant endExclusive,
+             @Param("excludedType") TaskType excludedType
+
+    );
+
+    @Query("""
+    SELECT COUNT(t)
+    FROM Task t
+    WHERE t.assignee.id = :userId
+      AND t.deletedAt IS NULL
+      AND t.dueDate >= :start
+      AND t.dueDate < :endExclusive
+      AND t.type <> :excludedType
+      AND t.parent IS NULL
+      AND t.completedAt IS NOT NULL
+      AND t.completedAt <= t.dueDate
+""")
+    long countOnTimeEligibleTasks(
+            @Param("userId") Long userId,
+            @Param("start") Instant start,
+            @Param("endExclusive") Instant endExclusive,
+             @Param("excludedType") TaskType excludedType
+
+    );
 }
