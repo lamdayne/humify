@@ -92,7 +92,10 @@ public enum SystemRole {
                     PermissionEnum.PROJECT_READ,
                     PermissionEnum.PROJECT_UPDATE,
                     PermissionEnum.PROJECT_CREATE,
-                    PermissionEnum.TASK_FULL
+                    PermissionEnum.TASK_FULL,
+                    PermissionEnum.TASK_WORKLOG_INSERT,
+                    PermissionEnum.TASK_WORKLOG_UPDATE,
+                    PermissionEnum.TASK_WORKLOG_DELETE
             )
     ),
 
@@ -108,7 +111,13 @@ public enum SystemRole {
                     PermissionEnum.PROJECT_READ,
                     PermissionEnum.TASK_READ,
                     PermissionEnum.TASK_CREATE,
+                    PermissionEnum.TASK_UPDATE,
                     PermissionEnum.TASK_MOVE,
+                    PermissionEnum.TASK_WORKLOG_INSERT,
+                    PermissionEnum.TASK_WORKLOG_UPDATE,
+                    PermissionEnum.TASK_WORKLOG_DELETE,
+                    PermissionEnum.TASK_COMMENT,
+                    PermissionEnum.TASK_ATTACHMENT,
                     PermissionEnum.ATTENDANCE_CORRECTION_CREATE,
                     PermissionEnum.ATTENDANCE_CORRECTION_READ,
                     PermissionEnum.LEAVE_TYPE_READ,
