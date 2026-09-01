@@ -5,8 +5,10 @@ import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.task.dto.request.*;
 import com.lamdayne.humify.task.dto.response.TaskDetailResponse;
 import com.lamdayne.humify.task.dto.response.TaskResponse;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface TaskService {
 
@@ -43,5 +45,7 @@ public interface TaskService {
             LocalDate periodStart,
             LocalDate periodEnd
     );
+
+    List<TaskResponse> filterTasksByProjectId(Long projectId, Pageable pageable, String[] params);
 
 }
