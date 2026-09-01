@@ -5,6 +5,8 @@ import com.lamdayne.humify.attendance.dto.request.WebSwipeRequest;
 import com.lamdayne.humify.attendance.dto.response.AttendanceLogResponse;
 import com.lamdayne.humify.attendance.entity.Attendance;
 import com.lamdayne.humify.attendance.entity.AttendanceLog;
+import com.lamdayne.humify.attendance.entity.EmployeeShift;
+import com.lamdayne.humify.attendance.entity.WorkShift;
 import com.lamdayne.humify.attendance.enums.AttendanceLogType;
 import com.lamdayne.humify.attendance.enums.AttendanceStatus;
 import com.lamdayne.humify.attendance.enums.AttendanceVerifyMethod;
@@ -12,6 +14,7 @@ import com.lamdayne.humify.attendance.enums.CheckedStatus;
 import com.lamdayne.humify.attendance.mapper.AttendanceLogMapper;
 import com.lamdayne.humify.attendance.repository.AttendanceLogRepository;
 import com.lamdayne.humify.attendance.repository.AttendanceRepository;
+import com.lamdayne.humify.attendance.repository.EmployeeShiftRepository;
 import com.lamdayne.humify.attendance.service.AttendanceLogService;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
@@ -45,9 +48,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AttendanceLogServiceImpl implements AttendanceLogService {
 
+    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Ho_Chi_Minh");
+
     private final AttendanceLogRepository attendanceLogRepository;
     private final AttendanceRepository attendanceRepository;
     private final EmployeeRepository employeeRepository;
+    private final EmployeeShiftRepository employeeShiftRepository;
     private final CompanyRepository companyRepository;
     private final CompanyService companyService;
     private final AttendanceLogMapper attendanceLogMapper;
@@ -64,7 +70,7 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
 
         Company company = companyService.getCompanyById(companyId);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZONE_ID);
         Instant now = Instant.now();
 
         // 1. Khởi tạo hoặc lấy bảng công tổng hợp ngày hôm nay
@@ -79,19 +85,11 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
 
         // 2. Xử lý logic linh hoạt (Bao trọn các trường hợp quên quẹt thẻ)
         if (request.getLogType() == AttendanceLogType.CHECK_IN) {
-
             if (attendance.getCheckInTime() == null) {
-                attendance.setCheckInTime(now);
-                attendance.setStatus(AttendanceStatus.PRESENT);
+                processCheckIn(attendance, employee, today, now);
             }
-
         } else if (request.getLogType() == AttendanceLogType.CHECK_OUT) {
-
-            attendance.setCheckOutTime(now);
-
-            if (attendance.getStatus() == AttendanceStatus.ABSENT) {
-                attendance.setStatus(AttendanceStatus.PRESENT);
-            }
+            processCheckOut(attendance, employee, today, now);
         }
 
         attendance = attendanceRepository.save(attendance);
@@ -204,7 +202,7 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
             Company company = employee.getCompany();
             CompanyContext.setCompanyId(company.getId());
 
-            LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now(ZONE_ID);
             Instant now = Instant.now();
 
             final Employee finalEmployee = employee;
@@ -222,17 +220,10 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
             AttendanceLogType logType;
             if (attendance.getCheckInTime() == null) {
                 logType = AttendanceLogType.CHECK_IN;
-                attendance.setCheckInTime(now);
-                attendance.setStatus(AttendanceStatus.PRESENT);
-                attendance.setCheckedStatus(CheckedStatus.CHECKED_IN);
+                processCheckIn(attendance, finalEmployee, today, now);
             } else {
                 logType = AttendanceLogType.CHECK_OUT;
-                attendance.setCheckOutTime(now);
-                attendance.setCheckedStatus(CheckedStatus.CHECKED_OUT);
-
-                long seconds = Duration.between(attendance.getCheckInTime(), now).toSeconds();
-                BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, RoundingMode.HALF_UP);
-                attendance.setWorkedHours(hours);
+                processCheckOut(attendance, finalEmployee, today, now);
             }
 
             attendance = attendanceRepository.save(attendance);
@@ -250,6 +241,94 @@ public class AttendanceLogServiceImpl implements AttendanceLogService {
             return attendanceLogMapper.toResponse(attendanceLogRepository.save(log));
         } finally {
             CompanyContext.clear();
+        }
+    }
+
+    private void processCheckIn(Attendance attendance, Employee employee, LocalDate workDate, Instant now) {
+        attendance.setCheckInTime(now);
+        attendance.setCheckedStatus(CheckedStatus.CHECKED_IN);
+
+        WorkShift workShift = employeeShiftRepository.findActiveShiftsByEmployeeIdAndDate(employee.getId(), workDate)
+                .stream()
+                .map(EmployeeShift::getWorkShift)
+                .filter(ws -> ws != null && ws.getDeletedAt() == null && Boolean.TRUE.equals(ws.getStatus()))
+                .findFirst()
+                .orElse(null);
+
+        if (workShift != null) {
+            attendance.setWorkShift(workShift);
+            calculateCheckInStatus(attendance, workShift, now);
+        } else {
+            attendance.setStatus(AttendanceStatus.PRESENT);
+            attendance.setLateMinutes(0);
+        }
+    }
+
+    private void calculateCheckInStatus(Attendance attendance, WorkShift workShift, Instant checkInInstant) {
+        if (workShift.getStartTime() == null) {
+            attendance.setStatus(AttendanceStatus.PRESENT);
+            attendance.setLateMinutes(0);
+            return;
+        }
+
+        LocalTime shiftStart = workShift.getStartTime().atZone(ZoneOffset.UTC).toLocalTime();
+        LocalTime checkInTime = checkInInstant.atZone(ZONE_ID).toLocalTime();
+
+        int startMinutes = shiftStart.getHour() * 60 + shiftStart.getMinute();
+        int checkInMinutes = checkInTime.getHour() * 60 + checkInTime.getMinute();
+        int gracePeriod = workShift.getGracePeriodMinutes() != null ? workShift.getGracePeriodMinutes() : 0;
+
+        int diffMinutes = checkInMinutes - startMinutes;
+
+        if (diffMinutes > gracePeriod) {
+            attendance.setStatus(AttendanceStatus.LATE);
+            attendance.setLateMinutes(diffMinutes);
+        } else {
+            attendance.setStatus(AttendanceStatus.PRESENT);
+            attendance.setLateMinutes(0);
+        }
+    }
+
+    private void processCheckOut(Attendance attendance, Employee employee, LocalDate workDate, Instant now) {
+        attendance.setCheckOutTime(now);
+        attendance.setCheckedStatus(CheckedStatus.CHECKED_OUT);
+
+        if (attendance.getCheckInTime() != null) {
+            long seconds = Duration.between(attendance.getCheckInTime(), now).toSeconds();
+            BigDecimal hours = BigDecimal.valueOf(seconds).divide(BigDecimal.valueOf(3600), 2, RoundingMode.HALF_UP);
+            attendance.setWorkedHours(hours);
+        }
+
+        WorkShift workShift = attendance.getWorkShift();
+        if (workShift == null) {
+            workShift = employeeShiftRepository.findActiveShiftsByEmployeeIdAndDate(employee.getId(), workDate)
+                    .stream()
+                    .map(EmployeeShift::getWorkShift)
+                    .filter(ws -> ws != null && ws.getDeletedAt() == null && Boolean.TRUE.equals(ws.getStatus()))
+                    .findFirst()
+                    .orElse(null);
+            if (workShift != null) {
+                attendance.setWorkShift(workShift);
+            }
+        }
+
+        if (workShift != null && workShift.getEndTime() != null) {
+            LocalTime shiftEnd = workShift.getEndTime().atZone(ZoneOffset.UTC).toLocalTime();
+            LocalTime checkOutTime = now.atZone(ZONE_ID).toLocalTime();
+
+            int endMinutes = shiftEnd.getHour() * 60 + shiftEnd.getMinute();
+            int checkOutMinutes = checkOutTime.getHour() * 60 + checkOutTime.getMinute();
+
+            int earlyMinutes = endMinutes - checkOutMinutes;
+            if (earlyMinutes > 0) {
+                attendance.setEarlyMinutes(earlyMinutes);
+            } else {
+                attendance.setEarlyMinutes(0);
+            }
+        }
+
+        if (attendance.getStatus() == AttendanceStatus.ABSENT) {
+            attendance.setStatus(AttendanceStatus.PRESENT);
         }
     }
 

@@ -5,12 +5,15 @@ import com.lamdayne.humify.attendance.dto.request.WebSwipeRequest;
 import com.lamdayne.humify.attendance.dto.response.AttendanceLogResponse;
 import com.lamdayne.humify.attendance.entity.Attendance;
 import com.lamdayne.humify.attendance.entity.AttendanceLog;
+import com.lamdayne.humify.attendance.entity.EmployeeShift;
+import com.lamdayne.humify.attendance.entity.WorkShift;
 import com.lamdayne.humify.attendance.enums.AttendanceLogType;
 import com.lamdayne.humify.attendance.enums.AttendanceStatus;
 import com.lamdayne.humify.attendance.enums.CheckedStatus;
 import com.lamdayne.humify.attendance.mapper.AttendanceLogMapper;
 import com.lamdayne.humify.attendance.repository.AttendanceLogRepository;
 import com.lamdayne.humify.attendance.repository.AttendanceRepository;
+import com.lamdayne.humify.attendance.repository.EmployeeShiftRepository;
 import com.lamdayne.humify.attendance.service.impl.AttendanceLogServiceImpl;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
@@ -33,8 +36,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +58,7 @@ class AttendanceLogServiceImplTest {
     @Mock private AttendanceLogRepository attendanceLogRepository;
     @Mock private AttendanceRepository attendanceRepository;
     @Mock private EmployeeRepository employeeRepository;
+    @Mock private EmployeeShiftRepository employeeShiftRepository;
     @Mock private CompanyRepository companyRepository;
     @Mock private CompanyService companyService;
     @Mock private AttendanceLogMapper attendanceLogMapper;
@@ -687,5 +695,154 @@ class AttendanceLogServiceImplTest {
 
         AttendanceLogResponse result = attendanceLogService.registerNfcSwipe(request, "IoT-Default-Auth-Key-2026");
         assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Register web swipe check-in late with work shift sets status LATE and lateMinutes")
+    void registerWebSwipe_checkIn_lateShift_statusLate() {
+        WebSwipeRequest request = new WebSwipeRequest();
+        request.setLogType(AttendanceLogType.CHECK_IN);
+
+        ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
+        // Shift started 30 mins ago in VN time, grace period is 5 mins
+        LocalTime shiftStartTime = LocalTime.now(zone).minusMinutes(30);
+        Instant shiftStartInstant = LocalDate.now().atTime(shiftStartTime).toInstant(ZoneOffset.UTC);
+        Instant shiftEndInstant = shiftStartInstant.plusSeconds(8 * 3600);
+
+        WorkShift workShift = WorkShift.builder()
+                .shiftCode("CT01")
+                .name("Ca toi")
+                .startTime(shiftStartInstant)
+                .endTime(shiftEndInstant)
+                .gracePeriodMinutes(5)
+                .status(Boolean.TRUE)
+                .build();
+        ReflectionTestUtils.setField(workShift, "id", 100L);
+
+        EmployeeShift empShift = EmployeeShift.builder()
+                .employee(employee)
+                .workShift(workShift)
+                .startDate(LocalDate.now().minusDays(1))
+                .endDate(LocalDate.now().plusDays(1))
+                .build();
+
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .company(company)
+                .workDate(LocalDate.now(zone))
+                .status(AttendanceStatus.ABSENT)
+                .checkedStatus(CheckedStatus.NOT_CHECKED)
+                .build();
+
+        when(employeeRepository.findByEmailAndCompanyId("nv@company.com", 1L)).thenReturn(Optional.of(employee));
+        when(companyService.getCompanyById(1L)).thenReturn(company);
+        when(attendanceRepository.findByEmployeeIdAndWorkDate(eq(1L), any())).thenReturn(Optional.of(attendance));
+        when(employeeShiftRepository.findActiveShiftsByEmployeeIdAndDate(eq(1L), any())).thenReturn(List.of(empShift));
+        when(attendanceRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(attendanceLogRepository.save(any())).thenReturn(attendanceLog);
+        when(attendanceLogMapper.toResponse(attendanceLog)).thenReturn(attendanceLogResponse);
+
+        attendanceLogService.registerWebSwipe("nv@company.com", 1L, request, "127.0.0.1", "Chrome");
+
+        assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.LATE);
+        assertThat(attendance.getLateMinutes()).isGreaterThanOrEqualTo(25);
+        assertThat(attendance.getWorkShift()).isEqualTo(workShift);
+        assertThat(attendance.getCheckedStatus()).isEqualTo(CheckedStatus.CHECKED_IN);
+    }
+
+    @Test
+    @DisplayName("Register web swipe check-in within grace period sets status PRESENT and lateMinutes 0")
+    void registerWebSwipe_checkIn_withinGracePeriod_statusPresent() {
+        WebSwipeRequest request = new WebSwipeRequest();
+        request.setLogType(AttendanceLogType.CHECK_IN);
+
+        ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
+        // Shift started 2 mins ago in VN time, grace period is 5 mins -> within grace
+        LocalTime shiftStartTime = LocalTime.now(zone).minusMinutes(2);
+        Instant shiftStartInstant = LocalDate.now().atTime(shiftStartTime).toInstant(ZoneOffset.UTC);
+        Instant shiftEndInstant = shiftStartInstant.plusSeconds(8 * 3600);
+
+        WorkShift workShift = WorkShift.builder()
+                .shiftCode("CT01")
+                .name("Ca toi")
+                .startTime(shiftStartInstant)
+                .endTime(shiftEndInstant)
+                .gracePeriodMinutes(5)
+                .status(Boolean.TRUE)
+                .build();
+
+        EmployeeShift empShift = EmployeeShift.builder()
+                .employee(employee)
+                .workShift(workShift)
+                .startDate(LocalDate.now(zone))
+                .build();
+
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .company(company)
+                .workDate(LocalDate.now(zone))
+                .status(AttendanceStatus.ABSENT)
+                .checkedStatus(CheckedStatus.NOT_CHECKED)
+                .build();
+
+        when(employeeRepository.findByEmailAndCompanyId("nv@company.com", 1L)).thenReturn(Optional.of(employee));
+        when(companyService.getCompanyById(1L)).thenReturn(company);
+        when(attendanceRepository.findByEmployeeIdAndWorkDate(eq(1L), any())).thenReturn(Optional.of(attendance));
+        when(employeeShiftRepository.findActiveShiftsByEmployeeIdAndDate(eq(1L), any())).thenReturn(List.of(empShift));
+        when(attendanceRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(attendanceLogRepository.save(any())).thenReturn(attendanceLog);
+        when(attendanceLogMapper.toResponse(attendanceLog)).thenReturn(attendanceLogResponse);
+
+        attendanceLogService.registerWebSwipe("nv@company.com", 1L, request, "127.0.0.1", "Chrome");
+
+        assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.PRESENT);
+        assertThat(attendance.getLateMinutes()).isEqualTo(0);
+        assertThat(attendance.getWorkShift()).isEqualTo(workShift);
+    }
+
+    @Test
+    @DisplayName("Register web swipe check-out calculates workedHours and earlyMinutes")
+    void registerWebSwipe_checkOut_calculatesWorkedHoursAndEarlyMinutes() {
+        WebSwipeRequest request = new WebSwipeRequest();
+        request.setLogType(AttendanceLogType.CHECK_OUT);
+
+        ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
+        // Shift ends in 30 mins in VN time
+        LocalTime shiftEndTime = LocalTime.now(zone).plusMinutes(30);
+        Instant shiftEndInstant = LocalDate.now().atTime(shiftEndTime).toInstant(ZoneOffset.UTC);
+        Instant shiftStartInstant = shiftEndInstant.minusSeconds(8 * 3600);
+
+        WorkShift workShift = WorkShift.builder()
+                .shiftCode("CT01")
+                .name("Ca toi")
+                .startTime(shiftStartInstant)
+                .endTime(shiftEndInstant)
+                .gracePeriodMinutes(5)
+                .status(Boolean.TRUE)
+                .build();
+
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .company(company)
+                .workDate(LocalDate.now(zone))
+                .workShift(workShift)
+                .checkInTime(Instant.now().minusSeconds(7200)) // checked in 2 hours ago
+                .status(AttendanceStatus.PRESENT)
+                .checkedStatus(CheckedStatus.CHECKED_IN)
+                .build();
+
+        when(employeeRepository.findByEmailAndCompanyId("nv@company.com", 1L)).thenReturn(Optional.of(employee));
+        when(companyService.getCompanyById(1L)).thenReturn(company);
+        when(attendanceRepository.findByEmployeeIdAndWorkDate(eq(1L), any())).thenReturn(Optional.of(attendance));
+        when(attendanceRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(attendanceLogRepository.save(any())).thenReturn(attendanceLog);
+        when(attendanceLogMapper.toResponse(attendanceLog)).thenReturn(attendanceLogResponse);
+
+        attendanceLogService.registerWebSwipe("nv@company.com", 1L, request, "127.0.0.1", "Chrome");
+
+        assertThat(attendance.getCheckOutTime()).isNotNull();
+        assertThat(attendance.getCheckedStatus()).isEqualTo(CheckedStatus.CHECKED_OUT);
+        assertThat(attendance.getWorkedHours()).isGreaterThan(BigDecimal.ZERO);
+        assertThat(attendance.getEarlyMinutes()).isGreaterThanOrEqualTo(25);
     }
 }
