@@ -46,7 +46,7 @@ public class GenericSpecificationBuilder<T> {
     }
 
     public Specification<T> build() {
-        if (params.isEmpty()) return null;
+        if (params.isEmpty()) return Specification.unrestricted();
 
         Specification<T> specification = new GenericSpecification<>(params.get(0));
         for (int i = 1; i < params.size(); i++) {

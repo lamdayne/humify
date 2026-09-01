@@ -4,8 +4,10 @@ import com.lamdayne.humify.task.entity.Task;
 import com.lamdayne.humify.task.enums.TaskType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
     @Query("SELECT MAX(t.position) FROM Task t WHERE t.column.id = :columnId")
     Double findMaxPositionByColumnId(@Param("columnId") Long columnId);
@@ -97,4 +99,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
              @Param("excludedType") TaskType excludedType
 
     );
+
+    @EntityGraph(attributePaths = {
+            "project", "reporter", "assignee", "sprint", "column", "parent"
+    })
+    Page<Task> findAll(Specification<Task> specification, Pageable pageable);
+
 }

@@ -14,6 +14,7 @@ import com.lamdayne.humify.task.service.TaskService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -255,6 +256,20 @@ public class ProjectController {
                 .body(ApiResponse.success(
                         SuccessCode.TASK_READ_SUCCESS,
                         taskService.getTaskByProjectId(projectId, page, size, sorts)
+                ));
+    }
+
+    @GetMapping("/{projectId}/tasks/filter")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_READ', 'TASK_FULL', 'PROJECT_FULL')")
+    public ResponseEntity<ApiResponse<List<TaskResponse>>> getTasks(
+            @PathVariable Long projectId,
+            Pageable pageable,
+            String[] params
+    ) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(
+                        SuccessCode.TASK_READ_SUCCESS,
+                        taskService.filterTasksByProjectId(projectId, pageable, params)
                 ));
     }
 
