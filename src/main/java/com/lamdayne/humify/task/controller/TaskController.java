@@ -158,7 +158,7 @@ public class TaskController {
     }
 
     @PostMapping("{taskId}/worklogs")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_UPDATE', 'TASK_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'TASK_WORKLOG_INSERT', 'TASK_FULL')")
     public ResponseEntity<ApiResponse<WorklogResponse>> create(
             @PathVariable Long taskId,
             @RequestBody @Valid CreateWorklogRequest request
