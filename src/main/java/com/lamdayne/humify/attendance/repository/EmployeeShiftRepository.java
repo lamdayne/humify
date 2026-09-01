@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface EmployeeShiftRepository extends JpaRepository<EmployeeShift, Long>, JpaSpecificationExecutor<EmployeeShift> {
@@ -21,5 +22,16 @@ public interface EmployeeShiftRepository extends JpaRepository<EmployeeShift, Lo
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,
         @Param("id") Long id
+    );
+
+    @Query("SELECT es FROM EmployeeShift es " +
+           "WHERE es.employee.id = :employeeId " +
+           "AND es.deletedAt IS NULL " +
+           "AND es.startDate <= :workDate " +
+           "AND (es.endDate IS NULL OR es.endDate >= :workDate) " +
+           "ORDER BY es.id DESC")
+    List<EmployeeShift> findActiveShiftsByEmployeeIdAndDate(
+        @Param("employeeId") Long employeeId,
+        @Param("workDate") LocalDate workDate
     );
 }
