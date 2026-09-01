@@ -5,6 +5,8 @@ import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.common.exception.AppException;
 import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
+import com.lamdayne.humify.common.search.SearchCriteriaParser;
+import com.lamdayne.humify.common.search.SpecSearchCriteria;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
 import com.lamdayne.humify.company.service.CompanyAccessService;
@@ -27,12 +29,14 @@ import com.lamdayne.humify.task.enums.TaskType;
 import com.lamdayne.humify.task.mapper.TaskMapper;
 import com.lamdayne.humify.task.repository.TaskActivityRepository;
 import com.lamdayne.humify.task.repository.TaskRepository;
+import com.lamdayne.humify.task.repository.TaskSpecification;
 import com.lamdayne.humify.task.service.TaskService;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -54,6 +58,7 @@ public class TaskServiceImpl implements TaskService {
     private final SprintService sprintService;
     private final ProjectService projectService;
     private final TaskRepository taskRepository;
+    private final TaskSpecification taskSpecification;
     private final BoardColumnService boardColumnService;
     private final CompanyAccessService companyAccessService;
     private final TaskActivityRepository taskActivityRepository;
@@ -360,6 +365,19 @@ public long countEligibleTasks(
                 endExclusive,
                 TaskType.EPIC
                 );
+    }
+
+    @Override
+    public List<TaskResponse> filterTasksByProjectId(Long projectId, Pageable pageable, String[] params) {
+        projectService.findById(projectId);
+
+        List<SpecSearchCriteria> criteriaList = SearchCriteriaParser.parse(params);
+        Specification<Task> specification = taskSpecification.build(criteriaList);
+        specification = specification.and((root, query, builder) ->
+                builder.equal(root.get("project").get("id"), projectId)
+        );
+        Page<Task> tasks = taskRepository.findAll(specification, pageable);
+        return tasks.stream().map(taskMapper::toResponse).toList();
     }
 
 }
