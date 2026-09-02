@@ -299,4 +299,21 @@ public class PerformanceReviewController {
                 )
         );
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long id
+    ) {
+        performanceReviewService.deleteReview(
+                userPrincipal,
+                id
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.PERFORMANCE_REVIEW_DELETE_SUCCESS,
+                        null
+                )
+        );
+    }
 }

@@ -235,7 +235,8 @@ public enum SuccessCode {
     PERFORMANCE_REVIEW_READ_SUCCESS("PERFORMANCE_REVIEW_READ_SUCCESS","performance review retrieved successfully"),
     PERFORMANCE_REVIEW_SELF_REVIEW_SUCCESS("PERFORMANCE_REVIEW_SELF_REVIEW_SUCCESS","performance review self review retrieved successfully" ),
     PERFORMANCE_REVIEW_MANAGER_REVIEW_SUCCESS("PERFORMANCE_REVIEW_MANAGER_REVIEW_SUCCESS","performance review manager review retrieved successfully" ),
-    PERFORMANCE_REVIEW_COMPLETE_SUCCESS("PERFORMANCE_REVIEW_COMPLETE_SUCCESS", "performance review completed successfully"),;
+    PERFORMANCE_REVIEW_COMPLETE_SUCCESS("PERFORMANCE_REVIEW_COMPLETE_SUCCESS", "performance review completed successfully"),
+    PERFORMANCE_REVIEW_DELETE_SUCCESS("PERFORMANCE_REVIEW_DELETE_SUCCESS","performance review deleted successfully" ),;
     private String code;
     private String defaultMessage;
 }
