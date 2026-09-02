@@ -12,6 +12,7 @@ public enum PermissionEnum {
     EMPLOYEE_CREATE("Create new employee", PermissionModule.EMPLOYEE),
     EMPLOYEE_UPDATE("Update employee information", PermissionModule.EMPLOYEE),
     EMPLOYEE_DELETE("Delete employee", PermissionModule.EMPLOYEE),
+    EMPLOYEE_SELF_UPDATE("Update my info employee", PermissionModule.EMPLOYEE),
     EMPLOYEE_FULL("Full access resources employee", PermissionModule.EMPLOYEE),
 
     // Employee Certification

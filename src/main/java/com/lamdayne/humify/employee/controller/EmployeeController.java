@@ -169,7 +169,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}")
-    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL')")
+    @PreAuthorize("hasAnyAuthority('FULL_ACCESS', 'EMPLOYEE_UPDATE', 'EMPLOYEE_FULL', 'EMPLOYEE_SELF_UPDATE')")
     public ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(
             @PathVariable("employeeId") Long employeeId,
             @RequestBody @Valid UpdateEmployeeRequest request

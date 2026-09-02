@@ -1,5 +1,7 @@
 package com.lamdayne.humify.employee.service.impl;
 
+import com.lamdayne.humify.auth.enums.SystemRole;
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.auth.service.PasswordResetTokenService;
 import com.lamdayne.humify.auth.service.RoleAccessService;
@@ -33,6 +35,7 @@ import com.lamdayne.humify.user.enums.PasswordFlag;
 import com.lamdayne.humify.user.service.UserService;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -141,6 +144,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Set<String> roles = roleAccessService.findAllRoleNames(userPrincipal);
+
+        boolean isAdminOrManager = roles.contains(SystemRole.COMPANY_ADMIN.name())
+                || roles.contains(SystemRole.HR_MANAGER.name());
+
+        User owner = userService.findByEmail(employee.getEmail());
+
+        boolean isOwner = owner.getId().equals(userPrincipal.getId());
+
+        if (!isAdminOrManager && !isOwner) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
+        }
 
         if (request.getNfcCardUid() != null && !request.getNfcCardUid().isBlank()) {
             employeeValidator.validateNfcCardUid(request.getNfcCardUid(), id);
