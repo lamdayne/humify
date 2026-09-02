@@ -1,5 +1,6 @@
 package com.lamdayne.humify.employee.service.impl;
 
+import com.lamdayne.humify.auth.security.principal.UserPrincipal;
 import com.lamdayne.humify.auth.security.rls.CompanyContext;
 import com.lamdayne.humify.auth.service.PasswordResetTokenService;
 import com.lamdayne.humify.auth.service.RoleAccessService;
@@ -42,9 +43,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.util.Set;
+
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +76,8 @@ public class EmployeeServiceImplTest {
     @Mock private EmployeeExcelParser employeeExcelParser;
     @Mock private EmployeeExcelProcessor employeeExcelProcessor;
     @Mock private EmployeeImportValidator employeeImportValidator;
+    @Mock private SecurityContext securityContext;
+    @Mock private Authentication authentication;
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;
@@ -85,6 +92,7 @@ public class EmployeeServiceImplTest {
     @BeforeEach
     void setUp() {
         CompanyContext.setCompanyId(10L);
+        SecurityContextHolder.setContext(securityContext);
 
         company = Company.builder().build();
         company.setId(10L);
@@ -120,6 +128,7 @@ public class EmployeeServiceImplTest {
     @AfterEach
     void tearDown() {
         CompanyContext.clear();
+        SecurityContextHolder.clearContext();
     }
 
     // ---- createEmployee ----
@@ -222,6 +231,15 @@ public class EmployeeServiceImplTest {
     @Test
     @DisplayName("Update employee successfully")
     void updateEmployee_success() {
+        UserPrincipal userPrincipal = UserPrincipal.builder().id(1L).email("admin@company.com").build();
+        User owner = mock(User.class);
+        when(owner.getId()).thenReturn(1L);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userPrincipal);
+        when(roleAccessService.findAllRoleNames(userPrincipal)).thenReturn(Set.of("COMPANY_ADMIN"));
+        when(userService.findByEmail(employee.getEmail())).thenReturn(owner);
+
         UpdateEmployeeRequest request = mock(UpdateEmployeeRequest.class);
         when(request.getNfcCardUid()).thenReturn("nfc-123");
 
@@ -517,6 +535,15 @@ public class EmployeeServiceImplTest {
     @Test
     @DisplayName("Update employee with null NFC card does not validate")
     void updateEmployee_nullNfc() {
+        UserPrincipal userPrincipal = UserPrincipal.builder().id(1L).email("admin@company.com").build();
+        User owner = mock(User.class);
+        when(owner.getId()).thenReturn(1L);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userPrincipal);
+        when(roleAccessService.findAllRoleNames(userPrincipal)).thenReturn(Set.of("COMPANY_ADMIN"));
+        when(userService.findByEmail(employee.getEmail())).thenReturn(owner);
+
         UpdateEmployeeRequest request = mock(UpdateEmployeeRequest.class);
         when(request.getNfcCardUid()).thenReturn(null); // testing null NFC branch
 
