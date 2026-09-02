@@ -18,7 +18,6 @@ import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.dto.response.UserRoleResponse;
 import com.lamdayne.humify.user.entity.User;
 import com.lamdayne.humify.user.enums.PasswordFlag;
-import com.lamdayne.humify.user.enums.UserRole;
 import com.lamdayne.humify.user.mapper.UserMapper;
 import com.lamdayne.humify.user.repository.UserRepository;
 import com.lamdayne.humify.user.service.UserService;
@@ -335,9 +334,9 @@ public class UserServiceImpl implements UserService {
                 .existsByUser_IdAndRole_NameIn(
                         userId,
                         List.of(
-                                UserRole.SYS_ADMIN.name(),
-                                UserRole.COMPANY_ADMIN.name(),
-                                UserRole.MANAGER.name()
+                                SystemRole.SYSTEM_ADMIN.name(),
+                                SystemRole.COMPANY_ADMIN.name(),
+                                SystemRole.HR_MANAGER.name()
                         )
                 );
     }
