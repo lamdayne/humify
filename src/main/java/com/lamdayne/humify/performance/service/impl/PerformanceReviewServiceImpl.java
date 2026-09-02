@@ -7,10 +7,8 @@ import com.lamdayne.humify.common.exception.ErrorCode;
 import com.lamdayne.humify.common.response.PageResponse;
 import com.lamdayne.humify.common.util.PageableUtil;
 import com.lamdayne.humify.company.entity.Company;
-import com.lamdayne.humify.company.repository.CompanyRepository;
 import com.lamdayne.humify.company.service.CompanyService;
 import com.lamdayne.humify.employee.entity.Employee;
-import com.lamdayne.humify.employee.repository.EmployeeRepository;
 import com.lamdayne.humify.employee.service.EmployeeService;
 import com.lamdayne.humify.performance.dto.request.CreatePerformanceReviewRequest;
 import com.lamdayne.humify.performance.dto.request.ManagerReviewRequest;
@@ -862,7 +860,7 @@ public class PerformanceReviewServiceImpl
                             .stream()
                             .anyMatch(authority ->
                                     authority.getAuthority()
-                                            .equals("FULL_ACCESS")
+                                            .equals("PERFORMANCE_REVIEW_MANAGE")
                             );
 
             if (!fullAccess) {
