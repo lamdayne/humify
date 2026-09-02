@@ -34,7 +34,13 @@ public enum SystemRole {
                     PermissionEnum.TASK_FULL,
                     PermissionEnum.ATTENDANCE_CORRECTION_FULL,
                     PermissionEnum.ATTENDANCE_LOG_READ,
-                    PermissionEnum.WORK_SHIFT_FULL
+                    PermissionEnum.WORK_SHIFT_FULL,
+                    PermissionEnum.PERFORMANCE_REVIEW_READ,
+                    PermissionEnum.PERFORMANCE_REVIEW_CREATE,
+                    PermissionEnum.PERFORMANCE_REVIEW_UPDATE,
+                    PermissionEnum.PERFORMANCE_REVIEW_EVALUATE,
+                    PermissionEnum.PERFORMANCE_REVIEW_COMPLETE,
+                    PermissionEnum.PERFORMANCE_REVIEW_MANAGE
             )
     ),
 

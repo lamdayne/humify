@@ -9,7 +9,6 @@ import com.lamdayne.humify.user.dto.request.CreateUserRequest;
 import com.lamdayne.humify.user.dto.request.UpdateUserStatusRequest;
 import com.lamdayne.humify.user.dto.response.UserResponse;
 import com.lamdayne.humify.user.entity.User;
-import com.lamdayne.humify.user.enums.UserRole;
 
 import java.util.Optional;
 
