@@ -60,4 +60,8 @@ public interface PerformanceReviewService {
     PerformanceReviewSummaryResponse getMyAssignedReviewSummary(
             UserPrincipal userPrincipal
     );
+    void deleteReview(
+            UserPrincipal userPrincipal,
+            Long reviewId
+    );
 }

@@ -824,4 +824,59 @@ public class PerformanceReviewServiceImpl
                 .completed(completed)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void deleteReview(
+            UserPrincipal userPrincipal,
+            Long reviewId
+    ) {
+        PerformanceReview review =
+                getReviewOrThrow(
+                        userPrincipal.getCompanyId(),
+                        reviewId
+                );
+
+        /*
+         * Review đã COMPLETED thì không cho xóa.
+         * Vì đây là dữ liệu đánh giá lịch sử đã được chốt.
+         */
+        if (review.getStatus()
+                == PerformanceReviewStatus.COMPLETED) {
+
+            throw new AppException(
+                    ErrorCode.PERFORMANCE_REVIEW_COMPLETED
+            );
+        }
+
+        /*
+         * Chỉ reviewer được gán hoặc FULL_ACCESS
+         * mới được phép xóa.
+         */
+        if (!review.getReviewer()
+                .getId()
+                .equals(userPrincipal.getId())) {
+
+            boolean fullAccess =
+                    userPrincipal.getAuthorities()
+                            .stream()
+                            .anyMatch(authority ->
+                                    authority.getAuthority()
+                                            .equals("FULL_ACCESS")
+                            );
+
+            if (!fullAccess) {
+                throw new AppException(
+                        ErrorCode.PERFORMANCE_REVIEW_REVIEWER_FORBIDDEN
+                );
+            }
+        }
+
+        // Soft delete
+        review.setDeletedAt(
+                java.time.Instant.now()
+        );
+
+        performanceReviewRepository.save(review);
+    }
 }
