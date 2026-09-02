@@ -40,7 +40,8 @@ public enum SystemRole {
                     PermissionEnum.PERFORMANCE_REVIEW_UPDATE,
                     PermissionEnum.PERFORMANCE_REVIEW_EVALUATE,
                     PermissionEnum.PERFORMANCE_REVIEW_COMPLETE,
-                    PermissionEnum.PERFORMANCE_REVIEW_MANAGE
+                    PermissionEnum.PERFORMANCE_REVIEW_MANAGE,
+                    PermissionEnum.PERFORMANCE_REVIEW_DELETE
             )
     ),
 
